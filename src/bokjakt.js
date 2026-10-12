@@ -52,7 +52,12 @@ function plusDuk(text) {
   return tex;
 }
 
-export function byggBokjakt(layout, hinder, tema, installning) {
+/**
+ * status kan delas mellan flera vaningar, sa att boken man plockar pa
+ * plan 1 raknas ihop med dem fran plan 0.
+ */
+export function byggBokjakt(layout, hinder, tema, installning,
+                            status = { bocker: 0, poang: 0 }) {
   const grupp = new THREE.Group();
   grupp.name = "bokjakt";
 
@@ -95,7 +100,6 @@ export function byggBokjakt(layout, hinder, tema, installning) {
   const farger = [tema.senap, tema.mint, tema.rosa, "#3d6fb6", "#d8574a", "#8a5aa8"];
   let bocker = [];
   let ny = 0;                          // naer nya bocker ska dyka upp
-  const status = { bocker: 0, poang: 0 };
 
   function laggUt() {
     bocker = platser.map((p, i) => ({

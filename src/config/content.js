@@ -6,8 +6,10 @@
 //   * Ändra text mellan citattecknen "...". Behåll citattecknen.
 //   * Behåll kommatecknen i slutet av raderna.
 //   * Rör inte "id". Det kopplar platsen till kartan.
-//   * avdelning: true  = räknas som avdelning (och i minispelet senare)
+//   * avdelning: true  = räknas som avdelning i minispelet
 //     avdelning: false = övrig plats, syns i listan men räknas inte
+//   * plan: 1 = platsen ligger på plan 1. Utan plan ligger den på plan 0.
+//     Platsen måste också finnas i den våningens kartfil.
 //   * Ordningen här är ordningen i listan på sidan.
 //   * farg är zonens färg på golvet och kanten på skylten, skriven som
 //     en färgkod. Sök på "color picker" på nätet för att hitta koder.
@@ -17,7 +19,7 @@
 
 export const SIDA = {
   titel: "Leksaksbiblioteket",
-  undertitel: "Plan 0",
+  undertitel: "Plan {plan}",
   listrubrik: "Hitta i biblioteket",
   avdelningarRubrik: "Avdelningar",
   ovrigtRubrik: "Övriga platser",
@@ -34,7 +36,17 @@ export const SIDA = {
   oppettiderRubrik: "Öppettider",
   kontaktRubrik: "Kontakt",
   infoNamn: "Info: {namn}",
-  stangKort: "Stäng"
+  stangKort: "Stäng",
+
+  // Våningar
+  vaningRubrik: "Våning",
+  vaningKnapp: "Plan {plan}",
+  vaningGrupp: "Plan {plan}",
+  nuPaPlan: "Du är på plan {plan}",
+  vaningUpp: "Upp till plan {plan}",
+  vaningNer: "Ner till plan {plan}",
+  visarVagAnnanVaning: "{namn} finns på plan {plan}",
+  visarVagAnnanUnder: "Följ prickarna till trappan."
 };
 
 export const PLATSER = [
@@ -117,6 +129,106 @@ export const PLATSER = [
     beskrivning: "Upp till plan 1.",
     avdelning: false,
     farg: "#c4bdb3"
+  },
+
+  // ------------------------------------------- plan 1, avdelningar
+  {
+    id: "romaner",
+    plan: 1,
+    namn: "Romaner",
+    beskrivning: "Skönlitteratur för vuxna.",
+    avdelning: true,
+    farg: "#e57f8f"
+  },
+  {
+    id: "spanning",
+    plan: 1,
+    namn: "Spänning",
+    beskrivning: "Deckare och thrillers.",
+    avdelning: true,
+    farg: "#e0866a"
+  },
+  {
+    id: "klassiker",
+    plan: 1,
+    namn: "Klassiker",
+    beskrivning: "Böcker som har hållit i många år.",
+    avdelning: true,
+    farg: "#c9a26b"
+  },
+  {
+    id: "ljudbocker",
+    plan: 1,
+    namn: "Ljudböcker",
+    beskrivning: "Böcker att lyssna på.",
+    avdelning: true,
+    farg: "#a58fd8"
+  },
+  {
+    id: "serier",
+    plan: 1,
+    namn: "Serier",
+    beskrivning: "Serieböcker och grafiska romaner.",
+    avdelning: true,
+    farg: "#ef9fc9"
+  },
+  {
+    id: "tidningshorna",
+    plan: 1,
+    namn: "Tidningshörnan",
+    beskrivning: "Dagstidningar och tidskrifter i sköna fåtöljer.",
+    avdelning: true,
+    farg: "#6fbf9a"
+  },
+  {
+    id: "studieyta",
+    plan: 1,
+    namn: "Studieytan",
+    beskrivning: "Långbord där du kan sitta och plugga.",
+    avdelning: true,
+    farg: "#a5c48a"
+  },
+  {
+    id: "datorer",
+    plan: 1,
+    namn: "Publika datorer",
+    beskrivning: "Datorer och skrivare som alla får använda.",
+    avdelning: true,
+    farg: "#7a8fe0"
+  },
+  {
+    id: "slaktforskning",
+    plan: 1,
+    namn: "Släktforskning",
+    beskrivning: "Tjustrummet, med material för den som släktforskar.",
+    avdelning: true,
+    farg: "#5fb3e0"
+  },
+
+  // --------------------------------------- plan 1, övriga platser
+  {
+    id: "information",
+    plan: 1,
+    namn: "Information",
+    beskrivning: "Disken där du kan fråga om hjälp på plan 1.",
+    avdelning: false,
+    farg: "#f0b86e"
+  },
+  {
+    id: "facklitteratur",
+    plan: 1,
+    namn: "Facklitteratur",
+    beskrivning: "Böcker om allt mellan himmel och jord.",
+    avdelning: false,
+    farg: "#8fc3c3"
+  },
+  {
+    id: "trappa_hiss_plan1",
+    plan: 1,
+    namn: "Trappa och hiss",
+    beskrivning: "Ner till plan 0.",
+    avdelning: false,
+    farg: "#c4bdb3"
   }
 ];
 
@@ -186,6 +298,16 @@ export const INFOPUNKTER = [
     rader: [
       "Barn- och ungdomsböcker har inga förseningsavgifter.",
       "Vårdnadshavare ansvarar för barnens lån."
+    ]
+  },
+  {
+    id: "info_plan1",
+    plan: 1,
+    rubrik: "Välkommen till plan 1",
+    rader: [
+      "Här finns romaner, spänning, facklitteratur, ljudböcker och serier.",
+      "Vid informationsdisken kan du fråga om hjälp att hitta.",
+      "Datorerna och släktforskningen finns i Tjustrummet längst in åt öster."
     ]
   }
 ];
@@ -273,7 +395,8 @@ export const TEMA = {
   lampSken:      "#ffd89a",
 
   // Pendellampor hänger över de här platserna (samma id som i listan ovan)
-  lampor: ["receptionsdisk", "ungdomshorna", "storstil", "barnavdelning", "entre"],
+  lampor: ["receptionsdisk", "ungdomshorna", "storstil", "barnavdelning", "entre",
+           "information", "tidningshorna", "studieyta", "slaktforskning"],
 
   // Bibliotekets profilfärger, från fasaden
   senap:         "#e7b53c",

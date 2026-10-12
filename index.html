@@ -74,9 +74,24 @@
   }
 
   #panel-innehall { overflow-y: auto; padding: 4px 16px 20px; }
-  #panel h2 {
-    margin: 16px 6px 8px; font-size: 14px; font-weight: 800;
+  #panel h2.vaning {
+    margin: 22px 4px 4px; padding-top: 14px; border-top: 2px solid var(--kant);
+    font-size: 20px; font-weight: 800; color: var(--text);
+  }
+  #panel .vaningsdel:first-child h2.vaning { margin-top: 8px; padding-top: 0; border-top: 0; }
+  #panel h3.grupp {
+    margin: 12px 6px 8px; font-size: 14px; font-weight: 800;
     text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-mjuk);
+  }
+  .vaningsval { display: flex; gap: 8px; margin: 10px 0 0; }
+  .vaningsval button {
+    padding: 4px 14px; border-radius: 999px;
+    background: #fff; border: 2px solid var(--kant);
+    box-shadow: 0 3px 0 var(--kant);
+    font-weight: 800; font-size: 15px;
+  }
+  .vaningsval button.vald {
+    background: #fbe7b0; border-color: #e7b53c; box-shadow: 0 3px 0 #c9962a;
   }
   .platser { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
   .plats {
@@ -92,9 +107,9 @@
     background: var(--farg);
     box-shadow: inset -3px -3px 0 rgba(0,0,0,0.12), inset 3px 3px 0 rgba(255,255,255,0.45);
   }
-  .plats h3 { margin: 0; font-size: 17px; font-weight: 800; line-height: 1.3; }
+  .plats .text h4 { margin: 0; font-size: 17px; font-weight: 800; line-height: 1.3; }
   .plats p { margin: 2px 0 0; color: var(--text-mjuk); font-size: 15px; }
-  .plats:not(.avdelning) h3 { font-size: 16px; }
+  .plats:not(.avdelning) .text h4 { font-size: 16px; }
 
   .visa {
     grid-column: 2; justify-self: start; margin-top: 8px;
@@ -188,6 +203,7 @@
   #forlopp .forlopp-rubrik { font-weight: 800; font-size: 16px; }
   #forlopp .rakning { font-variant-numeric: tabular-nums; }
   #forlopp .prickrad { display: flex; gap: 8px; margin-top: 8px; }
+  #forlopp .prickrad + .prickrad { margin-top: 6px; }
   .forlopp-prick {
     width: 22px; height: 22px; border-radius: 50%; box-sizing: border-box;
     border: 3px solid var(--farg); background: #fff;
@@ -237,7 +253,7 @@
 
   /* ------------------------------------------------------------- bokjakt */
   #bokjakt {
-    position: fixed; top: 108px; left: 16px;
+    position: fixed; top: 142px; left: 16px;
     display: flex; align-items: center; gap: 12px;
     padding: 8px 14px 8px 10px; border-radius: 999px;
     background: var(--papper); border: 2px solid var(--kant);
@@ -265,6 +281,13 @@
   .bokjakt-i-listan { margin-top: 10px; }
   .bokjakt-i-listan p { margin: 4px 0 0; font-size: 14px; color: var(--text-mjuk); }
 
+  /* Mjuk övertoning när figuren byter våning. */
+  #tona {
+    position: fixed; inset: 0; pointer-events: none;
+    background: #f6efe5; opacity: 0; transition: opacity 0.25s ease;
+  }
+  #tona.syns { opacity: 1; }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
@@ -288,6 +311,7 @@
 </head>
 <body>
 <canvas id="spelduk" tabindex="-1" aria-label="3D-vy av biblioteket"></canvas>
+<div id="tona" aria-hidden="true"></div>
 
 <aside id="panel" aria-label="Platser i biblioteket"></aside>
 
@@ -306,7 +330,8 @@
   <kbd>&uarr;</kbd> <kbd>&darr;</kbd> går framåt och bakåt.
   <kbd>&larr;</kbd> <kbd>&rarr;</kbd> vrider figuren.
   <kbd>Skift</kbd> springer. Gå upp på en gul
-  <span class="i-prick" aria-hidden="true">i</span>-platta för info.
+  <span class="i-prick" aria-hidden="true">i</span>-platta för info,
+  eller på den gula plattan vid trappan för att byta våning.
   <kbd>Esc</kbd> stänger.
 </div>
 

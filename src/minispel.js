@@ -23,22 +23,31 @@ export function skapaMinispel(platser, { narHittad, narVinst, narBesok }) {
   // nar figuren har gatt ut och kommit tillbaka.
   const vantar = new Set();
   let vunnit = false;
+  // Bara platserna pa den vaning figuren ar pa. Samma x och z finns ju
+  // pa bada vaningarna.
+  const pa = (p, plan) => plan === undefined || p.plan === undefined || p.plan === plan;
 
   /** Platser figuren star i just nu raknas inte forran man gatt ut. */
-  function borja(x, z) {
-    for (const p of platser) if (iZon(p, x, z)) besokta.add(p.id);
-    for (const p of avdelningar) if (iZon(p, x, z, MARGINAL)) vantar.add(p.id);
+  function borja(x, z, plan) {
+    for (const p of platser) if (pa(p, plan) && iZon(p, x, z)) besokta.add(p.id);
+    for (const p of avdelningar) if (pa(p, plan) && iZon(p, x, z, MARGINAL)) vantar.add(p.id);
   }
 
-  function kolla(x, z) {
+  function kolla(x, z, plan) {
     for (const p of platser) {
+      if (!pa(p, plan)) continue;
       if (!besokta.has(p.id) && iZon(p, x, z)) {
         besokta.add(p.id);
         narBesok(p);
       }
     }
+    // Marginalen behovs bara for zoner man inte kan kliva in i. Star
+    // figuren mitt i en avdelning raknas inte grannen intill ocksa.
+    const har = avdelningar.filter(p => pa(p, plan));
+    const mitti = har.filter(p => iZon(p, x, z));
+    const nara = mitti.length ? mitti : har.filter(p => iZon(p, x, z, MARGINAL));
     for (const p of avdelningar) {
-      const inne = iZon(p, x, z, MARGINAL);
+      const inne = nara.includes(p);
       if (vantar.has(p.id)) {
         if (!inne) vantar.delete(p.id);
         continue;
@@ -53,12 +62,12 @@ export function skapaMinispel(platser, { narHittad, narVinst, narBesok }) {
     }
   }
 
-  function nollstall(x, z) {
+  function nollstall(x, z, plan) {
     funna.clear();
     besokta.clear();
     vantar.clear();
     vunnit = false;
-    borja(x, z);
+    borja(x, z, plan);
   }
 
   return {

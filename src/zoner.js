@@ -12,9 +12,10 @@ const PX_PER_METER = 40;
 /** Platserna med bade geometri och innehall, i innehallsfilens ordning. */
 export function sammanfogaPlatser(layout, platser) {
   const zoner = new Map(layout.zones.map(z => [z.id, z]));
+  const plan = layout.meta?.plan ?? 0;
   return platser
     .filter(p => zoner.has(p.id))
-    .map(p => ({ ...p, rutor: zoner.get(p.id).rutor, skylt: zoner.get(p.id).skylt }));
+    .map(p => ({ ...p, plan, rutor: zoner.get(p.id).rutor, skylt: zoner.get(p.id).skylt }));
 }
 
 /** Ligger punkten i platsens zon, eventuellt med lite marginal? */
@@ -108,6 +109,12 @@ function byggGolvzoner(layout, platser) {
     ctx.drawImage(zon.duk, zon.x, zon.z);
     ctx.globalAlpha = 1;
   }
+  // Trappor som gar ner ar hal i golvet, och zonfargen far inte tacka dem.
+  ctx.globalCompositeOperation = "destination-out";
+  for (const f of layout.fixtures.filter(f => f.typ === "trappa" && f.ner)) {
+    ctx.fillRect(f.x * PX_PER_METER, f.z * PX_PER_METER, f.bredd * PX_PER_METER, f.djup * PX_PER_METER);
+  }
+  ctx.globalCompositeOperation = "source-over";
 
   const textur = new THREE.CanvasTexture(duk);
   textur.colorSpace = THREE.SRGBColorSpace;

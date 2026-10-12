@@ -1,0 +1,242 @@
+{
+  "meta": {
+    "plan": 1,
+    "namn": "Bibliotek plan 1, Kv. Bryggaren 23, Västervik",
+    "enhet": "meter",
+    "koordinatsystem": "Samma som plan 0: origo i byggnadens nordvästra ytterhörn på plan 0, x växer åt öster, z växer åt söder. Plan 1 ligger rakt ovanpå plan 0.",
+    "kallor": {
+      "ritningar": [
+        "material/planlösningar/820_01A30P2-Bibliotek plan 1_final.pdf",
+        "material/planlösningar/Orienteringskarta 2024_plan1_tryck.pdf"
+      ],
+      "ritningsnummer": "820:01, A30P:102, Västerviks Bostads AB, daterad 2019-04-15",
+      "skala": "1:100",
+      "omrakning": "1 punkt i PDF-filen = 0,352778 mm papper = 35,2778 mm verklighet",
+      "skarv": "Plan 1-bladet ligger inte vridet. Spelets koordinater = bladets koordinater minus (13,315 ; 2,533) m. Förskjutningen är framräknad så att västra ytterväggen, norra ytterväggen, hisschaktet, huvudtrapphusets västra vägg och den lilla trappan vid informationsdisken hamnar på samma ställe som på plan 0.",
+      "fordelning": "Väggar, trappor, hiss och toaletter är uppmätta ur ritningen från 2019. Hyllor, bord och avdelningar är placerade efter orienteringskartan från 2024, som visar hur det ser ut i dag. Orienteringskartan saknar skala och är inpassad mot ytterväggarna och hisschaktet."
+    },
+    "forenklingar": [
+      "Takterrassen öster om trapphallen ingår inte. Dörren dit är ritad som vägg.",
+      "Trapphuset väster om hissen, med vilplan och trappan vidare upp till plan 2, är ett slutet block.",
+      "Trappan vid informationsdisken fortsätter upp till plan 2. Den delen är bara utseende.",
+      "Toaletterna är ett slutet block.",
+      "Hyllrader är förenklade till raka lådor. Små möbler, växter och bokvagnar är utelämnade."
+    ],
+    "kartnoter": [
+      "Rutnätet är en meter.",
+      "Plan 1 ligger rakt ovanpå plan 0.",
+      "Gula plattor: här byter man våning.",
+      "Pilarna visar var man kommer ut",
+      "när man kommer upp från plan 0.",
+      "Toaletterna och trapphuset",
+      "väster om hissen är stängda.",
+      "Takterrassen ingår inte."
+    ]
+  },
+
+  "bounds": { "bredd": 23.70, "djup": 37.90 },
+
+  "floors": [
+    { "id": "salen",       "x":  3.35, "z":  0.00, "bredd": 14.90, "djup": 37.90 },
+    { "id": "tjustrummet", "x": 18.25, "z":  0.00, "bredd":  5.45, "djup": 20.15 }
+  ],
+
+  "blocks": [
+    { "id": "trapphus",      "namn": "Trapphus",  "x":  9.76, "z": 21.50, "bredd": 2.30, "djup": 5.50 },
+    { "id": "trapphus_syd",  "namn": "Trapphus",  "x": 12.06, "z": 25.44, "bredd": 2.00, "djup": 1.56 },
+    { "id": "toalett",       "namn": "Toaletter", "x":  9.00, "z": 27.00, "bredd": 5.30, "djup": 2.60 }
+  ],
+
+  "walls": [
+    { "id": "yttre_norr",       "x":  3.35, "z":  0.00, "bredd": 20.35, "djup":  0.25 },
+    { "id": "yttre_vast",       "x":  3.35, "z":  0.25, "bredd":  0.25, "djup": 37.40, "fonster": true },
+    { "id": "yttre_syd",        "x":  3.35, "z": 37.65, "bredd": 14.90, "djup":  0.25, "fonster": true },
+    { "id": "yttre_ost_ovan",   "x": 23.45, "z":  0.25, "bredd":  0.25, "djup": 19.90 },
+    { "id": "tjust_syd",        "x": 18.25, "z": 19.90, "bredd":  5.45, "djup":  0.25 },
+    { "id": "yttre_ost_mitt",   "x": 18.00, "z": 19.90, "bredd":  0.25, "djup":  1.70 },
+    { "id": "yttre_ost_nedan",  "x": 18.00, "z": 21.60, "bredd":  0.25, "djup": 16.05, "fonster": true },
+
+    { "id": "tjust_vast_n",     "x": 18.00, "z":  0.25, "bredd":  0.25, "djup": 16.45 },
+    { "id": "tjust_vast_s",     "x": 18.00, "z": 18.00, "bredd":  0.25, "djup":  1.90 },
+
+    { "id": "trapphall_norr",   "x": 12.06, "z": 21.60, "bredd":  4.64, "djup":  0.20 },
+    { "id": "trapphall_syd_v",  "x": 14.30, "z": 28.85, "bredd":  1.30, "djup":  0.20 },
+    { "id": "trapphall_syd_o",  "x": 16.70, "z": 28.85, "bredd":  1.30, "djup":  0.20 }
+  ],
+
+  "doors": [
+    { "id": "tjust_dorr",        "typ": "inre", "x": 18.00, "z": 16.70, "bredd": 0.25, "djup": 1.30, "riktning": "ost" },
+    { "id": "trapphall_dorr_n",  "typ": "inre", "x": 16.70, "z": 21.60, "bredd": 1.30, "djup": 0.20, "riktning": "syd" },
+    { "id": "trapphall_dorr_s",  "typ": "inre", "x": 15.60, "z": 28.85, "bredd": 1.10, "djup": 0.20, "riktning": "syd" }
+  ],
+
+  "shelves": [
+    { "id": "p1h01", "zon": "facklitteratur", "x":  3.80, "z":  0.25, "bredd": 4.20, "djup": 0.50, "hojd": 1.80 },
+    { "id": "p1h02", "zon": "facklitteratur", "x":  9.10, "z":  0.25, "bredd": 2.90, "djup": 0.50, "hojd": 1.80 },
+    { "id": "p1h03", "zon": "facklitteratur", "x":  6.50, "z":  2.00, "bredd": 3.10, "djup": 0.50, "hojd": 1.50 },
+    { "id": "p1h04", "zon": "facklitteratur", "x":  5.90, "z":  4.40, "bredd": 4.00, "djup": 0.50, "hojd": 1.50 },
+    { "id": "p1h05", "zon": "facklitteratur", "x":  6.50, "z":  6.80, "bredd": 3.10, "djup": 0.50, "hojd": 1.50 },
+
+    { "id": "p1h06", "zon": "spanning",       "x": 12.05, "z":  6.80, "bredd": 2.90, "djup": 0.55, "hojd": 1.50 },
+    { "id": "p1h07", "zon": "spanning",       "x": 12.05, "z":  9.25, "bredd": 2.90, "djup": 0.60, "hojd": 1.50 },
+    { "id": "p1h08", "zon": "spanning",       "x": 12.05, "z": 11.70, "bredd": 2.90, "djup": 0.60, "hojd": 1.50 },
+    { "id": "p1h09", "zon": "spanning",       "x": 12.05, "z": 14.10, "bredd": 2.90, "djup": 0.60, "hojd": 1.50 },
+    { "id": "p1h10", "zon": "spanning",       "x": 12.05, "z": 16.60, "bredd": 2.90, "djup": 0.60, "hojd": 1.50 },
+
+    { "id": "p1h11", "zon": "romaner",        "x":  5.90, "z":  9.25, "bredd": 4.00, "djup": 0.60, "hojd": 1.50 },
+    { "id": "p1h12", "zon": "romaner",        "x":  5.90, "z": 11.70, "bredd": 4.00, "djup": 0.60, "hojd": 1.50 },
+    { "id": "p1h13", "zon": "romaner",        "x":  6.50, "z": 14.10, "bredd": 3.10, "djup": 0.60, "hojd": 1.50 },
+    { "id": "p1h14", "zon": "romaner",        "x":  5.90, "z": 16.60, "bredd": 4.00, "djup": 0.60, "hojd": 1.50 },
+    { "id": "p1h15", "zon": "romaner",        "x":  5.90, "z": 19.00, "bredd": 4.00, "djup": 0.60, "hojd": 1.50 },
+
+    { "id": "p1h16", "zon": null,             "x": 17.45, "z":  4.00, "bredd": 0.50, "djup": 3.10, "hojd": 1.80 },
+    { "id": "p1h17", "zon": null,             "x": 17.45, "z":  8.90, "bredd": 0.50, "djup": 7.40, "hojd": 1.80 },
+
+    { "id": "p1h18", "zon": "serier",         "x": 13.50, "z": 21.00, "bredd": 1.60, "djup": 0.55, "hojd": 1.50 },
+    { "id": "p1h19", "zon": "klassiker",      "x":  9.30, "z": 23.40, "bredd": 0.46, "djup": 3.30, "hojd": 1.80 },
+
+    { "id": "p1h20", "zon": "ljudbocker",     "x":  5.70, "z": 21.70, "bredd": 2.20, "djup": 0.60, "hojd": 1.50 },
+    { "id": "p1h21", "zon": "ljudbocker",     "x":  5.70, "z": 23.80, "bredd": 2.20, "djup": 0.60, "hojd": 1.50 },
+    { "id": "p1h22", "zon": "ljudbocker",     "x":  5.70, "z": 25.90, "bredd": 2.20, "djup": 0.60, "hojd": 1.50 },
+    { "id": "p1h23", "zon": "ljudbocker",     "x":  5.70, "z": 28.00, "bredd": 2.20, "djup": 0.60, "hojd": 1.50 },
+
+    { "id": "p1h24", "zon": "studieyta",      "x":  3.80, "z": 37.15, "bredd": 3.60, "djup": 0.50, "hojd": 1.50 },
+    { "id": "p1h25", "zon": "studieyta",      "x":  7.80, "z": 37.15, "bredd": 3.60, "djup": 0.50, "hojd": 1.50 },
+    { "id": "p1h26", "zon": "tidningshorna",  "x": 12.50, "z": 37.15, "bredd": 5.30, "djup": 0.50, "hojd": 1.50 },
+
+    { "id": "p1h27", "zon": "slaktforskning", "x": 20.80, "z":  0.25, "bredd": 2.60, "djup": 0.50, "hojd": 1.80 },
+    { "id": "p1h28", "zon": "slaktforskning", "x": 22.95, "z":  0.90, "bredd": 0.50, "djup": 2.60, "hojd": 1.80 },
+    { "id": "p1h29", "zon": "slaktforskning", "x": 18.25, "z":  0.90, "bredd": 0.50, "djup": 5.30, "hojd": 1.80 },
+    { "id": "p1h30", "zon": "slaktforskning", "x": 20.40, "z":  6.70, "bredd": 2.80, "djup": 0.50, "hojd": 1.50 },
+    { "id": "p1h31", "zon": "slaktforskning", "x": 20.40, "z":  9.10, "bredd": 2.80, "djup": 0.50, "hojd": 1.50 },
+    { "id": "p1h32", "zon": "datorer",        "x": 18.25, "z":  8.00, "bredd": 0.50, "djup": 8.20, "hojd": 1.80 }
+  ],
+
+  "fixtures": [
+    { "id": "p1f01", "typ": "trappa",    "namn": "Trappa ner till plan 0",  "x": 13.90, "z":  0.25, "bredd": 2.60, "djup": 1.10, "hojd": 2.80, "ner": true },
+    { "id": "p1f02", "typ": "trappa",    "namn": "Trappa upp till plan 2",  "x": 16.50, "z":  0.25, "bredd": 1.40, "djup": 3.25, "hojd": 2.80 },
+    { "id": "p1f03", "typ": "skap",      "namn": "Skåp",                    "x": 14.60, "z":  1.35, "bredd": 1.90, "djup": 0.60, "hojd": 0.95, "riktning": "syd" },
+    { "id": "p1f04", "typ": "infodisk",  "namn": "Informationsdisk",        "x": 13.70, "z":  2.60, "bredd": 1.20, "djup": 1.10, "hojd": 1.00 },
+    { "id": "p1f05", "typ": "fatolj",    "namn": "Musikfåtölj",             "x": 16.80, "z":  7.60, "bredd": 0.70, "djup": 0.70, "hojd": 0.80, "rygg": "ost" },
+
+    { "id": "p1f06", "typ": "fatolj",    "namn": "Fåtölj",                  "x":  3.90, "z":  3.00, "bredd": 0.70, "djup": 0.70, "hojd": 0.80, "rygg": "vast" },
+    { "id": "p1f07", "typ": "fatolj",    "namn": "Fåtölj",                  "x":  3.90, "z":  5.70, "bredd": 0.70, "djup": 0.70, "hojd": 0.80, "rygg": "vast" },
+    { "id": "p1f08", "typ": "fatolj",    "namn": "Fåtölj",                  "x":  3.90, "z":  8.20, "bredd": 0.70, "djup": 0.70, "hojd": 0.80, "rygg": "vast" },
+    { "id": "p1f09", "typ": "fatolj",    "namn": "Fåtölj",                  "x":  3.90, "z": 10.80, "bredd": 0.70, "djup": 0.70, "hojd": 0.80, "rygg": "vast" },
+    { "id": "p1f10", "typ": "fatolj",    "namn": "Fåtölj",                  "x":  3.90, "z": 13.40, "bredd": 0.70, "djup": 0.70, "hojd": 0.80, "rygg": "vast" },
+    { "id": "p1f11", "typ": "fatolj",    "namn": "Fåtölj",                  "x":  3.90, "z": 15.90, "bredd": 0.70, "djup": 0.70, "hojd": 0.80, "rygg": "vast" },
+    { "id": "p1f12", "typ": "fatolj",    "namn": "Fåtölj",                  "x":  3.90, "z": 18.00, "bredd": 0.70, "djup": 0.70, "hojd": 0.80, "rygg": "vast" },
+
+    { "id": "p1f13", "typ": "trappa",    "namn": "Huvudtrappa ner till plan 0", "x": 12.06, "z": 21.80, "bredd": 3.34, "djup": 1.40, "hojd": 2.80, "ner": true },
+    { "id": "p1f14", "typ": "hiss",      "namn": "Hiss",                    "x": 12.06, "z": 23.20, "bredd": 2.00, "djup": 2.24, "hojd": 2.80, "riktning": "ost" },
+
+    { "id": "p1f15", "typ": "bord",      "namn": "Studiebord",              "x":  5.20, "z": 31.00, "bredd": 1.20, "djup": 4.60, "hojd": 0.75 },
+    { "id": "p1f16", "typ": "bord",      "namn": "Studiebord",              "x":  9.90, "z": 31.00, "bredd": 1.00, "djup": 4.00, "hojd": 0.75 },
+    { "id": "p1f17", "typ": "pall",      "namn": "Stol",                    "x":  4.55, "z": 31.40, "bredd": 0.45, "djup": 0.45, "hojd": 0.45 },
+    { "id": "p1f18", "typ": "pall",      "namn": "Stol",                    "x":  4.55, "z": 32.90, "bredd": 0.45, "djup": 0.45, "hojd": 0.45 },
+    { "id": "p1f19", "typ": "pall",      "namn": "Stol",                    "x":  4.55, "z": 34.40, "bredd": 0.45, "djup": 0.45, "hojd": 0.45 },
+    { "id": "p1f20", "typ": "pall",      "namn": "Stol",                    "x":  6.60, "z": 31.40, "bredd": 0.45, "djup": 0.45, "hojd": 0.45 },
+    { "id": "p1f21", "typ": "pall",      "namn": "Stol",                    "x":  6.60, "z": 32.90, "bredd": 0.45, "djup": 0.45, "hojd": 0.45 },
+    { "id": "p1f22", "typ": "pall",      "namn": "Stol",                    "x":  6.60, "z": 34.40, "bredd": 0.45, "djup": 0.45, "hojd": 0.45 },
+    { "id": "p1f23", "typ": "pall",      "namn": "Stol",                    "x":  9.25, "z": 31.60, "bredd": 0.45, "djup": 0.45, "hojd": 0.45 },
+    { "id": "p1f24", "typ": "pall",      "namn": "Stol",                    "x":  9.25, "z": 33.80, "bredd": 0.45, "djup": 0.45, "hojd": 0.45 },
+    { "id": "p1f25", "typ": "pall",      "namn": "Stol",                    "x": 11.10, "z": 31.60, "bredd": 0.45, "djup": 0.45, "hojd": 0.45 },
+    { "id": "p1f26", "typ": "pall",      "namn": "Stol",                    "x": 11.10, "z": 33.80, "bredd": 0.45, "djup": 0.45, "hojd": 0.45 },
+
+    { "id": "p1f27", "typ": "fatolj",    "namn": "Fåtölj",                  "x": 12.40, "z": 31.30, "bredd": 0.70, "djup": 0.70, "hojd": 0.80 },
+    { "id": "p1f28", "typ": "fatolj",    "namn": "Fåtölj",                  "x": 12.40, "z": 32.50, "bredd": 0.70, "djup": 0.70, "hojd": 0.80 },
+    { "id": "p1f29", "typ": "bord",      "namn": "Litet bord",              "x": 13.30, "z": 31.70, "bredd": 0.60, "djup": 0.70, "hojd": 0.50 },
+    { "id": "p1f30", "typ": "fatolj",    "namn": "Fåtölj",                  "x": 12.40, "z": 34.30, "bredd": 0.70, "djup": 0.70, "hojd": 0.80 },
+    { "id": "p1f31", "typ": "fatolj",    "namn": "Fåtölj",                  "x": 12.40, "z": 35.50, "bredd": 0.70, "djup": 0.70, "hojd": 0.80 },
+    { "id": "p1f32", "typ": "bord",      "namn": "Litet bord",              "x": 13.30, "z": 34.70, "bredd": 0.60, "djup": 0.70, "hojd": 0.50 },
+    { "id": "p1f33", "typ": "fatolj",    "namn": "Fåtölj",                  "x": 16.90, "z": 32.40, "bredd": 0.70, "djup": 0.70, "hojd": 0.80 },
+    { "id": "p1f34", "typ": "fatolj",    "namn": "Fåtölj",                  "x": 16.90, "z": 34.10, "bredd": 0.70, "djup": 0.70, "hojd": 0.80 },
+    { "id": "p1f35", "typ": "bord",      "namn": "Litet bord",              "x": 15.90, "z": 33.20, "bredd": 0.70, "djup": 0.70, "hojd": 0.50 },
+
+    { "id": "p1f36", "typ": "bord",      "namn": "Släktforskarbord",        "x": 20.60, "z":  1.80, "bredd": 1.20, "djup": 2.60, "hojd": 0.75 },
+    { "id": "p1f37", "typ": "pall",      "namn": "Stol",                    "x": 19.90, "z":  2.30, "bredd": 0.45, "djup": 0.45, "hojd": 0.45 },
+    { "id": "p1f38", "typ": "pall",      "namn": "Stol",                    "x": 19.90, "z":  3.60, "bredd": 0.45, "djup": 0.45, "hojd": 0.45 },
+    { "id": "p1f39", "typ": "pall",      "namn": "Stol",                    "x": 22.05, "z":  2.30, "bredd": 0.45, "djup": 0.45, "hojd": 0.45 },
+    { "id": "p1f40", "typ": "pall",      "namn": "Stol",                    "x": 22.05, "z":  3.60, "bredd": 0.45, "djup": 0.45, "hojd": 0.45 },
+    { "id": "p1f41", "typ": "datorbord", "namn": "Datorer",                 "x": 20.40, "z": 11.50, "bredd": 2.40, "djup": 1.40, "hojd": 0.75 },
+    { "id": "p1f42", "typ": "datorbord", "namn": "Datorer",                 "x": 20.40, "z": 14.70, "bredd": 2.40, "djup": 1.40, "hojd": 0.75 },
+    { "id": "p1f43", "typ": "bord",      "namn": "Bänk med skrivare",       "x": 18.80, "z": 19.30, "bredd": 4.50, "djup": 0.60, "hojd": 0.90 }
+  ],
+
+  "zones": [
+    { "id": "information",     "namn": "Information",
+      "rutor": [ { "x": 11.20, "z":  1.35, "bredd":  5.30, "djup":  3.65 } ],
+      "skylt": { "x": 15.60, "z":  3.40 } },
+
+    { "id": "facklitteratur",  "namn": "Facklitteratur",
+      "rutor": [ { "x":  3.60, "z":  0.75, "bredd":  7.60, "djup":  7.25 } ],
+      "skylt": { "x":  8.00, "z":  5.60 } },
+
+    { "id": "romaner",         "namn": "Romaner",
+      "rutor": [ { "x":  4.60, "z":  8.00, "bredd":  6.60, "djup": 12.40 } ],
+      "skylt": { "x":  7.90, "z": 13.20 } },
+
+    { "id": "spanning",        "namn": "Spänning",
+      "rutor": [ { "x": 11.20, "z":  5.00, "bredd":  6.25, "djup": 13.40 } ],
+      "skylt": { "x": 13.50, "z": 10.70 } },
+
+    { "id": "serier",          "namn": "Serier",
+      "rutor": [ { "x": 11.20, "z": 18.40, "bredd":  6.25, "djup":  3.20 } ],
+      "skylt": { "x": 14.30, "z": 19.80 } },
+
+    { "id": "trappa_hiss_plan1",     "namn": "Trappa och hiss",
+      "rutor": [ { "x": 14.06, "z": 21.80, "bredd":  3.94, "djup":  7.05 } ],
+      "skylt": { "x": 16.40, "z": 25.80 } },
+
+    { "id": "klassiker",       "namn": "Klassiker",
+      "rutor": [ { "x":  8.10, "z": 22.80, "bredd":  1.66, "djup":  4.20 } ],
+      "skylt": { "x":  8.60, "z": 25.10 } },
+
+    { "id": "ljudbocker",      "namn": "Ljudböcker",
+      "rutor": [ { "x":  3.60, "z": 20.40, "bredd":  4.50, "djup":  9.20 },
+                 { "x":  8.10, "z": 20.40, "bredd":  1.66, "djup":  2.40 } ],
+      "skylt": { "x":  6.80, "z": 27.30 } },
+
+    { "id": "studieyta",       "namn": "Studieytan",
+      "rutor": [ { "x":  3.60, "z": 29.60, "bredd":  8.60, "djup":  8.05 } ],
+      "skylt": { "x":  8.10, "z": 36.20 } },
+
+    { "id": "tidningshorna",   "namn": "Tidningshörnan",
+      "rutor": [ { "x": 12.20, "z": 29.60, "bredd":  5.80, "djup":  8.05 },
+                 { "x": 14.30, "z": 29.05, "bredd":  3.70, "djup":  0.55 } ],
+      "skylt": { "x": 15.00, "z": 36.20 } },
+
+    { "id": "slaktforskning",  "namn": "Släktforskning",
+      "rutor": [ { "x": 18.25, "z":  0.25, "bredd":  5.20, "djup": 10.15 } ],
+      "skylt": { "x": 20.90, "z":  5.30 } },
+
+    { "id": "datorer",         "namn": "Publika datorer",
+      "rutor": [ { "x": 18.25, "z": 10.40, "bredd":  5.20, "djup":  9.50 } ],
+      "skylt": { "x": 21.30, "z": 17.70 } }
+  ],
+
+  "infopunkter": [
+    { "id": "info_plan1", "x": 12.60, "z": 4.40 }
+  ],
+
+  "lantagare": [
+    { "id": "p1l1", "slinga": false, "bana": [[10.6, 5.3], [10.6, 18.2]] },
+    { "id": "p1l2", "slinga": false, "bana": [[16.2, 5.0], [16.2, 16.5]] },
+    { "id": "p1l3", "slinga": false, "bana": [[4.4, 30.3], [17.3, 30.3]] },
+    { "id": "p1l4", "slinga": false, "bana": [[19.3, 10.6], [19.3, 18.5]] }
+  ],
+
+  "forbindelser": [
+    { "id": "huvudtrappan", "typ": "trappa", "fixture": "p1f13", "till": 0,
+      "platta":  { "x": 15.40, "z": 21.90, "bredd": 0.60, "djup": 1.20 },
+      "ankomst": { "x": 16.40, "z": 22.50, "riktning": 90 } },
+    { "id": "hissen",       "typ": "hiss",   "fixture": "p1f14", "till": 0,
+      "platta":  { "x": 14.06, "z": 23.70, "bredd": 0.60, "djup": 1.20 },
+      "ankomst": { "x": 15.10, "z": 24.30, "riktning": 90 } },
+    { "id": "lilla_trappan", "typ": "trappa", "fixture": "p1f01", "till": 0,
+      "platta":  { "x": 13.30, "z":  0.30, "bredd": 0.60, "djup": 1.00 },
+      "ankomst": { "x": 12.70, "z":  1.40, "riktning": 225 } }
+  ],
+
+  "start": { "x": 16.40, "z": 22.50, "riktning": 90 }
+}

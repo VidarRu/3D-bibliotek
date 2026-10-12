@@ -52,12 +52,15 @@ export function infoInnehall(info) {
   return del;
 }
 
+const plan = (mall, n) => mall.replace("{plan}", n);
+
 /**
  * Bygger panelen i elementet #panel.
  * valj(id) anropas nar nagon trycker pa "Visa vagen".
  * sluta() anropas nar nagon trycker pa "Sluta visa".
+ * valjVaning(plan) anropas nar nagon trycker pa en vaningsknapp.
  */
-export function byggPanel(platser, { valj, sluta }, info = []) {
+export function byggPanel(platser, { valj, sluta, valjVaning }, info = []) {
   const panel = document.getElementById("panel");
   const knappar = new Map();
   const rader = new Map();
@@ -84,15 +87,36 @@ export function byggPanel(platser, { valj, sluta }, info = []) {
                             style: `--farg: ${p.farg}` },
         el("span", { class: "prick", "aria-hidden": "true" }),
         el("div", { class: "text" },
-          el("h3", {}, el("span", { text: p.namn }),
+          el("h4", {}, el("span", { text: p.namn }),
             el("span", { class: "hittad-marke", text: MINISPEL.hittadMarke })),
           el("p", { text: p.beskrivning })),
         knapp);
       ul.append(li);
       rader.set(p.id, li);
     }
-    return el("section", {}, el("h2", { text: rubrik }), ul);
+    return el("section", {}, el("h3", { class: "grupp", text: rubrik }), ul);
   };
+
+  // En del per vaning, med avdelningar och ovriga platser.
+  const planer = [...new Set(platser.map(p => p.plan ?? 0))].sort();
+  const vaningsdelar = planer.map(n => {
+    const har = platser.filter(p => (p.plan ?? 0) === n);
+    const delar = [el("h2", { class: "vaning", text: plan(SIDA.vaningGrupp, n) })];
+    if (har.some(p => p.avdelning)) delar.push(grupp(SIDA.avdelningarRubrik, har.filter(p => p.avdelning), true));
+    if (har.some(p => !p.avdelning)) delar.push(grupp(SIDA.ovrigtRubrik, har.filter(p => !p.avdelning), false));
+    return el("section", { class: "vaningsdel" }, ...delar);
+  });
+
+  // Knappar for att byta vaning direkt, utan att ga till trappan.
+  const vaningsknappar = new Map();
+  const vaningsval = el("div", { class: "vaningsval", role: "group", "aria-label": SIDA.vaningRubrik });
+  for (const n of planer) {
+    const k = el("button", { type: "button", "aria-pressed": "false", text: plan(SIDA.vaningKnapp, n) });
+    k.addEventListener("click", () => valjVaning && valjVaning(n));
+    vaningsknappar.set(n, k);
+    vaningsval.append(k);
+  }
+  const undertitel = el("small", { text: plan(SIDA.undertitel, planer[0] ?? 0) });
 
   // "Bra att veta": en utfallbar rad per infopunkt.
   const braAttVeta = el("ul", { class: "platser" });
@@ -113,15 +137,14 @@ export function byggPanel(platser, { valj, sluta }, info = []) {
   }
 
   innehall.append(
-    grupp(SIDA.avdelningarRubrik, platser.filter(p => p.avdelning), true),
-    el("section", {}, el("h2", { text: SIDA.braAttVeta }), braAttVeta),
-    grupp(SIDA.ovrigtRubrik, platser.filter(p => !p.avdelning), false));
+    ...vaningsdelar,
+    el("section", { class: "vaningsdel" }, el("h2", { class: "vaning", text: SIDA.braAttVeta }), braAttVeta));
 
   panel.append(
     el("header", {},
-      el("h1", {}, el("span", { text: SIDA.titel }), " ",
-        el("small", { text: SIDA.undertitel })),
+      el("h1", {}, el("span", { text: SIDA.titel }), " ", undertitel),
       el("p", { class: "idag-chip", text: idagText() }),
+      planer.length > 1 ? vaningsval : "",
       el("p", { class: "listrubrik", text: SIDA.listrubrik })),
     fallKnapp,
     innehall);
@@ -147,7 +170,16 @@ export function byggPanel(platser, { valj, sluta }, info = []) {
     for (const [id, li] of rader) li.classList.toggle("funnen", ids.includes(id));
   }
 
-  return { panel, markera, markeraFunna };
+  /** Visar vilken vaning figuren ar pa. */
+  function visaVaning(n) {
+    undertitel.textContent = plan(SIDA.undertitel, n);
+    for (const [p, k] of vaningsknappar) {
+      k.setAttribute("aria-pressed", String(p === n));
+      k.classList.toggle("vald", p === n);
+    }
+  }
+
+  return { panel, markera, markeraFunna, visaVaning };
 }
 
 // ---------------------------------------------------------- meddelanden
@@ -206,16 +238,19 @@ export function byggForlopp(avdelningar) {
   const ruta = document.getElementById("forlopp");
   const text = el("span", { class: "rakning" });
   const prickar = new Map();
-  const rad = el("div", { class: "prickrad", "aria-hidden": "true" });
+  // En rad prickar per vaning.
+  const rader = new Map();
   for (const a of avdelningar) {
+    const n = a.plan ?? 0;
+    if (!rader.has(n)) rader.set(n, el("div", { class: "prickrad", "aria-hidden": "true" }));
     const p = el("span", { class: "forlopp-prick", style: `--farg: ${a.farg}`, title: a.namn });
     prickar.set(a.id, p);
-    rad.append(p);
+    rader.get(n).append(p);
   }
   ruta.replaceChildren(
     el("div", { class: "forlopp-rubrik" },
       el("span", { text: MINISPEL.rubrik }), " · ", text),
-    rad);
+    ...[...rader.keys()].sort().map(n => rader.get(n)));
 
   function uppdatera(funna) {
     text.textContent = ersatt(MINISPEL.rakning, { antal: funna.length, totalt: avdelningar.length });

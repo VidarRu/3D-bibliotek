@@ -43,6 +43,52 @@ function disk(f, t) {
   return g;
 }
 
+/** Informationsdisken pa plan 1: en mindre disk med en enda skarm. */
+function infodisk(f, t) {
+  const g = new THREE.Group();
+  const m = mitt(f);
+  g.add(rundLada(f.x + 0.05, f.z + 0.05, f.bredd - 0.1, f.djup - 0.1, f.hojd - 0.06, 0,
+                 mat(t.hylla), 0.06));
+  g.add(rundLada(f.x, f.z, f.bredd, f.djup, 0.07, f.hojd - 0.07, mat(t.bjork), 0.03));
+  // En senapsgul rand runt disken, sa att den syns pa avstand.
+  g.add(rundLada(f.x + 0.04, f.z + 0.04, f.bredd - 0.08, f.djup - 0.08, 0.12, f.hojd - 0.3,
+                 mat(t.senap), 0.04));
+  g.add(rundLadaMitt(m.x, m.z, 0.5, 0.05, 0.34, f.hojd + 0.12, mat(t.automat), 0.02));
+  g.add(rundLadaMitt(m.x, m.z + 0.03, 0.44, 0.01, 0.28, f.hojd + 0.15, lysande(t.skarm, 0.6), 0.004));
+  g.add(cylinder(m.x, m.z - 0.04, 0.025, 0.14, f.hojd, mat(t.automat), 8));
+  return g;
+}
+
+/**
+ * Ett datorbord med skarmar rygg mot rygg langs mitten, sa att man
+ * sitter pa bada langsidorna.
+ */
+function datorbord(f, t) {
+  return placera(f, (bredd, djup) => {
+    const g = new THREE.Group();
+    g.add(rundLadaMitt(0, 0, bredd, djup, 0.06, f.hojd - 0.06, mat(t.bjork), 0.03));
+    const ben = mat(t.hylla);
+    for (const [dx, dz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+      g.add(cylinder(dx * (bredd / 2 - 0.1), dz * (djup / 2 - 0.1), 0.04, f.hojd - 0.06, 0, ben, 10));
+    }
+    const svart = mat(t.automat);
+    const antal = Math.max(1, Math.floor(bredd / 1.1));
+    for (let i = 0; i < antal; i++) {
+      const x = -bredd / 2 + bredd * (i + 0.5) / antal;
+      for (const sida of [-1, 1]) {
+        const z = sida * 0.1;
+        g.add(cylinder(x, z, 0.025, 0.14, f.hojd, svart, 8));
+        g.add(rundLadaMitt(x, z, 0.56, 0.05, 0.36, f.hojd + 0.12, svart, 0.02));
+        g.add(rundLadaMitt(x, z + sida * 0.03, 0.5, 0.01, 0.3, f.hojd + 0.15,
+                           lysande(t.skarm, 0.6), 0.004));
+        // Tangentbord framfor skarmen.
+        g.add(rundLadaMitt(x, sida * 0.38, 0.42, 0.14, 0.025, f.hojd, mat(t.hylla), 0.01));
+      }
+    }
+    return g;
+  });
+}
+
 // ------------------------------------------------------------ automaten
 
 function automat(f, t) {
@@ -123,6 +169,8 @@ const SITTFARGER = t => [t.senap, t.mint, t.rosa];
  * och fatoljer runt ett bord vander sig mot varandra.
  */
 function ryggsida(f, alla) {
+  // En ensam fatolj vid en vagg far sin rygg angiven i datafilen.
+  if (f.rygg) return f.rygg;
   const m = mitt(f);
   const grannar = alla.filter(o => ["soffa", "fatolj", "bord"].includes(o.typ) &&
     Math.hypot(mitt(o).x - m.x, mitt(o).z - m.z) < 3.5);
@@ -201,6 +249,7 @@ function randTextur(t) {
 }
 
 function trappa(f, t) {
+  if (f.ner) return trappaNer(f, t);
   const g = new THREE.Group();
   const antal = 14;
   const langsZ = f.djup >= f.bredd;
@@ -251,6 +300,65 @@ function trappa(f, t) {
       racke.rotation.z = -vinkel;
     }
     g.add(racke);
+  }
+  return g;
+}
+
+/**
+ * En trappa som gar ner genom ett hal i golvet. Hålet tas upp av golvet
+ * sjalvt (se varld.js). Har byggs stegen, schaktets vaggar och racken
+ * med glas langs kanterna. f.nerMot sager at vilket hall trappan sjunker.
+ */
+export const SCHAKTDJUP = 2.9;
+
+function trappaNer(f, t) {
+  const g = new THREE.Group();
+  const antal = 14;
+  const mot = f.nerMot || "norr";
+  const langsZ = mot === "norr" || mot === "syd";
+  const langd = langsZ ? f.djup : f.bredd;
+  const steglangd = langd / antal;
+  const steg = mat("#8f8b86");
+  const djup = SCHAKTDJUP - 0.1;
+
+  // Steg i fran ovansidan och nedat. "fram" ar avstandet fran den kant
+  // dar man kliver ner.
+  for (let i = 0; i < antal; i++) {
+    const topp = -(djup * (i + 1)) / antal;
+    const fram = i * steglangd;
+    const h = topp + SCHAKTDJUP;
+    const [x, z, b, d] =
+      mot === "vast" ? [f.x + f.bredd - fram - steglangd, f.z, steglangd, f.djup] :
+      mot === "ost"  ? [f.x + fram, f.z, steglangd, f.djup] :
+      mot === "norr" ? [f.x, f.z + f.djup - fram - steglangd, f.bredd, steglangd] :
+                       [f.x, f.z + fram, f.bredd, steglangd];
+    g.add(rundLada(x, z, b, d, h, -SCHAKTDJUP, steg, 0.02));
+  }
+
+  // Schaktets vaggar och botten, sa att man inte ser ut under huset.
+  const vagg = mat(t.vaggKant);
+  const T = 0.04;
+  g.add(rundLada(f.x, f.z, f.bredd, T, SCHAKTDJUP, -SCHAKTDJUP, vagg, 0.01));
+  g.add(rundLada(f.x, f.z + f.djup - T, f.bredd, T, SCHAKTDJUP, -SCHAKTDJUP, vagg, 0.01));
+  g.add(rundLada(f.x, f.z, T, f.djup, SCHAKTDJUP, -SCHAKTDJUP, vagg, 0.01));
+  g.add(rundLada(f.x + f.bredd - T, f.z, T, f.djup, SCHAKTDJUP, -SCHAKTDJUP, vagg, 0.01));
+  g.add(rundLada(f.x, f.z, f.bredd, f.djup, 0.05, -SCHAKTDJUP - 0.05, mat("#6d6a66"), 0.01));
+
+  // Glasrack langs kanterna, utom dar man kliver ner.
+  const glas = new THREE.MeshStandardMaterial({
+    color: t.glas, transparent: true, opacity: 0.35, roughness: 0.1, depthWrite: false });
+  const bjork = mat(t.bjork);
+  const kanter = {
+    norr: [f.x, f.z, f.bredd, 0.06], syd: [f.x, f.z + f.djup - 0.06, f.bredd, 0.06],
+    vast: [f.x, f.z, 0.06, f.djup], ost: [f.x + f.bredd - 0.06, f.z, 0.06, f.djup]
+  };
+  const motsatt = { norr: "syd", syd: "norr", ost: "vast", vast: "ost" };
+  for (const [sida, [x, z, b, d]] of Object.entries(kanter)) {
+    if (sida === motsatt[mot]) continue;
+    const ruta = new THREE.Mesh(new THREE.BoxGeometry(b, 0.85, d), glas);
+    ruta.position.set(x + b / 2, 0.45, z + d / 2);
+    g.add(ruta);
+    g.add(rundLada(x - 0.01, z - 0.01, b + 0.02, d + 0.02, 0.07, 0.9, bjork, 0.03));
   }
   return g;
 }
@@ -374,6 +482,8 @@ let sittIndex = 0;
 export function byggMobel(f, t, alla) {
   switch (f.typ) {
     case "disk": return disk(f, t);
+    case "infodisk": return infodisk(f, t);
+    case "datorbord": return datorbord(f, t);
     case "automat": return automat(f, t);
     case "soffa":
     case "fatolj": return sittmobel(f, t, alla, sittIndex++);

@@ -18,7 +18,37 @@ const PX_PER_METER = 40;
 const LAXROSA_VAGGAR = ["yttre_norr", "labb_ostvagg", "karna_vast", "karna_norr"];
 const TEGEL_VAGGAR = ["karna_ost_syd", "karna_ost_mitt"];
 // Zoner med beige stengolv i stallet for det grå golvet.
-const STENGOLV = ["entre", "trappa_hiss"];
+const STENGOLV = ["entre", "trappa_hiss", "trappa_hiss_plan1"];
+
+/** Trappor som gar ner till vaningen under. Dar har golvet ett hal. */
+const halIGolvet = layout => layout.fixtures.filter(f => f.typ === "trappa" && f.ner);
+
+/** Delar en rektangel i bitar som inte overlappar halet. */
+function utanHal(r, h) {
+  const x1 = Math.max(r.x, h.x), x2 = Math.min(r.x + r.bredd, h.x + h.bredd);
+  const z1 = Math.max(r.z, h.z), z2 = Math.min(r.z + r.djup, h.z + h.djup);
+  if (x1 >= x2 || z1 >= z2) return [r];
+  const bitar = [
+    { x: r.x, z: r.z, bredd: r.bredd, djup: z1 - r.z },
+    { x: r.x, z: z2, bredd: r.bredd, djup: r.z + r.djup - z2 },
+    { x: r.x, z: z1, bredd: x1 - r.x, djup: z2 - z1 },
+    { x: x2, z: z1, bredd: r.x + r.bredd - x2, djup: z2 - z1 }
+  ];
+  return bitar.filter(b => b.bredd > 0.001 && b.djup > 0.001);
+}
+
+/**
+ * At vilket hall en nedatgaende trappa sjunker: bort fran plattan dar
+ * man kliver pa. Plattan ligger i forbindelserna i datafilen.
+ */
+function nerRiktning(layout, f) {
+  const fb = (layout.forbindelser || []).find(o => o.fixture === f.id);
+  if (!fb) return f.bredd >= f.djup ? "vast" : "norr";
+  const px = fb.platta.x + fb.platta.bredd / 2, pz = fb.platta.z + fb.platta.djup / 2;
+  const dx = px - (f.x + f.bredd / 2), dz = pz - (f.z + f.djup / 2);
+  if (Math.abs(dx) / f.bredd > Math.abs(dz) / f.djup) return dx > 0 ? "vast" : "ost";
+  return dz > 0 ? "norr" : "syd";
+}
 
 // ---------------------------------------------------------------- golvet
 
@@ -112,8 +142,13 @@ function golvDuk(layout, tema) {
   for (const v of layout.walls) if (!v.fonster) skugga(v, 0.1);
   for (const b of layout.blocks) if (!b.gangbar) skugga(b, 0.1);
   for (const h of layout.shelves) skugga(h, 0.07);
-  for (const f of layout.fixtures) if (f.typ !== "tavla") skugga(f, 0.06);
+  for (const f of layout.fixtures) if (f.typ !== "tavla" && !f.ner) skugga(f, 0.06);
   c.filter = "none";
+
+  // Hal dar trapporna gar ner.
+  c.globalCompositeOperation = "destination-out";
+  for (const h of halIGolvet(layout)) c.fillRect(h.x * P, h.z * P, h.bredd * P, h.djup * P);
+  c.globalCompositeOperation = "source-over";
   c.restore();
   return duk;
 }
@@ -121,7 +156,10 @@ function golvDuk(layout, tema) {
 function byggGolv(layout, tema) {
   const grupp = new THREE.Group();
   const kant = mat(tema.vaggKant);
-  for (const g of layout.floors) {
+  const hal = halIGolvet(layout);
+  let bitar = layout.floors;
+  for (const h of hal) bitar = bitar.flatMap(r => utanHal(r, h));
+  for (const g of bitar) {
     const golv = new THREE.Mesh(new THREE.BoxGeometry(g.bredd, GOLVTJOCKLEK, g.djup), kant);
     golv.position.set(g.x + g.bredd / 2, -GOLVTJOCKLEK / 2 - 0.001, g.z + g.djup / 2);
     golv.receiveShadow = true;
@@ -141,7 +179,21 @@ function byggGolv(layout, tema) {
   grupp.add(yta);
 
   // Mjuk mark runt huset, sa att det inte svavar i tomma intet.
-  const mark = new THREE.Mesh(new THREE.CircleGeometry(90, 48), mat(tema.mark, { roughness: 1 }));
+  // Marken har samma hal som golvet, annars skymmer den trappschaktet.
+  const form = new THREE.Shape();
+  form.absarc(0, 0, 90, 0, Math.PI * 2, false);
+  for (const h of hal) {
+    // Formen ligger i x/y och vrids sedan ner, sa z blir -y.
+    const x0 = h.x - bredd / 2, y0 = -(h.z - djup / 2);
+    const p = new THREE.Path();
+    p.moveTo(x0, y0);
+    p.lineTo(x0, y0 - h.djup);
+    p.lineTo(x0 + h.bredd, y0 - h.djup);
+    p.lineTo(x0 + h.bredd, y0);
+    p.closePath();
+    form.holes.push(p);
+  }
+  const mark = new THREE.Mesh(new THREE.ShapeGeometry(form, 48), mat(tema.mark, { roughness: 1 }));
   mark.rotation.x = -Math.PI / 2;
   mark.position.set(bredd / 2, -GOLVTJOCKLEK - 0.01, djup / 2);
   mark.receiveShadow = true;
@@ -294,7 +346,10 @@ export function byggVarld(layout, tema) {
 
   const mobler = new THREE.Group();
   mobler.name = "mobler";
-  for (const f of layout.fixtures) mobler.add(byggMobel(f, tema, layout.fixtures));
+  for (const f of layout.fixtures) {
+    const m = f.ner ? { ...f, nerMot: nerRiktning(layout, f) } : f;
+    mobler.add(byggMobel(m, tema, layout.fixtures));
+  }
   varld.add(mobler);
 
   varld.add(byggLampor(layout, tema));

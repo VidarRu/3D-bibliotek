@@ -2,7 +2,7 @@
 //
 // Verifieringen tar en skarmbild fran varje plats, sa att samma vinklar
 // gar att jamfora mellan olika versioner. Oppna spelet med ?vy=salen for
-// att se en av dem i webblasaren.
+// att se en av dem i webblasaren. plan: 1 betyder att vyn visar plan 1.
 
 export const VYER = {
   oversikt: {
@@ -69,5 +69,48 @@ export const VYER = {
     beskrivning: "Figuren i ogonhojd, for att doma av skalan",
     position: [16.6, 1.6, 30.2],
     mot: [16.6, 1.0, 25.0]
+  },
+  lillatrappan: {
+    beskrivning: "Plan 0: lilla trappan upp till plan 1, med sin gula platta",
+    position: [14.2, 2.4, 9.0],
+    mot: [17.0, 0.6, 3.6]
+  },
+
+  // ------------------------------------------------------------- plan 1
+  oversikt1: {
+    plan: 1,
+    beskrivning: "Plan 1: hela vaningen snett uppifran",
+    position: [11.85, 38, 47],
+    mot: [11.85, 0, 19.5]
+  },
+  trapphall1: {
+    plan: 1,
+    beskrivning: "Plan 1: trappan ner, hissen och plattorna",
+    position: [17.5, 2.6, 27.0],
+    mot: [13.6, 0.0, 22.6]
+  },
+  information1: {
+    plan: 1,
+    beskrivning: "Plan 1: informationsdisken och lilla trappan",
+    position: [10.6, 3.0, 8.6],
+    mot: [14.2, 0.6, 1.6]
+  },
+  hyllgang1: {
+    plan: 1,
+    beskrivning: "Plan 1: gangen mellan romaner och spanning",
+    position: [10.6, 1.8, 19.6],
+    mot: [10.6, 1.1, 8.0]
+  },
+  datorer1: {
+    plan: 1,
+    beskrivning: "Plan 1: publika datorer i Tjustrummet",
+    position: [22.6, 2.4, 18.9],
+    mot: [19.6, 0.7, 11.5]
+  },
+  tidningar1: {
+    plan: 1,
+    beskrivning: "Plan 1: studieytan och tidningshornan",
+    position: [7.4, 2.6, 28.6],
+    mot: [13.0, 0.6, 35.6]
   }
 };

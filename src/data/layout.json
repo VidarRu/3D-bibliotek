@@ -231,5 +231,17 @@
     { "id": "l4", "slinga": false, "bana": [[11.40, 18.90], [16.60, 18.90]] }
   ],
 
+  "forbindelser": [
+    { "id": "huvudtrappan", "typ": "trappa", "fixture": "f07", "till": 1,
+      "platta":  { "x": 14.00, "z": 22.30, "bredd": 0.60, "djup": 1.20 },
+      "ankomst": { "x": 15.30, "z": 22.90, "riktning": 90 } },
+    { "id": "hissen",       "typ": "hiss",   "fixture": "f08", "till": 1,
+      "platta":  { "x": 14.00, "z": 24.30, "bredd": 0.60, "djup": 1.20 },
+      "ankomst": { "x": 15.30, "z": 24.90, "riktning": 90 } },
+    { "id": "lilla_trappan", "typ": "trappa", "fixture": "f06", "till": 1,
+      "platta":  { "x": 16.50, "z":  4.30, "bredd": 1.20, "djup": 0.60 },
+      "ankomst": { "x": 17.10, "z":  5.60, "riktning": 180 } }
+  ],
+
   "start": { "x": 16.60, "z": 25.00, "riktning": 0 }
 }
