@@ -538,6 +538,204 @@ function pelare(f, t) {
   return g;
 }
 
+// ----------------------------------------------------------- kopiatorn
+
+/** En stor kopiator med pappersfack, en lutad panel och ett lock overst. */
+function kopiator(f, t) {
+  return placera(f, (bredd, djup) => {
+    const g = new THREE.Group();
+    const ljus = mat("#e9e5de"), mork = mat("#8d8984");
+    const kropp = f.hojd - 0.12;
+    g.add(rundLadaMitt(0, 0, bredd * 0.56, djup, kropp, 0, ljus, 0.05));
+    // Fyra pappersfack med morka handtag pa framsidan.
+    for (let i = 0; i < 4; i++) {
+      const y = 0.1 + i * 0.17;
+      g.add(rundLadaMitt(0, -djup / 2 - 0.005, bredd * 0.52, 0.02, 0.13, y, mat("#f4f1ec"), 0.01));
+      g.add(rundLadaMitt(0, -djup / 2 - 0.02, 0.18, 0.02, 0.03, y + 0.09, mork, 0.008));
+    }
+    // Locket och skannern overst, och en lutad panel med skarm.
+    g.add(rundLadaMitt(0, 0.02, bredd * 0.56, djup - 0.06, 0.12, kropp, ljus, 0.03));
+    const panel = new THREE.Group();
+    panel.add(rundLadaMitt(0, 0, 0.36, 0.2, 0.04, 0, mork, 0.015));
+    panel.add(rundLadaMitt(-0.06, 0, 0.16, 0.12, 0.01, 0.04, lysande(t.skarm, 0.7), 0.004));
+    panel.position.set(bredd * 0.12, kropp + 0.08, -djup / 2 + 0.02);
+    panel.rotation.x = 0.4;
+    g.add(panel);
+    // Utmatningsfacket pa sidan, med nagra ark.
+    g.add(rundLadaMitt(bredd * 0.28 + 0.13, 0, 0.26, djup * 0.7, 0.03, kropp * 0.62, mork, 0.01));
+    g.add(rundLadaMitt(bredd * 0.28 + 0.13, 0, 0.22, djup * 0.55, 0.02, kropp * 0.62 + 0.03,
+                       mat("#fbfaf7"), 0.005));
+    // Ett litet bord med papper bredvid.
+    g.add(rundLadaMitt(-bredd / 2 + 0.15, 0, 0.28, djup * 0.9, 0.75, 0, mat(t.bjork), 0.04));
+    g.add(rundLadaMitt(-bredd / 2 + 0.15, 0, 0.22, 0.3, 0.12, 0.75, mat("#fbfaf7"), 0.01));
+    return g;
+  });
+}
+
+// ------------------------------------------------------- varuautomater
+
+/**
+ * En hog varuautomat. sort "godis" har ett stort fonster med fargglada
+ * paket i rader, sort "kaffe" har en lysande panel och en kopphylla.
+ */
+function varuautomat(f, t) {
+  return placera(f, (bredd, djup) => {
+    const g = new THREE.Group();
+    const godis = f.sort === "godis";
+    const fram = -djup / 2;
+    g.add(rundLadaMitt(0, 0, bredd, djup, f.hojd, 0, mat(godis ? t.rosa : t.automat), 0.06));
+    if (godis) {
+      // Glasruta med fyra rader paket, och knappsats till hoger.
+      const b = bredd * 0.62, x0 = -bredd * 0.12;
+      g.add(rundLadaMitt(x0, fram - 0.005, b, 0.02, 1.0, 0.6, mat("#3b2f27"), 0.02));
+      const farger = [t.senap, t.mint, "#e6dccb", t.bjork, "#7a3b33"];
+      const slp = slump(f.id);
+      for (let rad = 0; rad < 4; rad++) {
+        for (let i = 0; i < 5; i++) {
+          g.add(rundLadaMitt(x0 - b / 2 + b * (i + 0.5) / 5, fram - 0.02, b / 5 - 0.04, 0.03,
+                             0.15, 0.68 + rad * 0.23,
+                             mat(farger[Math.floor(slp() * farger.length)]), 0.01));
+        }
+      }
+      g.add(rundLadaMitt(x0, fram - 0.012, b, 0.012, 1.0, 0.6, new THREE.MeshStandardMaterial({
+        color: t.glas, transparent: true, opacity: 0.25, roughness: 0.1, depthWrite: false }), 0.01));
+      g.add(rundLadaMitt(bredd * 0.36, fram - 0.01, bredd * 0.16, 0.02, 0.4, 1.0,
+                         lysande(t.skarm, 0.5), 0.01));
+      g.add(rundLadaMitt(x0, fram - 0.01, b, 0.03, 0.16, 0.3, mat("#3b2f27"), 0.02));
+    } else {
+      // Lysande panel med bild pa en kopp, knappar och en nisch for koppen.
+      g.add(rundLadaMitt(0, fram - 0.005, bredd * 0.8, 0.02, 0.6, 1.0, lysande(t.bjork, 0.45), 0.02));
+      g.add(cylinder(0, fram - 0.02, 0.1, 0.16, 1.2, mat("#fbf6ee"), 16));
+      for (let i = 0; i < 3; i++) {
+        g.add(rundLadaMitt(-0.2 + i * 0.2, fram - 0.01, 0.12, 0.02, 0.06, 0.85,
+                           mat([t.senap, t.mint, t.rosa][i]), 0.01));
+      }
+      g.add(rundLadaMitt(0, fram + 0.08, 0.32, 0.18, 0.32, 0.4, mat("#1b1a19"), 0.02));
+      g.add(cylinder(0, fram + 0.04, 0.04, 0.09, 0.42, mat("#fbf6ee"), 12));
+      // Vattenkranen bredvid.
+      g.add(rundLadaMitt(bredd * 0.3, fram - 0.01, 0.12, 0.04, 0.18, 0.55, mat(t.glas), 0.02));
+    }
+    return g;
+  });
+}
+
+// ---------------------------------------------------------- nodutgang
+
+let nodMaterial = null;
+/** Den gronna nodutgangsskylten: en springande figur mot en dorr. */
+function nodSkylt() {
+  if (!nodMaterial) {
+    const duk = document.createElement("canvas");
+    duk.width = 256; duk.height = 104;
+    const c = duk.getContext("2d");
+    c.fillStyle = "#1f8a4c";
+    c.beginPath();
+    c.roundRect(0, 0, 256, 104, 12);
+    c.fill();
+    c.strokeStyle = c.fillStyle = "#ffffff";
+    c.lineCap = "round";
+    c.lineWidth = 11;
+    // Dorren till hoger och figuren som springer mot den.
+    c.strokeRect(176, 18, 52, 70);
+    c.beginPath(); c.arc(124, 26, 10, 0, Math.PI * 2); c.fill();
+    c.beginPath();
+    c.moveTo(120, 40); c.lineTo(108, 66);
+    c.moveTo(108, 66); c.lineTo(128, 86);
+    c.moveTo(108, 66); c.lineTo(86, 84);
+    c.moveTo(118, 44); c.lineTo(142, 58);
+    c.moveTo(118, 44); c.lineTo(96, 50);
+    c.stroke();
+    // En pil framfor figuren.
+    c.beginPath();
+    c.moveTo(24, 52); c.lineTo(70, 52);
+    c.moveTo(56, 38); c.lineTo(72, 52); c.lineTo(56, 66);
+    c.stroke();
+    const tex = new THREE.CanvasTexture(duk);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    nodMaterial = new THREE.MeshStandardMaterial({
+      map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.55, roughness: 0.5 });
+  }
+  return nodMaterial;
+}
+
+/**
+ * En nodutgang i ytterväggen: en dorr med tryckstang, vagg ovanfor och
+ * en liten gron skylt. riktning ar sidan som vetter in mot rummet.
+ */
+function nodutgang(f, t) {
+  return placera(f, (bredd, djup) => {
+    const g = new THREE.Group();
+    const dorrHojd = f.hojd;
+    g.add(rundLadaMitt(0, 0, bredd, djup, 3.2 - dorrHojd, dorrHojd, mat(t.vagg), 0.04));
+    g.add(rundLadaMitt(0, 0, bredd, djup * 0.5, dorrHojd, 0, mat("#e3ddd4"), 0.03));
+    // Karm och tryckstang pa insidan.
+    for (const dx of [-bredd / 2 + 0.04, bredd / 2 - 0.04]) {
+      g.add(rundLadaMitt(dx, 0, 0.08, djup, dorrHojd, 0, mat(t.karm), 0.02));
+    }
+    g.add(rundLadaMitt(0, -djup * 0.25 - 0.05, bredd * 0.7, 0.05, 0.05, 1.0, mat("#9b9690"), 0.02));
+    const skylt = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.17), nodSkylt());
+    // Planet vetter mot syd fran borjan, vand det mot norr (in mot rummet).
+    skylt.rotation.y = Math.PI;
+    skylt.position.set(0, dorrHojd + 0.2, -djup / 2 - 0.025);
+    g.add(skylt);
+    g.add(rundLadaMitt(0, -djup / 2 - 0.01, 0.46, 0.02, 0.21, dorrHojd + 0.095, mat("#f7f1e6"), 0.01));
+    return g;
+  });
+}
+
+// -------------------------------------------------------------- pentry
+
+/** En pentrybank: vita skap, bjorkskiva, diskho med kran och en vattenkokare. */
+function pentry(f, t) {
+  return placera(f, (bredd, djup) => {
+    const g = new THREE.Group();
+    g.add(rundLadaMitt(0, 0, bredd - 0.04, djup - 0.04, f.hojd - 0.05, 0, mat(t.hylla), 0.04));
+    g.add(rundLadaMitt(0, 0, bredd, djup, 0.05, f.hojd - 0.05, mat(t.bjork), 0.02));
+    const luckor = Math.max(2, Math.round(bredd / 0.6));
+    for (let i = 0; i < luckor; i++) {
+      const x = -bredd / 2 + bredd * (i + 0.5) / luckor;
+      g.add(rundLadaMitt(x, -djup / 2 + 0.01, bredd / luckor - 0.05, 0.02, f.hojd - 0.2, 0.08,
+                         mat("#f1ebe1"), 0.01));
+      g.add(rundLadaMitt(x, -djup / 2 - 0.02, 0.12, 0.03, 0.03, f.hojd - 0.22, mat(t.senap), 0.012));
+    }
+    // Diskhon ar en grund, gra fordjupning i skivan, med kran bakom.
+    g.add(rundLadaMitt(bredd * 0.2, 0, 0.5, 0.36, 0.02, f.hojd, mat("#b9b6b1"), 0.03));
+    g.add(cylinder(bredd * 0.2, djup / 2 - 0.1, 0.02, 0.26, f.hojd, mat("#c9c6c1"), 10));
+    g.add(rundLadaMitt(bredd * 0.2, djup / 2 - 0.16, 0.04, 0.14, 0.03, f.hojd + 0.24, mat("#c9c6c1"), 0.012));
+    g.add(cylinder(-bredd * 0.25, 0, 0.09, 0.22, f.hojd, mat(t.mint), 16));
+    return g;
+  });
+}
+
+// ----------------------------------------------------------- sittrappa
+
+/**
+ * En sittrappa med "steg" breda trappsteg som stiger mot "hogMot".
+ * Varje steg har en dyna i nagon av bibliotekets farger.
+ */
+function sittrappa(f, t) {
+  const g = new THREE.Group();
+  const n = f.steg || 3;
+  const sida = f.hogMot || "ost";
+  const langsX = sida === "ost" || sida === "vast";
+  const L = langsX ? f.bredd : f.djup;
+  const s = L / n, h = f.hojd / n;
+  const dynor = [t.senap, t.mint, t.rosa];
+  for (let i = 0; i < n; i++) {
+    // Steg i borjar i fran den laga sidan och gar anda till den hoga.
+    const fran = sida === "ost" || sida === "syd" ? i * s : 0;
+    const langd = L - i * s;
+    const [x, z, b, d] = langsX ? [f.x + fran, f.z, langd, f.djup] : [f.x, f.z + fran, f.bredd, langd];
+    g.add(rundLada(x, z, b, d, h, i * h, mat(t.bjork), 0.03));
+    // Dynan ligger pa stegets synliga del.
+    const synlig = sida === "ost" || sida === "syd" ? 0 : langd - s;
+    const [dx, dz, db, dd] = langsX ? [x + synlig + 0.04, z + 0.06, s - 0.08, d - 0.12]
+                                    : [x + 0.06, z + synlig + 0.04, b - 0.12, s - 0.08];
+    g.add(rundLada(dx, dz, db, dd, 0.06, (i + 1) * h, mat(dynor[i % 3]), 0.03));
+  }
+  return g;
+}
+
 // -------------------------------------------------------- pendellampor
 
 let lampGeo = null;
@@ -599,6 +797,11 @@ export function byggMobel(f, t, alla) {
     case "tv": return tv(f, t);
     case "tavla": return tavla(f, t);
     case "pelare": return pelare(f, t);
+    case "kopiator": return kopiator(f, t);
+    case "varuautomat": return varuautomat(f, t);
+    case "nodutgang": return nodutgang(f, t);
+    case "pentry": return pentry(f, t);
+    case "sittrappa": return sittrappa(f, t);
     default: return rundLada(f.x, f.z, f.bredd, f.djup, f.hojd, 0, mat(t.hylla), 0.06);
   }
 }

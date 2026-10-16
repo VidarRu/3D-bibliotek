@@ -108,9 +108,79 @@ export const PLATSER = [
   {
     id: "storstil",
     namn: "Storstil",
-    beskrivning: "Böcker med stor text och en lugn sitthörna.",
+    beskrivning: "Böcker med stor text.",
     avdelning: false,
     farg: "#c2ab8a"
+  },
+  {
+    id: "soffgrupp",
+    namn: "Soffgruppen",
+    beskrivning: "Fåtöljer runt ett soffbord, en lugn plats att sitta och läsa.",
+    avdelning: false,
+    farg: "#a8846a"
+  },
+  {
+    id: "godis",
+    namn: "Godisautomat",
+    beskrivning: "Här kan du köpa godis.",
+    avdelning: false,
+    farg: "#9a5a4a"
+  },
+  {
+    id: "reservationer",
+    namn: "Reservationer",
+    beskrivning: "Här hämtar du det du har reserverat.",
+    avdelning: false,
+    farg: "#8c6b4f"
+  },
+  {
+    id: "kopiator",
+    namn: "Utskrifter och kopior",
+    beskrivning: "Kopiatorn där du skriver ut och kopierar.",
+    avdelning: false,
+    farg: "#7d6a5a"
+  },
+  {
+    id: "kaffe",
+    namn: "Kaffe och vatten",
+    beskrivning: "Automat med kaffe och vatten, vid toaletterna.",
+    avdelning: false,
+    farg: "#8c5a3c"
+  },
+  {
+    id: "toaletter",
+    namn: "Toaletter",
+    beskrivning: "Två toaletter mot salen, och två till från barnavdelningen.",
+    avdelning: false,
+    farg: "#b8ab8c"
+  },
+  {
+    id: "smabarn",
+    namn: "Småbarnsrummet",
+    beskrivning: "Ett lugnt rum för de minsta, med bilderbokstråg.",
+    avdelning: false,
+    farg: "#c8a878"
+  },
+  {
+    id: "pentry",
+    namn: "Pentry",
+    beskrivning: "Ett litet kök med bord, innanför småbarnsrummet.",
+    avdelning: false,
+    farg: "#b59a78"
+  },
+  {
+    id: "hoglasningsrum",
+    namn: "Högläsningsrummet",
+    beskrivning: "Ett rum för sagostunder, med en sittrappa att sitta i.",
+    avdelning: false,
+    farg: "#a46a5a"
+  },
+  {
+    id: "barnvagnar",
+    namn: "Barnvagnsparkering",
+    beskrivning: "Här ställer du barnvagnen, strax innanför entrén.",
+    avdelning: false,
+    farg: "#c8b496"
   },
   {
     id: "trappa_hiss",
@@ -433,7 +503,8 @@ export const TEMA = {
   lampSken:      "#ffd89a",
 
   // Pendellampor hänger över de här platserna (samma id som i listan ovan)
-  lampor: ["receptionsdisk", "ungdomshorna", "storstil", "barnavdelning", "entre",
+  lampor: ["receptionsdisk", "ungdomshorna", "storstil", "soffgrupp", "barnavdelning", "entre",
+           "smabarn", "hoglasningsrum",
            "information", "tidningshorna", "studieyta", "slaktforskning"],
 
   // Accentfärger. senap används till i-plattorna och trapplattorna,

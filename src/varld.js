@@ -283,33 +283,42 @@ function byggVaggar(layout, tema) {
   }
 
   // Slutna rum, som toaletterna, blir rundade block med en farglad dorr.
-  // Ett block kan ange var dorrarna sitter ("dorrar" med sida och x),
-  // annars fordelas de jamnt over sidan.
-  const dorrar = { toalett: { sida: "syd", farg: tema.mint, antal: 2, wc: true },
-                   barnvagn: { sida: "norr", farg: tema.rosa, antal: 1 } };
+  // Ett block kan ange var dorrarna sitter ("dorrar" med sida och x, eller
+  // z for vast och ost, eller en lista med flera sidor), annars fordelas
+  // de jamnt over sidan. Block utan dorrar ar personalutrymmen.
+  const dorrar = { toalett: { sida: "syd", farg: tema.mint, antal: 2, wc: true } };
   for (const b of layout.blocks) {
     if (b.gangbar) continue;
     grupp.add(rundLada(b.x, b.z, b.bredd, b.djup, VAGGHOJD, 0, mat(tema.vagg), 0.12));
     const d = dorrar[b.id];
     if (!d) continue;
-    const sida = b.dorrar?.sida || d.sida;
-    const syd = sida === "syd";
-    const z = syd ? b.z + b.djup + 0.01 : b.z - 0.01;
-    const lagen = b.dorrar?.x ||
-      Array.from({ length: d.antal }, (_, i) => b.x + b.bredd * (i + 1) / (d.antal + 1));
-    for (const x of lagen) {
-      grupp.add(rundLadaMitt(x, z, 0.9, 0.05, 2.05, 0, mat(d.farg), 0.03));
-      grupp.add(rundLadaMitt(x + 0.3, z + (syd ? 0.03 : -0.03),
-                             0.08, 0.03, 0.08, 1.0, mat(tema.automat), 0.01));
-      if (d.wc) grupp.add(wcSkylt(x, z + (syd ? 0.035 : -0.035), syd));
+    const sidor = [].concat(b.dorrar || { sida: d.sida });
+    for (const s of sidor) {
+      const langsX = s.sida === "norr" || s.sida === "syd";
+      // Ut fran blocket: +1 at syd och ost, -1 at norr och vast.
+      const ut = s.sida === "syd" || s.sida === "ost" ? 1 : -1;
+      const yta = { norr: b.z - 0.01, syd: b.z + b.djup + 0.01,
+                    vast: b.x - 0.01, ost: b.x + b.bredd + 0.01 }[s.sida];
+      const lagen = (langsX ? s.x : s.z) || Array.from({ length: d.antal }, (_, i) =>
+        langsX ? b.x + b.bredd * (i + 1) / (d.antal + 1) : b.z + b.djup * (i + 1) / (d.antal + 1));
+      // Punkt pa dorren: a langs vaggen, u ut fran den.
+      const p = (a, u) => (langsX ? [a, yta + u * ut] : [yta + u * ut, a]);
+      for (const a of lagen) {
+        const [x, z] = p(a, 0);
+        grupp.add(langsX ? rundLadaMitt(x, z, 0.9, 0.05, 2.05, 0, mat(d.farg), 0.03)
+                         : rundLadaMitt(x, z, 0.05, 0.9, 2.05, 0, mat(d.farg), 0.03));
+        const [hx, hz] = p(a + 0.3, 0.03);
+        grupp.add(rundLadaMitt(hx, hz, 0.08, 0.08, 0.08, 1.0, mat(tema.automat), 0.01));
+        if (d.wc) grupp.add(wcSkylt(...p(a, 0.035), s.sida));
+      }
     }
   }
   return grupp;
 }
 
 let wcMaterial = null;
-/** En liten WC-skylt i ogonhojd pa en toalettdorr. */
-function wcSkylt(x, z, syd) {
+/** En liten WC-skylt i ogonhojd pa en toalettdorr, vand ut fran dorren. */
+function wcSkylt(x, z, sida) {
   if (!wcMaterial) {
     const duk = document.createElement("canvas");
     duk.width = duk.height = 128;
@@ -329,7 +338,8 @@ function wcSkylt(x, z, syd) {
   }
   const skylt = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.22), wcMaterial);
   skylt.position.set(x, 1.55, z);
-  if (!syd) skylt.rotation.y = Math.PI;
+  // Planet vetter mot syd fran borjan.
+  skylt.rotation.y = { syd: 0, norr: Math.PI, ost: Math.PI / 2, vast: -Math.PI / 2 }[sida];
   return skylt;
 }
 

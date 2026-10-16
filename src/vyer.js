@@ -75,6 +75,41 @@ export const VYER = {
     position: [14.2, 2.4, 9.0],
     mot: [17.0, 0.6, 3.6]
   },
+  soffgrupp: {
+    beskrivning: "Soffgruppen, godisautomaten och nodutgangen i sydostra hornet",
+    position: [17.4, 3.2, 13.2],
+    mot: [21.4, 0.8, 18.0]
+  },
+  talbocker: {
+    beskrivning: "Talbockernas hyllrad framfor utstallningsytan och storstil",
+    position: [13.2, 3.4, 15.0],
+    mot: [18.6, 1.0, 8.6]
+  },
+  kopiator: {
+    beskrivning: "Kopiatorn vid labbets glasvagg och bokhyllorna soder om den",
+    position: [10.4, 2.4, 10.9],
+    mot: [6.4, 0.7, 8.6]
+  },
+  toaletter: {
+    beskrivning: "Toalettdorrarna och kaffeautomaten mot salen",
+    position: [12.0, 2.6, 15.2],
+    mot: [12.0, 1.0, 19.8]
+  },
+  smabarn: {
+    beskrivning: "Smabarnsrummet och pentryt, sett uppifran",
+    position: [2.8, 7.5, 21.0],
+    mot: [2.8, 0.0, 15.6]
+  },
+  hoglasning: {
+    beskrivning: "Hoglasningsrummet med sittrappan, sett uppifran",
+    position: [5.4, 7.5, 40.5],
+    mot: [5.4, 0.0, 34.8]
+  },
+  barnhyllor: {
+    beskrivning: "Bilderbokstragen vaster om barnavdelningens lanedisk",
+    position: [8.6, 3.6, 33.0],
+    mot: [7.2, 0.4, 26.0]
+  },
 
   // ------------------------------------------------------------- plan 1
   oversikt1: {
