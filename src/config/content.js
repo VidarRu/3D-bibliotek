@@ -154,6 +154,14 @@ export const PLATSER = [
     farg: "#6b4a3a"
   },
   {
+    id: "biografier",
+    plan: 1,
+    namn: "Biografier",
+    beskrivning: "Berättelser om verkliga människors liv.",
+    avdelning: true,
+    farg: "#8c6b4f"
+  },
+  {
     id: "serier",
     plan: 1,
     namn: "Serier",
@@ -223,7 +231,7 @@ export const PLATSER = [
     id: "toaletter_plan1",
     plan: 1,
     namn: "Toaletter",
-    beskrivning: "Två toaletter, vid tidningshörnan.",
+    beskrivning: "Två toaletter, mellan studieytan och tidningshörnan.",
     avdelning: false,
     farg: "#b8ab8c"
   }
@@ -302,7 +310,7 @@ export const INFOPUNKTER = [
     plan: 1,
     rubrik: "Välkommen till plan 1",
     rader: [
-      "Här finns romaner, spänning, facklitteratur, ljudböcker och serier.",
+      "Här finns romaner, spänning, facklitteratur, ljudböcker, biografier och serier.",
       "Vid informationsdisken kan du fråga om hjälp att hitta.",
       "Datorerna och släktforskningen finns i Tjustrummet längst in åt öster."
     ]

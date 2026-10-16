@@ -19,7 +19,7 @@
       "Takterrassen öster om trapphallen ingår inte. Dörren dit är ritad som vägg.",
       "Trapphuset väster om hissen, med vilplan och trappan vidare upp till plan 2, är ett slutet block.",
       "Det finns inget plan 2. Trappan vid informationsdisken går bara ner till plan 0: först österut längs norra väggen till ett vilplan i hörnet, sedan söderut ovanför trappan på plan 0.",
-      "Toaletterna är ett slutet block med två dörrar mot tidningshörnan.",
+      "Toaletterna är ett slutet block med två dörrar jämnt fördelade på södra väggen.",
       "Hyllrader är förenklade till raka lådor. Små möbler, växter och bokvagnar är utelämnade."
     ],
     "kartnoter": [
@@ -45,7 +45,7 @@
     { "id": "trapphus",      "namn": "Trapphus",  "x":  9.76, "z": 21.50, "bredd": 2.30, "djup": 5.50 },
     { "id": "trapphus_syd",  "namn": "Trapphus",  "x": 12.06, "z": 25.44, "bredd": 2.00, "djup": 1.56 },
     { "id": "toalett",       "namn": "Toaletter", "x":  9.00, "z": 27.00, "bredd": 5.30, "djup": 2.60,
-      "dorrar": { "sida": "syd", "x": [12.80, 13.80] } }
+      "dorrar": { "sida": "syd", "x": [10.77, 12.53] } }
   ],
 
   "walls": [
@@ -100,7 +100,7 @@
     { "id": "p1h20", "zon": "ljudbocker",     "x":  5.70, "z": 21.70, "bredd": 2.20, "djup": 0.60, "hojd": 1.50 },
     { "id": "p1h21", "zon": "ljudbocker",     "x":  5.70, "z": 23.80, "bredd": 2.20, "djup": 0.60, "hojd": 1.50 },
     { "id": "p1h22", "zon": "ljudbocker",     "x":  5.70, "z": 25.90, "bredd": 2.20, "djup": 0.60, "hojd": 1.50 },
-    { "id": "p1h23", "zon": "ljudbocker",     "x":  5.70, "z": 28.00, "bredd": 2.20, "djup": 0.60, "hojd": 1.50 },
+    { "id": "p1h23", "zon": "biografier",     "x":  5.70, "z": 28.00, "bredd": 2.20, "djup": 0.60, "hojd": 1.50 },
 
     { "id": "p1h24", "zon": "studieyta",      "x":  3.80, "z": 37.15, "bredd": 3.60, "djup": 0.50, "hojd": 1.50 },
     { "id": "p1h25", "zon": "studieyta",      "x":  7.80, "z": 37.15, "bredd": 3.60, "djup": 0.50, "hojd": 1.50 },
@@ -205,12 +205,17 @@
       "skylt": { "x":  8.60, "z": 25.10 } },
 
     { "id": "ljudbocker",      "namn": "Ljudböcker",
-      "rutor": [ { "x":  3.60, "z": 20.40, "bredd":  4.50, "djup":  9.20 },
+      "rutor": [ { "x":  3.60, "z": 20.40, "bredd":  4.50, "djup":  6.85 },
                  { "x":  8.10, "z": 20.40, "bredd":  1.66, "djup":  2.40 } ],
-      "skylt": { "x":  6.80, "z": 27.30 } },
+      "skylt": { "x":  6.80, "z": 26.30 } },
+
+    { "id": "biografier",      "namn": "Biografier",
+      "rutor": [ { "x":  3.60, "z": 27.25, "bredd":  4.50, "djup":  2.35 } ],
+      "skylt": { "x":  6.80, "z": 28.30 } },
 
     { "id": "studieyta",       "namn": "Studieytan",
-      "rutor": [ { "x":  3.60, "z": 29.60, "bredd":  8.60, "djup":  8.05 } ],
+      "rutor": [ { "x":  3.60, "z": 29.60, "bredd":  6.40, "djup":  8.05 },
+                 { "x": 10.00, "z": 30.50, "bredd":  2.20, "djup":  7.15 } ],
       "skylt": { "x":  7.95, "z": 33.10, "y": 1.95 } },
 
     { "id": "tidningshorna",   "namn": "Tidningshörnan",
@@ -219,8 +224,8 @@
       "skylt": { "x": 14.75, "z": 33.00, "y": 1.95 } },
 
     { "id": "toaletter_plan1", "namn": "Toaletter",
-      "rutor": [ { "x": 12.25, "z": 29.60, "bredd":  2.05, "djup":  0.90 } ],
-      "skylt": { "x": 13.30, "z": 29.95, "y": 2.45 } },
+      "rutor": [ { "x": 10.00, "z": 29.60, "bredd":  3.30, "djup":  0.90 } ],
+      "skylt": { "x": 11.65, "z": 29.95, "y": 2.45 } },
 
     { "id": "slaktforskning",  "namn": "Släktforskning",
       "rutor": [ { "x": 18.25, "z":  0.25, "bredd":  5.20, "djup": 10.15 } ],
