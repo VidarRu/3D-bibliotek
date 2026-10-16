@@ -220,7 +220,7 @@
     { "id": "smabarn",         "namn": "Småbarnsrummet",
       "rutor": [ { "x":  0.25, "z": 12.80, "bredd":  2.00, "djup":  6.85 },
                  { "x":  2.25, "z": 16.20, "bredd":  3.05, "djup":  3.45 } ],
-      "skylt": { "x":  2.60, "z": 17.90, "y": 2.30 } },
+      "skylt": { "x":  1.35, "z": 17.50, "y": 2.30 } },
 
     { "id": "pentry",          "namn": "Pentry",
       "rutor": [ { "x":  2.45, "z": 12.80, "bredd":  2.85, "djup":  2.80 } ],
@@ -228,7 +228,7 @@
 
     { "id": "hoglasningsrum",  "namn": "Högläsningsrummet",
       "rutor": [ { "x":  3.60, "z": 32.60, "bredd":  3.50, "djup":  5.05 } ],
-      "skylt": { "x":  4.90, "z": 35.00, "y": 2.35 } },
+      "skylt": { "x":  5.00, "z": 33.50, "y": 2.35 } },
 
     { "id": "barnvagnar",      "namn": "Barnvagnsparkering",
       "rutor": [ { "x": 14.00, "z": 27.20, "bredd":  1.70, "djup":  1.60 } ],

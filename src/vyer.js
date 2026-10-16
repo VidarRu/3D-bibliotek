@@ -87,8 +87,8 @@ export const VYER = {
   },
   kopiator: {
     beskrivning: "Kopiatorn vid labbets glasvagg och bokhyllorna soder om den",
-    position: [10.4, 2.4, 10.9],
-    mot: [6.4, 0.7, 8.6]
+    position: [9.9, 1.9, 9.4],
+    mot: [6.4, 0.8, 8.6]
   },
   toaletter: {
     beskrivning: "Toalettdorrarna och kaffeautomaten mot salen",
