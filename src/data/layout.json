@@ -99,8 +99,8 @@
     { "id": "yttre_syd",         "x":  7.30, "z": 37.65, "bredd": 10.95, "djup":  0.25, "fonster": true },
 
     { "id": "forrad_ostvagg",    "x":  5.30, "z":  0.25, "bredd":  0.30, "djup": 19.40 },
-    { "id": "pentry_vast",       "x":  2.25, "z": 12.80, "bredd":  0.20, "djup":  1.90 },
-    { "id": "pentry_syd",        "x":  3.25, "z": 15.60, "bredd":  2.05, "djup":  0.20 },
+    { "id": "pentry_vast",       "x":  2.25, "z": 12.80, "bredd":  0.20, "djup":  1.50 },
+    { "id": "pentry_syd",        "x":  3.45, "z": 15.60, "bredd":  1.85, "djup":  0.20 },
 
     { "id": "hogl_norr_vast",    "x":  3.60, "z": 32.40, "bredd":  0.70, "djup":  0.20 },
     { "id": "hogl_norr_ost",     "x":  5.20, "z": 32.40, "bredd":  2.10, "djup":  0.20 },
@@ -125,7 +125,7 @@
     { "id": "labb_dorr",       "typ": "inre",  "x":  8.00, "z":  8.00, "bredd": 1.20, "djup": 0.20, "riktning": "syd" },
     { "id": "barn_dorr",       "typ": "inre",  "x": 16.30, "z": 26.90, "bredd": 1.00, "djup": 0.20, "riktning": "syd" },
     { "id": "smabarn_dorr",    "typ": "inre",  "x":  3.60, "z": 19.65, "bredd": 1.00, "djup": 0.25, "riktning": "syd" },
-    { "id": "pentry_oppning",  "typ": "inre",  "x":  2.25, "z": 14.70, "bredd": 0.20, "djup": 0.90, "riktning": "ost" },
+    { "id": "pentry_oppning",  "typ": "inre",  "x":  2.25, "z": 14.30, "bredd": 0.20, "djup": 1.30, "riktning": "ost" },
     { "id": "hogl_dorr",       "typ": "inre",  "x":  4.30, "z": 32.40, "bredd": 0.90, "djup": 0.20, "riktning": "syd" },
     { "id": "nod_storstil",    "typ": "nod",   "x": 22.25, "z": 19.65, "bredd": 1.00, "djup": 0.25, "riktning": "syd" },
     { "id": "nod_barn",        "typ": "nod",   "x": 18.00, "z": 34.60, "bredd": 0.25, "djup": 1.00, "riktning": "ost" }
@@ -188,7 +188,7 @@
     { "id": "f20", "typ": "nodutgang", "namn": "Nödutgång",               "x": 22.25, "z": 19.65, "bredd": 1.00, "djup": 0.25, "hojd": 2.20, "riktning": "norr" },
     { "id": "f21", "typ": "nodutgang", "namn": "Nödutgång",               "x": 18.00, "z": 34.60, "bredd": 0.25, "djup": 1.00, "hojd": 2.20, "riktning": "vast" },
 
-    { "id": "b01", "typ": "pentry",  "namn": "Pentrybänk",                "x":  3.25, "z": 15.00, "bredd": 2.05, "djup": 0.60, "hojd": 0.92, "riktning": "norr" },
+    { "id": "b01", "typ": "pentry",  "namn": "Pentrybänk",                "x":  3.45, "z": 15.00, "bredd": 1.85, "djup": 0.60, "hojd": 0.92, "riktning": "norr" },
     { "id": "b02", "typ": "bord",    "namn": "Pentrybord",                "x":  3.50, "z": 13.30, "bredd": 0.80, "djup": 0.80, "hojd": 0.72 },
     { "id": "b03", "typ": "stol",    "namn": "Stol",                      "x":  3.70, "z": 12.85, "bredd": 0.40, "djup": 0.40, "hojd": 0.85, "rygg": "norr" },
     { "id": "b04", "typ": "stol",    "namn": "Stol",                      "x":  3.70, "z": 14.15, "bredd": 0.40, "djup": 0.40, "hojd": 0.85, "rygg": "syd" },
@@ -248,7 +248,7 @@
 
     { "id": "pentry",          "namn": "Pentry",
       "rutor": [ { "x":  2.45, "z": 12.80, "bredd":  2.85, "djup":  2.80 } ],
-      "skylt": { "x":  3.90, "z": 14.20, "y": 2.30 } },
+      "skylt": { "x":  3.10, "z": 14.30, "y": 2.30 } },
 
     { "id": "hoglasningsrum",  "namn": "Högläsningsrummet",
       "rutor": [ { "x":  3.60, "z": 32.60, "bredd":  3.50, "djup":  5.05 } ],

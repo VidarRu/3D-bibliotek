@@ -112,13 +112,13 @@ export const VYER = {
   },
   pentry: {
     beskrivning: "Pentryt med hoga vaggar och ingang i sydvastra hornet",
-    position: [1.0, 2.4, 18.8],
-    mot: [4.2, 0.8, 13.6]
+    position: [0.8, 6.5, 19.0],
+    mot: [3.6, 0.4, 14.4]
   },
   barnentre: {
     beskrivning: "Dorroppningen fran entren in till barnavdelningen, och automaten framfor forradet",
-    position: [17.2, 2.4, 23.4],
-    mot: [14.0, 0.8, 30.0]
+    position: [16.6, 7.5, 32.5],
+    mot: [15.4, 0.0, 26.4]
   },
   torget: {
     beskrivning: "Startplatsen pa torget, figuren blickar mot entren",
