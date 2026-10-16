@@ -113,7 +113,8 @@ export function animeraFigur(figur, tillstand, dt, springer) {
  * riktning ar radianer medurs fran norr, samma som i datafilen.
  */
 export function stegaFigur(tillstand, tangenter, dt, layout, hinder) {
-  const vrid = (tangenter.vanster ? 1 : 0) - (tangenter.hoger ? 1 : 0);
+  // Riktningen raknas medurs, sa hoger okar den och vanster minskar den.
+  const vrid = (tangenter.hoger ? 1 : 0) - (tangenter.vanster ? 1 : 0);
   tillstand.riktning += vrid * VRIDFART * dt;
 
   const framat = (tangenter.fram ? 1 : 0) - (tangenter.bak ? 1 : 0);
