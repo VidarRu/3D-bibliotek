@@ -12,10 +12,10 @@ export const LANTAGAR_RADIE = 0.3;
 
 // Kladfarger, sa att lantagarna skiljer sig fran spelaren och varandra.
 const KLADER = [
-  { troja: "#e7a6c6", byxor: "#3d6fb6", har: "#c97b3a" },
-  { troja: "#5aa7c9", byxor: "#5a4a6a", har: "#2b2420" },
-  { troja: "#8a5aa8", byxor: "#e6d06a", har: "#e3b06a" },
-  { troja: "#d8574a", byxor: "#2f8a6b", har: "#5a3d2b" }
+  { troja: "#a46a5a", byxor: "#5b4130", har: "#6b4a3a" },
+  { troja: "#c8ad86", byxor: "#6b4a3a", har: "#2b2420" },
+  { troja: "#6b4a3a", byxor: "#a8845c", har: "#c8ad86" },
+  { troja: "#9a6b4f", byxor: "#3d3029", har: "#5a3d2b" }
 ];
 
 /** En liten bokhog som lantagaren bar i famnen. */

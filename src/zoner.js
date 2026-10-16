@@ -4,7 +4,6 @@
 // vilken farg den har kommer ur src/config/content.js.
 
 import * as THREE from "three";
-import { VAGGHOJD } from "./varld.js";
 
 export const TYPSNITT = "Nunito, 'Segoe UI', system-ui, sans-serif";
 const PX_PER_METER = 40;
@@ -105,7 +104,8 @@ function byggGolvzoner(layout, platser) {
 
   for (const p of platser) {
     const zon = ritaZon(p.rutor, p.farg);
-    ctx.globalAlpha = p.avdelning ? 0.9 : 0.6;
+    // Svaga ytor: zonen ska antyda platsen, inte ta over bilden.
+    ctx.globalAlpha = p.avdelning ? 0.32 : 0.2;
     ctx.drawImage(zon.duk, zon.x, zon.z);
     ctx.globalAlpha = 1;
   }
@@ -145,52 +145,39 @@ export function rundRekt(ctx, x, y, b, h, r) {
   ctx.closePath();
 }
 
-/** Ritar en pillerformad skylt och ger tillbaka en sprite i ratt storlek. */
+const SKYLTHOJD = 0.4;              // skyltens hojd i meter
+const UTAN_HYLLA = 1.75;            // dar platsen saknar hylla
+
+/**
+ * Ritar en liten, lugn skylt, som en hyllskylt i ett riktigt bibliotek:
+ * ljus botten, tunn kant i platsens farg och mork text. Ingen skugga,
+ * ingen prick.
+ */
 function byggSkylt(plats) {
-  const H = 150;                    // dukens hojd i pixlar
-  const textstorlek = 72;
-  const kant = 14;
-  const skugga = 12;
-  const prick = 30;
+  const H = 128;                    // dukens hojd i pixlar
+  const textstorlek = 74;
+  const kant = 8;
 
   const mat = document.createElement("canvas").getContext("2d");
-  mat.font = `800 ${textstorlek}px ${TYPSNITT}`;
-  const textbredd = Math.ceil(mat.measureText(plats.namn).width);
-  const B = textbredd + H + prick * 2 + 20;
+  mat.font = `700 ${textstorlek}px ${TYPSNITT}`;
+  const B = Math.ceil(mat.measureText(plats.namn).width) + 72;
 
   const duk = document.createElement("canvas");
-  duk.width = B + 8;
-  duk.height = H + skugga + 8;
+  duk.width = B + kant;
+  duk.height = H + kant;
   const ctx = duk.getContext("2d");
-  const h = H - kant, b = B - kant, x0 = kant / 2 + 4, y0 = kant / 2 + 4;
-
-  // Mjuk skugga under, som en leksak som star pa bordet.
-  rundRekt(ctx, x0, y0 + skugga, b, h, h / 2);
-  ctx.fillStyle = "rgba(60, 45, 30, 0.22)";
-  ctx.fill();
-
-  // Kropp och kant.
-  rundRekt(ctx, x0, y0, b, h, h / 2);
-  ctx.fillStyle = "#fffaf2";
+  rundRekt(ctx, kant / 2, kant / 2, B, H, 18);
+  ctx.fillStyle = "#f7f1e6";
   ctx.fill();
   ctx.lineWidth = kant;
   ctx.strokeStyle = plats.farg;
   ctx.stroke();
 
-  // Liten fargprick framfor texten.
-  ctx.beginPath();
-  ctx.arc(x0 + h / 2 + 4, y0 + h / 2, prick, 0, Math.PI * 2);
-  ctx.fillStyle = plats.farg;
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(x0 + h / 2 - 4, y0 + h / 2 - 8, prick * 0.32, 0, Math.PI * 2);
-  ctx.fillStyle = "rgba(255,255,255,0.7)";
-  ctx.fill();
-
-  ctx.font = `800 ${textstorlek}px ${TYPSNITT}`;
-  ctx.fillStyle = "#2b2420";
+  ctx.font = `700 ${textstorlek}px ${TYPSNITT}`;
+  ctx.fillStyle = "#3b2f27";
+  ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(plats.namn, x0 + h / 2 + prick + 26, y0 + h / 2 + 4);
+  ctx.fillText(plats.namn, duk.width / 2, duk.height / 2 + 3);
 
   const textur = new THREE.CanvasTexture(duk);
   textur.colorSpace = THREE.SRGBColorSpace;
@@ -199,21 +186,34 @@ function byggSkylt(plats) {
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
     map: textur, transparent: true, depthWrite: false, toneMapped: false
   }));
-  const hojd = plats.avdelning ? 0.95 : 0.7;
-  sprite.scale.set(hojd * duk.width / duk.height, hojd, 1);
+  sprite.scale.set(SKYLTHOJD * duk.width / duk.height, SKYLTHOJD, 1);
   sprite.renderOrder = 10;
   return sprite;
 }
 
 /**
- * Bygger zoner och skyltar. Ger tillbaka gruppen och en funktion som
- * animerar skyltarna, samt ett satt att fa en skylt att hoppa.
+ * Var skylten ska sta: ovanpa den hylla i zonen som ligger narmast
+ * skyltpunkten i kartan. Har platsen ingen hylla star skylten pa
+ * skyltpunkten, i ogonhojd.
+ */
+export function skyltPlats(layout, plats) {
+  const hyllor = (layout.shelves || []).filter(h => h.zon === plats.id);
+  if (!hyllor.length) return { x: plats.skylt.x, y: UTAN_HYLLA, z: plats.skylt.z };
+  const mitt = h => ({ x: h.x + h.bredd / 2, z: h.z + h.djup / 2 });
+  const avst = h => Math.hypot(mitt(h).x - plats.skylt.x, mitt(h).z - plats.skylt.z);
+  const h = hyllor.reduce((a, b) => (avst(b) < avst(a) ? b : a));
+  return { ...mitt(h), y: (h.hojd ?? 1.8) + SKYLTHOJD / 2 + 0.03 };
+}
+
+/**
+ * Bygger zoner och skyltar. Ger tillbaka gruppen. Skyltarna star still,
+ * sa att det inte ror sig nagot i bilden som man inte sjalv satt igang.
  */
 export async function byggZoner(layout, platser) {
   // Typsnittet maste vara laddat innan skylttexten ritas.
   try {
     await Promise.all([
-      document.fonts.load(`800 72px Nunito`),
+      document.fonts.load(`700 74px Nunito`),
       document.fonts.load(`400 16px Nunito`)
     ]);
   } catch { /* reservtypsnittet duger */ }
@@ -222,37 +222,13 @@ export async function byggZoner(layout, platser) {
   grupp.name = "zoner";
   grupp.add(byggGolvzoner(layout, platser));
 
-  const skyltar = new Map();
-  platser.forEach((p, i) => {
+  for (const p of platser) {
     const s = byggSkylt(p);
-    const y = VAGGHOJD + (p.avdelning ? 0.75 : 0.45);
-    s.position.set(p.skylt.x, y, p.skylt.z);
+    const { x, y, z } = skyltPlats(layout, p);
+    s.position.set(x, y, z);
+    s.name = "skylt_" + p.id;
     grupp.add(s);
-    skyltar.set(p.id, { sprite: s, y, fas: i * 1.3, hopp: -1, skala: s.scale.clone() });
-  });
-
-  function animera(tid) {
-    for (const s of skyltar.values()) {
-      let lyft = Math.sin(tid * 1.6 + s.fas) * 0.07;
-      let stor = 1;
-      if (s.hopp >= 0) {
-        const t = tid - s.hopp;
-        if (t > 0.9) s.hopp = -1;
-        else {
-          // Ett glatt hopp: upp och ner, med en liten studs i storleken.
-          lyft += Math.sin((t / 0.9) * Math.PI) * 0.8;
-          stor = 1 + Math.sin((t / 0.9) * Math.PI * 2) * 0.12;
-        }
-      }
-      s.sprite.position.y = s.y + lyft;
-      s.sprite.scale.set(s.skala.x * stor, s.skala.y * stor, 1);
-    }
   }
 
-  function hoppa(id, tid) {
-    const s = skyltar.get(id);
-    if (s) s.hopp = tid;
-  }
-
-  return { grupp, animera, hoppa };
+  return { grupp };
 }

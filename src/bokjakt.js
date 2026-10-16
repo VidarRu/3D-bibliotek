@@ -97,7 +97,7 @@ export function byggBokjakt(layout, hinder, tema, installning,
   }
 
   const platser = placeraBocker(layout, hinder, installning.antalBocker);
-  const farger = [tema.senap, tema.mint, tema.rosa, "#3d6fb6", "#d8574a", "#8a5aa8"];
+  const farger = tema.bocker;
   let bocker = [];
   let ny = 0;                          // naer nya bocker ska dyka upp
 

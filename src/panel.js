@@ -1,7 +1,7 @@
-// Listan till hoger: alla platser som vanlig text, med en knapp som visar
-// vagen. Listan gar att anvanda utan att spela, och med tangentbordet.
+// Det som visas ovanpa 3D-bilden: meddelanden, infokortet och rutorna
+// for minispelen.
 
-import { SIDA, OPPETTIDER, KONTAKT, MINISPEL } from "./config/content.js";
+import { SIDA, OPPETTIDER, KONTAKT, MINISPEL, RUTOR } from "./config/content.js";
 
 const el = (tagg, attribut = {}, ...barn) => {
   const e = document.createElement(tagg);
@@ -18,11 +18,6 @@ const el = (tagg, attribut = {}, ...barn) => {
 /** Dagens rad i OPPETTIDER. Listan borjar pa mandag, Date pa sondag. */
 export function idag(datum = new Date()) {
   return OPPETTIDER[(datum.getDay() + 6) % 7];
-}
-
-export function idagText(datum = new Date()) {
-  const d = idag(datum);
-  return /stängt/i.test(d.tid) ? SIDA.stangtIdag : SIDA.oppetIdag.replace("{tid}", d.tid);
 }
 
 function oppettidTabell() {
@@ -52,142 +47,12 @@ export function infoInnehall(info) {
   return del;
 }
 
-const plan = (mall, n) => mall.replace("{plan}", n);
-
-/**
- * Bygger panelen i elementet #panel.
- * valj(id) anropas nar nagon trycker pa "Visa vagen".
- * sluta() anropas nar nagon trycker pa "Sluta visa".
- * valjVaning(plan) anropas nar nagon trycker pa en vaningsknapp.
- */
-export function byggPanel(platser, { valj, sluta, valjVaning }, info = []) {
-  const panel = document.getElementById("panel");
-  const knappar = new Map();
-  const rader = new Map();
-
-  const fallKnapp = el("button", {
-    class: "fall", type: "button", "aria-expanded": "true",
-    "aria-controls": "panel-innehall", text: SIDA.fallIhop
-  });
-
-  const innehall = el("div", { id: "panel-innehall" });
-
-  const grupp = (rubrik, lista, avdelning) => {
-    const ul = el("ul", { class: "platser" });
-    for (const p of lista) {
-      const knapp = el("button", { type: "button", class: "visa",
-                                   "aria-label": `${SIDA.knappVisaVag} till ${p.namn}`,
-                                   text: SIDA.knappVisaVag });
-      knapp.addEventListener("click", () => {
-        if (knapp.classList.contains("aktiv")) sluta();
-        else valj(p.id);
-      });
-      knappar.set(p.id, knapp);
-      const li = el("li", { class: "plats" + (avdelning ? " avdelning" : ""),
-                            style: `--farg: ${p.farg}` },
-        el("span", { class: "prick", "aria-hidden": "true" }),
-        el("div", { class: "text" },
-          el("h4", {}, el("span", { text: p.namn }),
-            el("span", { class: "hittad-marke", text: MINISPEL.hittadMarke })),
-          el("p", { text: p.beskrivning })),
-        knapp);
-      ul.append(li);
-      rader.set(p.id, li);
-    }
-    return el("section", {}, el("h3", { class: "grupp", text: rubrik }), ul);
-  };
-
-  // En del per vaning, med avdelningar och ovriga platser.
-  const planer = [...new Set(platser.map(p => p.plan ?? 0))].sort();
-  const vaningsdelar = planer.map(n => {
-    const har = platser.filter(p => (p.plan ?? 0) === n);
-    const delar = [el("h2", { class: "vaning", text: plan(SIDA.vaningGrupp, n) })];
-    if (har.some(p => p.avdelning)) delar.push(grupp(SIDA.avdelningarRubrik, har.filter(p => p.avdelning), true));
-    if (har.some(p => !p.avdelning)) delar.push(grupp(SIDA.ovrigtRubrik, har.filter(p => !p.avdelning), false));
-    return el("section", { class: "vaningsdel" }, ...delar);
-  });
-
-  // Knappar for att byta vaning direkt, utan att ga till trappan.
-  const vaningsknappar = new Map();
-  const vaningsval = el("div", { class: "vaningsval", role: "group", "aria-label": SIDA.vaningRubrik });
-  for (const n of planer) {
-    const k = el("button", { type: "button", "aria-pressed": "false", text: plan(SIDA.vaningKnapp, n) });
-    k.addEventListener("click", () => valjVaning && valjVaning(n));
-    vaningsknappar.set(n, k);
-    vaningsval.append(k);
-  }
-  const undertitel = el("small", { text: plan(SIDA.undertitel, planer[0] ?? 0) });
-
-  // "Bra att veta": en utfallbar rad per infopunkt.
-  const braAttVeta = el("ul", { class: "platser" });
-  for (const i of info) {
-    const knapp = el("button", { type: "button", class: "visa",
-                                 "aria-label": `${SIDA.knappVisaVag} till infopunkten ${i.rubrik}`,
-                                 text: SIDA.knappVisaVag });
-    knapp.addEventListener("click", () => {
-      if (knapp.classList.contains("aktiv")) sluta();
-      else valj(i.id);
-    });
-    knappar.set(i.id, knapp);
-    const detaljer = el("details", { class: "info" },
-      el("summary", {}, el("span", { class: "i-prick", "aria-hidden": "true", text: "i" }),
-        el("span", { text: i.rubrik })),
-      infoInnehall(i), knapp);
-    braAttVeta.append(el("li", { class: "plats info-rad" }, detaljer));
-  }
-
-  innehall.append(
-    ...vaningsdelar,
-    el("section", { class: "vaningsdel" }, el("h2", { class: "vaning", text: SIDA.braAttVeta }), braAttVeta));
-
-  panel.append(
-    el("header", {},
-      el("h1", {}, el("span", { text: SIDA.titel }), " ", undertitel),
-      el("p", { class: "idag-chip", text: idagText() }),
-      planer.length > 1 ? vaningsval : "",
-      el("p", { class: "listrubrik", text: SIDA.listrubrik })),
-    fallKnapp,
-    innehall);
-
-  fallKnapp.addEventListener("click", () => {
-    const ihop = panel.classList.toggle("ihop");
-    fallKnapp.textContent = ihop ? SIDA.fallUt : SIDA.fallIhop;
-    fallKnapp.setAttribute("aria-expanded", String(!ihop));
-  });
-
-  /** Markerar vilken plats som har vagvisning just nu, eller ingen. */
-  function markera(aktivId) {
-    for (const [id, knapp] of knappar) {
-      const aktiv = id === aktivId;
-      knapp.classList.toggle("aktiv", aktiv);
-      knapp.textContent = aktiv ? SIDA.knappSluta : SIDA.knappVisaVag;
-      knapp.setAttribute("aria-pressed", String(aktiv));
-    }
-  }
-
-  /** Markerar de avdelningar som ar funna i minispelet. */
-  function markeraFunna(ids) {
-    for (const [id, li] of rader) li.classList.toggle("funnen", ids.includes(id));
-  }
-
-  /** Visar vilken vaning figuren ar pa. */
-  function visaVaning(n) {
-    undertitel.textContent = plan(SIDA.undertitel, n);
-    for (const [p, k] of vaningsknappar) {
-      k.setAttribute("aria-pressed", String(p === n));
-      k.classList.toggle("vald", p === n);
-    }
-  }
-
-  return { panel, markera, markeraFunna, visaVaning };
-}
-
 // ---------------------------------------------------------- meddelanden
 
 let doljTimer = null;
 
-/** Visar en kort glad ruta overst. Langd i sekunder, 0 = tills vidare. */
-export function meddela(text, langd = 3, under = "") {
+/** Visar en kort ruta overst. Langd i sekunder, 0 = tills vidare. */
+export function meddela(text, langd = 4.5, under = "") {
   const ruta = document.getElementById("meddelande");
   ruta.replaceChildren(el("span", { class: "huvud", text }));
   if (under) ruta.append(el("span", { class: "under", text: under }));
@@ -207,23 +72,42 @@ export const fyllI = (mall, namn) => mall.replace("{namn}", namn);
 
 // ------------------------------------------------------------ infokortet
 
+/** Laser upp text med webblasarens talsyntes, om den finns. */
+const tal = typeof speechSynthesis !== "undefined" ? speechSynthesis : null;
+
+function lasUppKnapp(info) {
+  if (!tal || typeof SpeechSynthesisUtterance === "undefined") return "";
+  const knapp = el("button", { type: "button", class: "stang", text: SIDA.lasUpp });
+  knapp.addEventListener("click", () => {
+    if (tal.speaking) { tal.cancel(); return; }
+    const yttrande = new SpeechSynthesisUtterance([info.rubrik, ...info.rader].join(". "));
+    yttrande.lang = "sv-SE";
+    const rost = tal.getVoices().find(r => r.lang?.startsWith("sv"));
+    if (rost) yttrande.voice = rost;
+    yttrande.onend = yttrande.onerror = () => { knapp.textContent = SIDA.lasUpp; };
+    knapp.textContent = SIDA.slutaLasa;
+    tal.speak(yttrande);
+  });
+  return knapp;
+}
+
 /** Visar infokortet nederst, eller doljer det om info ar null. */
 export function visaInfokort(info, stang) {
   const kort = document.getElementById("infokort");
+  tal?.cancel();
   if (!info) {
     kort.classList.remove("syns");
     return;
   }
-  const knapp = el("button", { type: "button", class: "stang", text: SIDA.stangKort });
+  const knapp = el("button", { type: "button", class: "stang" },
+    el("span", { text: SIDA.stangKort }), " ", el("kbd", { text: "Esc" }));
   knapp.addEventListener("click", stang);
   kort.replaceChildren(
     el("div", { class: "kort-huvud" },
       el("span", { class: "i-prick stor", "aria-hidden": "true", text: "i" }),
-      el("h2", { text: info.rubrik }),
-      knapp),
-    infoInnehall(info));
-  kort.classList.remove("syns");
-  void kort.offsetWidth;              // startar om animationen
+      el("h2", { text: info.rubrik })),
+    infoInnehall(info),
+    el("div", { class: "kort-fot" }, lasUppKnapp(info), knapp));
   kort.classList.add("syns");
 }
 
@@ -233,8 +117,18 @@ const ersatt = (mall, varden) =>
   mall.replace(/\{(\w+)\}/g, (_, k) => (k in varden ? varden[k] : `{${k}}`));
 export { ersatt };
 
-/** Brickan uppe till vanster: rubrik, "3 av 6" och en prick per avdelning. */
-export function byggForlopp(avdelningar) {
+/** Avsluta-knappen som alla spelrutor har. */
+function avslutaKnapp(avsluta) {
+  const k = el("button", { type: "button", class: "avsluta", text: RUTOR.avsluta });
+  k.addEventListener("click", avsluta);
+  return k;
+}
+
+/**
+ * Brickan uppe till vanster medan orienteringen pagar: rubrik, "3 av 6",
+ * en prick per avdelning och en knapp for att avsluta.
+ */
+export function byggForlopp(avdelningar, avsluta) {
   const ruta = document.getElementById("forlopp");
   const text = el("span", { class: "rakning" });
   const prickar = new Map();
@@ -250,20 +144,18 @@ export function byggForlopp(avdelningar) {
   ruta.replaceChildren(
     el("div", { class: "forlopp-rubrik" },
       el("span", { text: MINISPEL.rubrik }), " · ", text),
-    ...[...rader.keys()].sort().map(n => rader.get(n)));
+    ...[...rader.keys()].sort().map(n => rader.get(n)),
+    avslutaKnapp(avsluta));
 
   function uppdatera(funna) {
     text.textContent = ersatt(MINISPEL.rakning, { antal: funna.length, totalt: avdelningar.length });
     for (const [id, p] of prickar) {
       const nu = funna.includes(id);
-      if (nu && !p.classList.contains("fylld")) {
-        p.classList.add("fylld", "studs");
-        setTimeout(() => p.classList.remove("studs"), 600);
-      } else if (!nu) p.classList.remove("fylld");
+      p.classList.toggle("fylld", nu);
     }
   }
   uppdatera([]);
-  return { uppdatera };
+  return { uppdatera, visa: syns => { ruta.hidden = !syns; } };
 }
 
 /**
@@ -295,7 +187,6 @@ export function visaGrattis(totalt, { spelaIgen, fortsatt }) {
 
   ruta.replaceChildren(
     el("div", { class: "grattis-kort" },
-      el("div", { class: "stjarnor", "aria-hidden": "true", text: "★ ★ ★" }),
       el("h2", { id: "grattis-rubrik", text: MINISPEL.grattisRubrik }),
       el("p", { text: ersatt(MINISPEL.grattisText, { totalt }) }),
       el("div", { class: "knappar" }, igen, vidare)));
@@ -308,46 +199,18 @@ export function visaGrattis(totalt, { spelaIgen, fortsatt }) {
 // --------------------------------------------------------------- bokjakt
 
 /**
- * Av/pa-knappar for bokjakten: en pa poangraden uppe till vanster och en
- * i listan. vaxla() anropas nar nagon trycker. uppdatera(pa, status)
- * visar lage och poang.
+ * Rutan uppe till vanster medan bokjakten pagar: poang och en knapp for
+ * att avsluta. uppdatera(status) visar poangen.
  */
-export function byggBokjaktRad(text, vaxla) {
-  const rad = document.getElementById("bokjakt");
-  const knappar = [];
-  const ny = () => {
-    const k = el("button", { type: "button", class: "vaxel", "aria-pressed": "false" },
-      el("span", { class: "vaxel-namn", text: text.knapp }),
-      el("span", { class: "vaxel-spar", "aria-hidden": "true" }, el("span", { class: "vaxel-knopp" })),
-      el("span", { class: "vaxel-lage" }));
-    k.addEventListener("click", vaxla);
-    knappar.push(k);
-    return k;
-  };
+export function byggBokjaktRuta(text, avsluta) {
+  const ruta = document.getElementById("bokjakt");
   const poang = el("span", { class: "poang", role: "status", "aria-live": "polite" });
-  rad.replaceChildren(ny(), poang);
+  ruta.replaceChildren(
+    el("div", { class: "forlopp-rubrik", text: text.namn }), poang, avslutaKnapp(avsluta));
 
-  // Samma knapp i listan, med en kort forklaring.
-  const iListan = el("div", { class: "bokjakt-i-listan" }, ny(),
-    el("p", { text: text.forklaring }));
-  document.querySelector("#panel header").append(iListan);
-
-  function uppdatera(pa, status) {
-    for (const k of knappar) {
-      k.setAttribute("aria-pressed", String(pa));
-      k.classList.toggle("pa", pa);
-      k.querySelector(".vaxel-lage").textContent = pa ? text.pa : text.av;
-    }
-    poang.hidden = !pa;
+  function uppdatera(status) {
     const mall = status.bocker === 1 ? text.rakningEn : text.rakning;
-    poang.textContent = pa ? "📚 " + ersatt(mall, status) : "";
+    poang.textContent = ersatt(mall, status);
   }
-
-  /** Liten studs pa poangen nar den andras. */
-  function studsa() {
-    poang.classList.remove("studs");
-    void poang.offsetWidth;
-    poang.classList.add("studs");
-  }
-  return { uppdatera, studsa };
+  return { uppdatera, visa: syns => { ruta.hidden = !syns; } };
 }
