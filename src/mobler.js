@@ -150,8 +150,8 @@ function tv(f, t) {
     g.add(rundLadaMitt(0, 0.05, 0.3, 0.16, 0.08, f.hojd, svart, 0.03));
     g.add(rundLadaMitt(0, 0.08, 0.08, 0.05, 0.14, f.hojd + 0.06, svart, 0.02));
     g.add(rundLadaMitt(0, 0.06, 1.5, 0.07, 0.86, f.hojd + 0.18, svart, 0.04));
-    g.add(rundLadaMitt(0, 0.02, 1.38, 0.01, 0.74, f.hojd + 0.24, lysande("#7fb7ff", 0.9), 0.006));
-    // Konsolen och tva handkontroller i glada farger.
+    g.add(rundLadaMitt(0, 0.02, 1.38, 0.01, 0.74, f.hojd + 0.24, lysande(t.tv, 0.6), 0.006));
+    // Konsolen och tva handkontroller.
     g.add(rundLadaMitt(0.62, -0.06, 0.3, 0.2, 0.06, f.hojd, mat(t.hylla), 0.02));
     for (const [dx, farg] of [[-0.75, t.rosa], [-0.45, t.mint]]) {
       g.add(rundLadaMitt(dx, -0.12, 0.16, 0.1, 0.04, f.hojd, mat(farg), 0.018));
@@ -398,10 +398,10 @@ function tavla(f, t) {
   const c = document.createElement("canvas");
   c.width = 256; c.height = 184;
   const x = c.getContext("2d");
-  const farger = [t.senap, t.mint, t.rosa, "#3d6fb6", "#d8574a", "#fbf6ee"];
+  const farger = [t.senap, t.mint, t.rosa, "#7a3b33", "#5b4130", "#fbf6ee"];
   x.fillStyle = farger[Math.floor(slp() * 3)];
   x.fillRect(0, 0, 256, 184);
-  // Nagra glada, enkla former, som barnteckningar.
+  // Nagra enkla former, som barnteckningar.
   for (let i = 0; i < 5; i++) {
     x.fillStyle = farger[Math.floor(slp() * farger.length)];
     const r = 20 + slp() * 50;

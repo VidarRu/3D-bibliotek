@@ -1,4 +1,8 @@
-// Leksaksbiblioteket.
+// Vasterviks stadsbibliotek i 3D.
+//
+// Kartan ar till for att kunna planera sitt besok i lugn och ro. Darfor
+// ar skarmen sa tom som mojligt: inget dyker upp utan att man fragas
+// forst, och spelen startar man sjalv i Labbet.
 //
 // All geometri kommer ur kartfilerna i src/data/ (en per vaning) och
 // alla texter ur src/config/content.js. Andras de foljer varlden med,
@@ -9,15 +13,15 @@ import { byggVarld, byggLjus, VAGGHOJD } from "./varld.js";
 import { byggFigur, stegaFigur, animeraFigur, FIGUR_HOJD } from "./figur.js";
 import { skapaHinder, arFri, flytta, FIGUR_RADIE } from "./kollision.js";
 import { VYER } from "./vyer.js";
-import { PLATSER, SIDA, TEMA, INFOPUNKTER, MINISPEL, BOKJAKT } from "./config/content.js";
+import { PLATSER, SIDA, TEMA, INFOPUNKTER, MINISPEL, BOKJAKT, RUTOR } from "./config/content.js";
 import { sammanfogaPlatser, byggZoner, iZon } from "./zoner.js";
 import { byggRutnat, hittaVag, byggPrickar, vaglangd } from "./vagvisning.js";
-import { byggPanel, meddela, doljMeddelande, fyllI, visaInfokort,
-         byggForlopp, visaGrattis, ersatt, byggBokjaktRad } from "./panel.js";
+import { meddela, doljMeddelande, fyllI, visaInfokort,
+         byggForlopp, visaGrattis, ersatt, byggBokjaktRuta } from "./panel.js";
 import { byggInfopunkter } from "./infopunkter.js";
 import { skapaMinispel } from "./minispel.js";
-import { byggKonfetti } from "./konfetti.js";
 import { byggBokjakt } from "./bokjakt.js";
+import { skapaDialog } from "./dialog.js";
 import { byggLantagare } from "./lantagare.js";
 import { byggPlattor } from "./vaningsbyte.js";
 
@@ -122,23 +126,25 @@ const kamera = new THREE.PerspectiveCamera(52, 1, 0.1, 400);
 // ---------------------------------------------------------------- styrning
 
 const tangenter = { fram: false, bak: false, vanster: false, hoger: false, spring: false };
+const STILLA = { fram: false, bak: false, vanster: false, hoger: false, spring: false };
 const KARTA = {
   ArrowUp: "fram", ArrowDown: "bak", ArrowLeft: "vanster", ArrowRight: "hoger",
   KeyW: "fram", KeyS: "bak", KeyA: "vanster", KeyD: "hoger", ShiftLeft: "spring"
 };
 
-// Nar fokus ligger i listan ska piltangenterna sköta listan, inte figuren.
-const iPanelen = () => {
-  const a = document.activeElement;
-  return a && a !== document.body &&
-    (document.getElementById("panel").contains(a) || document.getElementById("grattis").contains(a));
-};
+const dialog = skapaDialog();
+const tillbakaTillSpelet = () => duk.focus({ preventScroll: true });
+
+// Nar fokus ligger i grattisrutan ska piltangenterna inte styra figuren.
+const iGrattis = () => document.getElementById("grattis").contains(document.activeElement);
 
 function tangent(e, ned) {
   if (ned && e.code === "Escape") { slutaVisa(); stangInfo(); return; }
+  if (ned && e.code === "Space" && infoOppen) { e.preventDefault(); stangInfo(); return; }
+  if (ned && (e.code === "KeyH" || e.key === "?") && !iGrattis()) { visaInstruktion(); return; }
   const namn = KARTA[e.code];
   if (!namn) return;
-  if (ned && iPanelen()) return;
+  if (ned && iGrattis()) return;
   tangenter[namn] = ned;
   e.preventDefault();
 }
@@ -146,6 +152,24 @@ window.addEventListener("keydown", e => tangent(e, true));
 window.addEventListener("keyup", e => tangent(e, false));
 // Slapps en tangent medan fonstret saknar fokus fastnar den annars.
 window.addEventListener("blur", () => { for (const k in tangenter) tangenter[k] = false; });
+
+// ------------------------------------------------------------ instruktion
+//
+// Visas av sig sjalv forsta gangen. Sedan med ?-knappen eller H.
+
+const SEDD = "bibliotek-instruktion-sedd";
+
+function visaInstruktion() {
+  stangInfo();
+  dialog.fraga({
+    rubrik: RUTOR.instruktionRubrik, rader: RUTOR.instruktionRader, stoppar: true,
+    knappar: [{ text: RUTOR.forstar, tangenter: ["Space", "Escape"], varde: true, huvudval: true }]
+  }).svar.then(() => {
+    try { localStorage.setItem(SEDD, "1"); } catch { /* da visas den igen nasta gang */ }
+    tillbakaTillSpelet();
+  });
+}
+document.getElementById("hjalpknapp").addEventListener("click", visaInstruktion);
 
 // ---------------------------------------------------------- hitta hit
 //
@@ -222,7 +246,6 @@ function visaVag(id) {
   vagvisning.mal = id;
   vagvisning.andraLangd = null;
   ritaVag();
-  panel.markera(id);
   meddelaVag(plats);
   return vagvisning.vag;
 }
@@ -233,7 +256,6 @@ function slutaVisa() {
   vagvisning.vag = null;
   vagvisning.andraLangd = null;
   prickar.dolj();
-  panel.markera(null);
   doljMeddelande();
 }
 
@@ -244,8 +266,7 @@ function folj(tid) {
     framme = plats.id;
     slutaVisa();
     // Har figuren just hittat avdelningen sager minispelet det i stallet.
-    if (nyssHittad !== plats.id) meddela(fyllI(SIDA.framme, plats.namn), 3.5);
-    V.zoner.hoppa(plats.id, tid);
+    if (nyssHittad !== plats.id) meddela(fyllI(SIDA.framme, plats.namn));
     return;
   }
   // Raknas om nagra ganger i sekunden medan figuren ror sig.
@@ -255,110 +276,179 @@ function folj(tid) {
   }
 }
 
-const panel = byggPanel(platser, {
-  valj: id => {
-    visaVag(id);
-    // Tillbaka till spelet, sa att piltangenterna styr figuren direkt.
-    duk.focus({ preventScroll: true });
-  },
-  sluta: slutaVisa,
-  valjVaning: plan => {
-    bytVaning(plan, "huvudtrappan");
-    duk.focus({ preventScroll: true });
-  }
-}, info);
-panel.visaVaning(V.plan);
-
 // ------------------------------------------------------------ infopunkter
+//
+// Gar figuren upp pa en platta kommer en liten fraga: "Vill du veta vad
+// det har ar?" Ja oppnar kortet. Fragan kommer inte igen forran man gatt
+// av plattan. Man kan ocksa klicka pa i-bubblan, var man an star.
 
 let infoOppen = null;      // kortet som visas just nu
-let infoAvstangd = null;   // stangt med Esc, oppnas inte igen forran man gatt av
+let infoFranPlatta = false;// kortet stangs nar man gar av plattan
+let platta = null;         // plattan figuren star pa
+let infoFraga = null;      // fragan som visas just nu
 
-function oppnaInfo(id, tid = performance.now() / 1000) {
+function oppnaInfo(id, franPlatta = false) {
   infoOppen = id;
-  for (const v of vaningar) v.infopunkter.markera(id, tid);
-  visaInfokort(id ? info.find(i => i.id === id) : null, stangInfo);
+  infoFranPlatta = franPlatta;
+  visaInfokort(id ? info.find(i => i.id === id) : null, () => { stangInfo(); tillbakaTillSpelet(); });
 }
 
 function stangInfo() {
-  if (!infoOppen) return;
-  infoAvstangd = infoOppen;
-  oppnaInfo(null);
+  if (infoOppen) oppnaInfo(null);
 }
 
-function kollaInfo(tid) {
-  const id = V.infopunkter.vid(tillstand.x, tillstand.z, infoOppen || infoAvstangd);
-  if (infoAvstangd && id !== infoAvstangd) infoAvstangd = null;
-  const visa = id && id !== infoAvstangd ? id : null;
-  if (visa !== infoOppen) oppnaInfo(visa, tid);
+function fragaOmInfo(id) {
+  const i = info.find(x => x.id === id);
+  const f = dialog.fraga({
+    rubrik: RUTOR.infoFraga, under: i.rubrik,
+    knappar: [{ text: RUTOR.ja, tangenter: ["Space"], varde: true, huvudval: true },
+              { text: RUTOR.nej, tangenter: ["Escape"], varde: false }]
+  });
+  infoFraga = f;
+  f.svar.then(ja => {
+    if (infoFraga === f) infoFraga = null;
+    if (ja && platta === id) oppnaInfo(id, true);
+  });
 }
 
-// ------------------------------------------------------------- minispelet
+function kollaInfo() {
+  const id = V.infopunkter.vid(tillstand.x, tillstand.z, platta);
+  if (id === platta) return;
+  platta = id;
+  infoFraga?.stang();
+  if (infoOppen && infoFranPlatta) oppnaInfo(null);
+  for (const v of vaningar) v.infopunkter.markera(id);
+  // En storre ruta, som instruktionen, ska inte ersattas av fragan.
+  if (id && !dialog.stoppar) fragaOmInfo(id);
+}
+
+// Klick pa en i-bubbla oppnar kortet direkt.
+const straleKastare = new THREE.Raycaster();
+function bubblaUnder(e) {
+  const r = duk.getBoundingClientRect();
+  const ndc = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1,
+                                -((e.clientY - r.top) / r.height) * 2 + 1);
+  straleKastare.setFromCamera(ndc, kamera);
+  return V.infopunkter.traffad(straleKastare);
+}
+duk.addEventListener("click", e => {
+  const id = bubblaUnder(e);
+  if (!id || dialog.stoppar) return;
+  infoFraga?.stang();
+  oppnaInfo(id);
+});
+duk.addEventListener("pointermove", e => {
+  duk.style.cursor = bubblaUnder(e) ? "pointer" : "";
+});
+
+// --------------------------------------------------------------- minispel
 //
-// Forsta gangen figuren gar in i en zon gor skylten ett glatt hopp. For
-// avdelningarna raknas det dessutom i minispelet, med konfetti och en
-// grattishalsning nar alla ar funna. Avdelningarna pa bada vaningarna
-// raknas i samma spel.
+// Tva sma spel som man startar sjalv i Labbet: Biblioteksorientering
+// (hitta alla avdelningar pa bada vaningarna) och Bokjakten. Bara ett i
+// taget, och inget ar igang nar sidan oppnas.
 
-const lugnt = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const konfetti = byggKonfetti();
-scen.add(konfetti.nat);
-const forlopp = byggForlopp(platser.filter(p => p.avdelning));
+let aktivtSpel = null;                 // null, "orientering" eller "bokjakt"
 let stangGrattis = null;
-let nu = 0;                            // tiden i sekunder, for skylthoppen
 let nyssHittad = null;                 // avdelningen som hittades i den har bildrutan
 
+const forlopp = byggForlopp(platser.filter(p => p.avdelning), () => avslutaSpel());
+const bokRuta = byggBokjaktRuta(BOKJAKT, () => avslutaSpel());
+
 const minispel = skapaMinispel(platser, {
-  narBesok: p => vaningFor(p.plan).zoner.hoppa(p.id, nu),
+  narBesok: () => {},
   narHittad: (p, antal, totalt) => {
     nyssHittad = p.id;
     forlopp.uppdatera(minispel.funna);
-    panel.markeraFunna(minispel.funna);
     if (antal < totalt) {
-      meddela(fyllI(MINISPEL.hittade, p.namn), 3,
+      meddela(fyllI(MINISPEL.hittade, p.namn), 4,
               ersatt(MINISPEL.hittadeUnder, { antal, totalt }));
     }
-    if (!lugnt) konfetti.small(p.skylt.x, VAGGHOJD + 0.8, p.skylt.z, [p.farg, "#ffffff", p.farg]);
   },
   narVinst: () => {
     const totalt = minispel.avdelningar.length;
-    if (!lugnt) konfetti.regn(tillstand.x, tillstand.z, [TEMA.senap, TEMA.mint, TEMA.rosa, "#ffffff"]);
     slutaVisa();
     doljMeddelande();
     stangGrattis = visaGrattis(totalt, {
-      spelaIgen: () => { stangGrattis = null; nollstall(); duk.focus({ preventScroll: true }); },
-      fortsatt: () => { stangGrattis = null; duk.focus({ preventScroll: true }); }
+      spelaIgen: () => { stangGrattis = null; nollstall(); tillbakaTillSpelet(); },
+      fortsatt: () => { stangGrattis = null; avslutaSpel(); }
     });
   }
 });
-// Startplatsen raknas inte som ett besok.
-minispel.borja(tillstand.x, tillstand.z, V.plan);
 
-function kollaZoner(tid) {
-  nu = tid;
+function kollaZoner() {
   nyssHittad = null;
-  minispel.kolla(tillstand.x, tillstand.z, V.plan);
+  if (aktivtSpel === "orientering") minispel.kolla(tillstand.x, tillstand.z, V.plan);
 }
 
 function nollstall() {
   minispel.nollstall(tillstand.x, tillstand.z, V.plan);
   forlopp.uppdatera([]);
-  panel.markeraFunna([]);
+}
+
+function startaSpel(namn) {
+  avslutaSpel(true);
+  aktivtSpel = namn;
+  if (namn === "orientering") {
+    nollstall();
+    forlopp.visa(true);
+  } else {
+    slaPaBokjakt(true);
+    bokRuta.uppdatera(delad);
+    bokRuta.visa(true);
+  }
+  tillbakaTillSpelet();
+}
+
+function avslutaSpel(tyst = false) {
+  if (!aktivtSpel) return;
+  if (aktivtSpel === "bokjakt") slaPaBokjakt(false);
+  aktivtSpel = null;
+  forlopp.visa(false);
+  bokRuta.visa(false);
+  if (stangGrattis) { stangGrattis(); stangGrattis = null; }
+  if (!tyst) meddela(RUTOR.spelSlut, 3);
+  tillbakaTillSpelet();
+}
+
+// Fragan i Labbet kommer nar figuren gar in, och inte igen forran den
+// har gatt ut. Ar ett spel redan igang fragas ingenting.
+const spelPlats = platser.find(p => p.id === RUTOR.spelPlats);
+let iSpelPlatsen = true;               // startplatsen raknas inte som att ga in
+
+async function fragaOmSpel() {
+  stangInfo();
+  const ja = await dialog.fraga({
+    rubrik: RUTOR.labbFraga, under: RUTOR.labbUnder, stoppar: true,
+    knappar: [{ text: RUTOR.ja, tangenter: ["Space"], varde: true, huvudval: true },
+              { text: RUTOR.nej, tangenter: ["Escape"], varde: false }]
+  }).svar;
+  if (!ja) { tillbakaTillSpelet(); return; }
+  const val = await dialog.fraga({
+    rubrik: RUTOR.valjSpel, stoppar: true,
+    rader: [`${MINISPEL.namn}: ${MINISPEL.forklaring}`, `${BOKJAKT.namn}: ${BOKJAKT.forklaring}`],
+    knappar: [{ text: MINISPEL.namn, tangenter: ["Digit1"], varde: "orientering", huvudval: true },
+              { text: BOKJAKT.namn, tangenter: ["Digit2"], varde: "bokjakt" },
+              { text: RUTOR.ingetSpel, tangenter: ["Escape"], varde: null }]
+  }).svar;
+  if (val) startaSpel(val);
+  else tillbakaTillSpelet();
+}
+
+function kollaSpelPlatsen() {
+  const inne = !!spelPlats && spelPlats.plan === V.plan && iZon(spelPlats, tillstand.x, tillstand.z);
+  if (inne && !iSpelPlatsen && !aktivtSpel && !dialog.stoppar) fragaOmSpel();
+  iSpelPlatsen = inne;
 }
 
 // ---------------------------------------------------------------- bokjakt
 //
 // Ett eget lager ovanpa resten: bocker att samla och lantagare att
 // undvika. Ar det avstangt finns det inte i scenen och ingen av dess kod
-// kors, sa det kan aldrig stora orienteringen eller minispelet. Varje
-// vaning har sina egna bocker och lantagare, men poangen ar gemensam.
+// kors. Varje vaning har sina egna bocker och lantagare, men poangen ar
+// gemensam.
 
 const SKYDDAD = 1.5;                   // sekunder utan nya krockar efter en krock
 const bokLager = { pa: false, skyddadTill: 0, lugnTill: 0, allaVar: false };
-
-const bokRad = byggBokjaktRad(BOKJAKT, () => {
-  slaPaBokjakt(!bokLager.pa);
-});
 
 function slaPaBokjakt(pa) {
   bokLager.pa = pa;
@@ -370,11 +460,8 @@ function slaPaBokjakt(pa) {
       v.grupp.remove(v.bokjakt.grupp, v.lantagare.grupp);
     }
   }
-  if (!pa) figur.visible = true;
   bokLager.allaVar = false;
-  bokRad.uppdatera(pa, delad);
 }
-slaPaBokjakt(BOKJAKT.paFranStart);
 
 /** Knuffar figuren bort fran (fx, fz), med vanlig kollision i sma steg. */
 function knuffa(fx, fz, langd) {
@@ -394,27 +481,23 @@ function stegaBokjakt(dt, tid) {
   const { bokjakt, lantagare } = V;
   lantagare.stega(dt);
 
-  if (bokjakt.plocka(tillstand.x, tillstand.z, tid)) {
-    bokRad.uppdatera(true, delad);
-    bokRad.studsa();
-  }
+  if (bokjakt.plocka(tillstand.x, tillstand.z, tid)) bokRuta.uppdatera(delad);
 
   const alla = bokjakt.allaPlockade();
-  if (alla && !bokLager.allaVar) meddela(BOKJAKT.allaSamlade, 3.5, BOKJAKT.allaUnder);
+  if (alla && !bokLager.allaVar) meddela(BOKJAKT.allaSamlade, 4.5, BOKJAKT.allaUnder);
   bokLager.allaVar = alla;
 
-  // Krock med en lantagare: tappa bocker, knuffas och blinka en stund.
+  // Krock med en lantagare: tappa bocker och knuffas lite. Figuren
+  // blinkar inte, det blir for mycket som hander pa en gang.
   const l = tid > bokLager.skyddadTill && tid > bokLager.lugnTill &&
     lantagare.krock(tillstand.x, tillstand.z);
   if (l) {
     const tappade = bokjakt.tappa(tillstand.x, tillstand.z, BOKJAKT.tappVidKrock, tid);
     knuffa(l.x, l.z, 0.9);
     bokLager.skyddadTill = tid + SKYDDAD;
-    meddela(tappade ? ersatt(BOKJAKT.krock, { antal: tappade }) : BOKJAKT.krockUtan, 2.2);
-    bokRad.uppdatera(true, delad);
-    bokRad.studsa();
+    meddela(tappade ? ersatt(BOKJAKT.krock, { antal: tappade }) : BOKJAKT.krockUtan, 3);
+    bokRuta.uppdatera(delad);
   }
-  figur.visible = tid > bokLager.skyddadTill || Math.floor(tid * 10) % 2 === 0;
 }
 
 // ------------------------------------------------------------ byta vaning
@@ -422,6 +505,7 @@ function stegaBokjakt(dt, tid) {
 // Gar figuren upp pa en gul platta tonar bilden ut, figuren flyttas till
 // samma trappa eller hiss pa den andra vaningen och bilden tonar in igen.
 
+const lugnt = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const tona = document.getElementById("tona");
 let byter = false;
 
@@ -440,19 +524,19 @@ function flyttaTillVaning(plan, viaId) {
   tillstand.riktning = (a.riktning * Math.PI) / 180;
   tillstand.gar = false;
 
-  // Infokortet hor till den vaning man lamnade.
-  infoAvstangd = null;
-  if (infoOppen) oppnaInfo(null);
+  // Infokortet och fragan hor till den vaning man lamnade.
+  platta = null;
+  infoFraga?.stang();
+  stangInfo();
   // En lantagare som star vid trappan ska inte krocka med en gang.
   bokLager.lugnTill = performance.now() / 1000 + 1.0;
   bokLager.allaVar = V.bokjakt.allaPlockade();
 
-  panel.visaVaning(V.plan);
   if (vagvisning.mal) {
     ritaVag();
     meddelaVag(platsMed(vagvisning.mal));
   } else {
-    meddela(ersatt(SIDA.nuPaPlan, { plan: V.plan }), 2.5);
+    meddela(ersatt(SIDA.nuPaPlan, { plan: V.plan }), 3);
   }
   placeraKamera(true);
 }
@@ -515,10 +599,8 @@ function passaStorlek() {
 function rita(tid = performance.now() / 1000) {
   figur.position.set(tillstand.x, 0, tillstand.z);
   figur.rotation.y = -tillstand.riktning;
-  V.zoner.animera(tid);
   prickar.animera(tid);
-  V.infopunkter.animera(tid);
-  V.plattor.animera(tid);
+  V.infopunkter.animera();
   if (bokLager.pa) V.bokjakt.animera(tid);
   passaStorlek();
   renderare.render(scen, kamera);
@@ -530,15 +612,17 @@ function slinga(nu) {
   const tid = nu / 1000;
   forra = nu;
   if (!fastVy && !byter) {
-    stegaFigur(tillstand, tangenter, dt, V.layout, V.hinder);
-    animeraFigur(figur, tillstand, dt, tangenter.spring);
-    kollaZoner(tid);
-    kollaInfo(tid);
+    // Medan en storre ruta ar oppen star figuren still.
+    const knappar = dialog.stoppar || stangGrattis ? STILLA : tangenter;
+    stegaFigur(tillstand, knappar, dt, V.layout, V.hinder);
+    animeraFigur(figur, tillstand, dt, knappar.spring);
+    kollaZoner();
+    kollaInfo();
+    kollaSpelPlatsen();
     folj(tid);
     stegaBokjakt(dt, tid);
     kollaVaning();
   }
-  konfetti.stega(dt);
   placeraKamera(false);
   rita(tid);
   requestAnimationFrame(slinga);
@@ -547,6 +631,11 @@ function slinga(nu) {
 placeraKamera(true);
 rita();
 requestAnimationFrame(slinga);
+
+// Instruktionen forsta gangen. Inte i granskningens fasta vyer.
+let sedd = false;
+try { sedd = localStorage.getItem(SEDD) === "1"; } catch { /* visas varje gang */ }
+if (!sedd && !fastVy) visaInstruktion();
 
 // --------------------------------------------------------- krok for tester
 // Verifieringen behover kunna styra figuren utan tangentbord och lasa av
@@ -593,12 +682,19 @@ window.spel = {
   get infoVid() { return infoOppen; },
   get funna() { return minispel.funna; },
   get vunnit() { return minispel.vunnit; },
-  get konfetti() { return konfetti.antal; },
   nollstall,
-  kollaZoner: () => kollaZoner(performance.now() / 1000),
+  kollaZoner,
+  dialog,
+  get aktivtSpel() { return aktivtSpel; },
+  startaSpel,
+  avslutaSpel,
+  kollaSpelPlatsen,
+  visaInstruktion,
+  /** Som ett klick pa i-bubblan. */
+  klickaInfo: id => { infoFraga?.stang(); oppnaInfo(id); },
   bokjakt: {
     get pa() { return bokLager.pa; },
-    satt: slaPaBokjakt,
+    satt: pa => (pa ? startaSpel("bokjakt") : avslutaSpel()),
     get status() { return { ...delad }; },
     get bocker() { return V.bokjakt.kvar.map(b => ({ x: b.x, z: b.z, tappad: b.tappad })); },
     get lantagare() { return V.lantagare.lista.map(l => ({ id: l.id, x: l.x, z: l.z })); },
@@ -610,7 +706,7 @@ window.spel = {
   get infopunkter() {
     return V.infopunkter.punkter.map(p => ({ id: p.id, x: p.x, z: p.z, rubrik: p.text.rubrik }));
   },
-  kollaInfo: () => kollaInfo(performance.now() / 1000),
+  kollaInfo,
   rita,
   /** Stall kameran var som helst, for granskningen. Utan argument: folj figuren. */
   titta(x, y, z, mx, my, mz) {

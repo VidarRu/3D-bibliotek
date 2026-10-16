@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Leksaksbiblioteket</title>
+<title>Västerviks stadsbibliotek</title>
 <style>
   /* Nunito, fritt typsnitt under SIL Open Font License (vendor/fonts). */
   @font-face { font-family: Nunito; font-weight: 400; font-display: swap;
@@ -20,7 +20,9 @@
     --papper: #fffaf2;
     --kant: #e6dccd;
     --skugga: rgba(90, 70, 50, 0.18);
-    --fokus: #1f5fbf;
+    --fokus: #6b3a2e;
+    --accent: #b9874a;          /* samma som TEMA.senap */
+    --accent-mork: #8a6232;
     --typsnitt: Nunito, "Segoe UI", system-ui, sans-serif;
   }
   html, body { margin: 0; height: 100%; background: #f6efe5; overflow: hidden; }
@@ -30,135 +32,53 @@
   button { font: inherit; color: inherit; cursor: pointer; }
   :focus-visible { outline: 3px solid var(--fokus); outline-offset: 3px; }
 
-  /* ---------------------------------------------------------- hjälprutan */
-  #hjalp {
-    position: fixed; left: 20px; bottom: 20px;
-    padding: 14px 18px; border-radius: 20px;
-    background: var(--papper);
-    border: 2px solid var(--kant);
-    box-shadow: 0 5px 0 var(--kant), 0 10px 24px var(--skugga);
-    max-width: 21em;
-  }
-  #hjalp b { display: block; margin-bottom: 4px; font-size: 17px; font-weight: 800; }
-  #hjalp kbd {
+  kbd {
     display: inline-block; min-width: 1.1em; padding: 0 6px;
-    border: 2px solid var(--kant); border-bottom-width: 4px; border-radius: 7px;
-    background: #fff; font: 700 14px/1.5 var(--typsnitt); text-align: center;
+    border: 2px solid var(--kant); border-bottom-width: 3px; border-radius: 6px;
+    background: #fff; font: 700 13px/1.4 var(--typsnitt); text-align: center;
+    color: var(--text-mjuk);
   }
 
-  /* -------------------------------------------------------------- panelen */
-  #panel {
-    position: fixed; top: 16px; right: 16px; bottom: 16px;
-    width: 340px; box-sizing: border-box;
-    display: flex; flex-direction: column;
-    background: var(--papper);
-    border: 2px solid var(--kant);
-    border-radius: 26px;
-    box-shadow: 0 6px 0 var(--kant), 0 14px 32px var(--skugga);
-    overflow: hidden;
-  }
-  #panel header { padding: 18px 22px 6px; }
-  #panel h1 { margin: 0; font-size: 22px; font-weight: 800; line-height: 1.2; }
-  #panel h1 small {
-    display: inline-block; margin-left: 4px; padding: 1px 10px;
-    border-radius: 999px; background: #f3e7d4;
-    font-size: 14px; font-weight: 800; vertical-align: 3px;
-  }
-  #panel .listrubrik { margin: 4px 0 0; color: var(--text-mjuk); font-weight: 700; }
-
-  #panel .fall {
-    position: absolute; top: 16px; right: 16px;
-    padding: 4px 12px; border-radius: 999px;
-    background: #fff; border: 2px solid var(--kant);
-    font-size: 14px; font-weight: 700;
-  }
-
-  #panel-innehall { overflow-y: auto; padding: 4px 16px 20px; }
-  #panel h2.vaning {
-    margin: 22px 4px 4px; padding-top: 14px; border-top: 2px solid var(--kant);
-    font-size: 20px; font-weight: 800; color: var(--text);
-  }
-  #panel .vaningsdel:first-child h2.vaning { margin-top: 8px; padding-top: 0; border-top: 0; }
-  #panel h3.grupp {
-    margin: 12px 6px 8px; font-size: 14px; font-weight: 800;
-    text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-mjuk);
-  }
-  .vaningsval { display: flex; gap: 8px; margin: 10px 0 0; }
-  .vaningsval button {
-    padding: 4px 14px; border-radius: 999px;
-    background: #fff; border: 2px solid var(--kant);
+  /* ------------------------------------------------------ hjälpknappen */
+  #hjalpknapp {
+    position: fixed; left: 16px; bottom: 16px;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--papper); border: 2px solid var(--kant);
     box-shadow: 0 3px 0 var(--kant);
-    font-weight: 800; font-size: 15px;
-  }
-  .vaningsval button.vald {
-    background: #fbe7b0; border-color: #e7b53c; box-shadow: 0 3px 0 #c9962a;
-  }
-  .platser { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-  .plats {
-    display: grid; grid-template-columns: auto 1fr; gap: 4px 12px;
-    align-items: start;
-    padding: 12px 14px;
-    background: #fff;
-    border: 2px solid color-mix(in srgb, var(--farg) 45%, white);
-    border-radius: 18px;
-  }
-  .plats .prick {
-    width: 18px; height: 18px; margin-top: 4px; border-radius: 50%;
-    background: var(--farg);
-    box-shadow: inset -3px -3px 0 rgba(0,0,0,0.12), inset 3px 3px 0 rgba(255,255,255,0.45);
-  }
-  .plats .text h4 { margin: 0; font-size: 17px; font-weight: 800; line-height: 1.3; }
-  .plats p { margin: 2px 0 0; color: var(--text-mjuk); font-size: 15px; }
-  .plats:not(.avdelning) .text h4 { font-size: 16px; }
-
-  .visa {
-    grid-column: 2; justify-self: start; margin-top: 8px;
-    padding: 6px 16px; border-radius: 999px;
-    background: color-mix(in srgb, var(--farg) 40%, white);
-    border: 2px solid color-mix(in srgb, var(--farg) 80%, black);
-    box-shadow: 0 4px 0 color-mix(in srgb, var(--farg) 80%, black);
-    font-weight: 800; font-size: 15px;
-    transition: transform 0.08s, box-shadow 0.08s;
-  }
-  .visa:hover { background: color-mix(in srgb, var(--farg) 60%, white); }
-  .visa:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
-  .visa.aktiv {
-    background: var(--text); color: #fff; border-color: var(--text);
-    box-shadow: 0 4px 0 #000;
+    font-size: 22px; font-weight: 800; line-height: 1;
   }
 
-  /* Ihopfälld: bara rubriken och knappen syns. */
-  #panel.ihop { bottom: auto; }
-  #panel.ihop #panel-innehall, #panel.ihop .listrubrik { display: none; }
-  #panel.ihop header { padding-bottom: 18px; padding-right: 110px; }
-
-  /* ------------------------------------------------ öppet idag och info */
-  #panel .idag-chip {
-    display: inline-block; margin: 8px 0 0; padding: 3px 12px;
-    border-radius: 999px; background: #fbe7b0; border: 2px solid #e7b53c;
-    font-weight: 800; font-size: 15px;
+  /* ----------------------------------------------- dialogrutan (frågor) */
+  #dialog {
+    position: fixed; left: 50%; bottom: 24px;
+    width: min(460px, calc(100vw - 32px)); box-sizing: border-box;
+    padding: 16px 20px 16px; text-align: center;
+    background: var(--papper); border: 2px solid var(--kant); border-radius: 18px;
+    box-shadow: 0 4px 0 var(--kant), 0 10px 26px var(--skugga);
+    transform: translateX(-50%);
+    display: none;
   }
+  #dialog.syns { display: block; }
+  #dialog h2 { margin: 0 0 4px; font-size: 19px; font-weight: 800; }
+  #dialog p { margin: 0 0 8px; text-align: left; }
+  #dialog p.under { text-align: center; color: var(--text-mjuk); }
+  #dialog .knappar { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 12px; }
+  .dialogknapp {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 7px 16px; border-radius: 12px;
+    background: #fff; border: 2px solid var(--kant);
+    font-weight: 800; font-size: 16px;
+  }
+  .dialogknapp.huvudval { background: #efe2cf; border-color: var(--accent); }
+
   .i-prick {
     display: inline-grid; place-items: center;
     width: 22px; height: 22px; border-radius: 50%;
-    background: #e7b53c; color: #fff; border: 2px solid #fff;
-    box-shadow: 0 0 0 2px #e7b53c;
+    background: var(--accent); color: #fff; border: 2px solid #fff;
+    box-shadow: 0 0 0 2px var(--accent);
     font-weight: 800; font-size: 15px; line-height: 1; flex: none;
   }
-  .i-prick.stor { width: 34px; height: 34px; font-size: 22px; }
-  .info-rad { display: block; border-color: #f2dca0; }
-  details.info summary {
-    display: flex; align-items: center; gap: 12px;
-    cursor: pointer; font-weight: 800; font-size: 17px;
-    list-style: none;
-  }
-  details.info summary::-webkit-details-marker { display: none; }
-  details.info summary::after {
-    content: "+"; margin-left: auto; font-size: 22px; color: var(--text-mjuk);
-  }
-  details.info[open] summary::after { content: "–"; }
-  details.info .info-text { margin-top: 8px; }
-  details.info .visa { --farg: #e7b53c; }
+  .i-prick.stor { width: 30px; height: 30px; font-size: 19px; }
   .info-text p { margin: 0 0 8px; font-size: 15px; }
   .info-text .liten { font-size: 14px; color: var(--text-mjuk); }
   .info-text h4 { margin: 10px 0 4px; font-size: 15px; font-weight: 800; }
@@ -166,120 +86,72 @@
   .oppettider caption { text-align: left; font-weight: 800; padding-bottom: 4px; }
   .oppettider th { text-align: left; font-weight: 700; padding: 2px 18px 2px 8px; }
   .oppettider td { padding: 2px 8px; font-variant-numeric: tabular-nums; }
-  .oppettider tr.idag { background: #fbe7b0; }
+  .oppettider tr.idag { background: #efe2cf; }
   .oppettider tr.idag th, .oppettider tr.idag td { font-weight: 800; }
-  .oppettider tr.idag th { border-radius: 8px 0 0 8px; }
-  .oppettider tr.idag td { border-radius: 0 8px 8px 0; }
 
   /* ------------------------------------------------------------ infokort */
   #infokort {
-    /* Mitt i den fria ytan mellan hjalprutan och listan. */
-    position: fixed; bottom: 20px; left: calc(50% + 20px);
-    width: min(440px, calc(100vw - 820px)); min-width: 300px;
-    max-height: calc(100vh - 140px); overflow-y: auto; box-sizing: border-box;
-    padding: 18px 22px 12px;
+    /* Samma plats som dialogrutan: allt man läser hamnar på ett ställe. */
+    position: fixed; bottom: 24px; left: 50%;
+    width: min(460px, calc(100vw - 32px)); box-sizing: border-box;
+    max-height: calc(100vh - 140px); overflow-y: auto;
+    padding: 16px 20px 12px;
     background: var(--papper);
-    border: 3px solid #e7b53c; border-radius: 26px;
-    box-shadow: 0 6px 0 #d4a02e, 0 16px 34px var(--skugga);
-    transform: translate(-50%, 130%);
-    visibility: hidden;
-    transition: transform 0.4s cubic-bezier(.3, 1.5, .5, 1), visibility 0s 0.4s;
+    border: 2px solid var(--kant); border-radius: 18px;
+    box-shadow: 0 4px 0 var(--kant), 0 10px 26px var(--skugga);
+    transform: translateX(-50%);
+    display: none;
   }
-  #infokort.syns { transform: translate(-50%, 0); visibility: visible; transition-delay: 0s; }
+  #infokort.syns { display: block; }
   #infokort .kort-huvud { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-  #infokort h2 { margin: 0; font-size: 21px; font-weight: 800; }
-  #infokort .stang {
-    margin-left: auto; padding: 3px 12px; border-radius: 999px;
+  #infokort h2 { margin: 0; font-size: 19px; font-weight: 800; }
+  #infokort .kort-fot { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
+  #infokort .stang, .avsluta {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px; border-radius: 10px;
     background: #fff; border: 2px solid var(--kant); font-size: 14px; font-weight: 700;
   }
 
   /* ------------------------------------------------------------ minispel */
-  #forlopp {
+  #forlopp, #bokjakt {
     position: fixed; top: 16px; left: 16px;
-    padding: 10px 16px 12px; border-radius: 20px;
+    padding: 10px 14px 12px; border-radius: 16px;
     background: var(--papper); border: 2px solid var(--kant);
-    box-shadow: 0 5px 0 var(--kant), 0 10px 24px var(--skugga);
+    box-shadow: 0 4px 0 var(--kant);
   }
-  #forlopp .forlopp-rubrik { font-weight: 800; font-size: 16px; }
-  #forlopp .rakning { font-variant-numeric: tabular-nums; }
-  #forlopp .prickrad { display: flex; gap: 8px; margin-top: 8px; }
+  #forlopp[hidden], #bokjakt[hidden] { display: none; }
+  .forlopp-rubrik { font-weight: 800; font-size: 16px; }
+  #forlopp .rakning, #bokjakt .poang { font-variant-numeric: tabular-nums; }
+  #bokjakt .poang { display: block; margin-top: 2px; }
+  #forlopp .prickrad { display: flex; gap: 6px; margin-top: 8px; }
   #forlopp .prickrad + .prickrad { margin-top: 6px; }
   .forlopp-prick {
-    width: 22px; height: 22px; border-radius: 50%; box-sizing: border-box;
-    border: 3px solid var(--farg); background: #fff;
-    transition: background 0.2s;
+    width: 16px; height: 16px; border-radius: 50%; box-sizing: border-box;
+    border: 2px solid var(--farg); background: #fff;
   }
-  .forlopp-prick.fylld {
-    background: var(--farg);
-    box-shadow: inset -3px -3px 0 rgba(0,0,0,0.12), inset 3px 3px 0 rgba(255,255,255,0.45);
-  }
-  .forlopp-prick.studs { animation: studs 0.6s cubic-bezier(.3, 1.8, .5, 1); }
-  @keyframes studs {
-    0% { transform: scale(0.4); } 60% { transform: scale(1.35); } 100% { transform: scale(1); }
-  }
-
-  .hittad-marke {
-    display: none; margin-left: 8px; padding: 1px 9px 1px 7px; border-radius: 999px;
-    background: #2f8a6b; color: #fff; font-size: 13px; font-weight: 800;
-    vertical-align: 2px;
-  }
-  .hittad-marke::before { content: "✓ "; }
-  .plats.funnen .hittad-marke { display: inline-block; }
-  .plats.funnen .prick { box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--farg); }
+  .forlopp-prick.fylld { background: var(--farg); }
+  .avsluta { margin-top: 10px; }
 
   #grattis {
     position: fixed; inset: 0; display: grid; place-items: center;
-    padding-right: 356px;
     background: rgba(60, 45, 30, 0.18);
-    visibility: hidden; opacity: 0;
-    transition: opacity 0.3s, visibility 0s 0.3s;
+    visibility: hidden;
   }
-  #grattis.syns { visibility: visible; opacity: 1; transition-delay: 0s; }
+  #grattis.syns { visibility: visible; }
   .grattis-kort {
     width: min(420px, 90vw); box-sizing: border-box; text-align: center;
-    padding: 26px 30px 24px; border-radius: 30px;
-    background: var(--papper); border: 3px solid #e7b53c;
-    box-shadow: 0 8px 0 #d4a02e, 0 22px 50px rgba(60, 45, 30, 0.3);
-    transform: scale(0.6) translateY(40px);
-    transition: transform 0.5s cubic-bezier(.3, 1.6, .5, 1);
-  }
-  #grattis.syns .grattis-kort { transform: none; }
-  .grattis-kort .stjarnor { font-size: 30px; letter-spacing: 6px; color: #e7b53c; }
-  .grattis-kort h2 { margin: 2px 0 6px; font-size: 34px; font-weight: 800; }
-  .grattis-kort p { margin: 0 0 18px; font-size: 17px; color: var(--text-mjuk); }
-  .grattis-kort .knappar { display: flex; gap: 12px; justify-content: center; }
-  .grattis-kort .visa { --farg: #8fd0b6; margin: 0; font-size: 16px; padding: 9px 18px; }
-  .grattis-kort .visa.huvudval { --farg: #e7b53c; }
-
-  /* ------------------------------------------------------------- bokjakt */
-  #bokjakt {
-    position: fixed; top: 142px; left: 16px;
-    display: flex; align-items: center; gap: 12px;
-    padding: 8px 14px 8px 10px; border-radius: 999px;
+    padding: 22px 26px 20px; border-radius: 18px;
     background: var(--papper); border: 2px solid var(--kant);
-    box-shadow: 0 4px 0 var(--kant), 0 8px 18px var(--skugga);
+    box-shadow: 0 4px 0 var(--kant), 0 16px 40px rgba(60, 45, 30, 0.25);
   }
-  #bokjakt .poang { font-weight: 800; font-size: 16px; font-variant-numeric: tabular-nums; }
-  #bokjakt .poang.studs { animation: studs 0.5s cubic-bezier(.3, 1.8, .5, 1); display: inline-block; }
-  .vaxel {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 4px 10px 4px 12px; border-radius: 999px;
-    background: #fff; border: 2px solid var(--kant);
-    font-weight: 800; font-size: 15px;
+  .grattis-kort h2 { margin: 2px 0 6px; font-size: 26px; font-weight: 800; }
+  .grattis-kort p { margin: 0 0 16px; font-size: 17px; color: var(--text-mjuk); }
+  .grattis-kort .knappar { display: flex; gap: 12px; justify-content: center; }
+  .grattis-kort button {
+    padding: 8px 16px; border-radius: 12px; background: #fff;
+    border: 2px solid var(--kant); font-weight: 800; font-size: 16px;
   }
-  .vaxel-spar {
-    position: relative; width: 38px; height: 22px; border-radius: 999px;
-    background: #d9d2c7; transition: background 0.2s;
-  }
-  .vaxel-knopp {
-    position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%;
-    background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.3); transition: left 0.2s;
-  }
-  .vaxel.pa .vaxel-spar { background: #2f8a6b; }
-  .vaxel.pa .vaxel-knopp { left: 19px; }
-  .vaxel-lage { min-width: 1.6em; text-align: left; color: var(--text-mjuk); }
-  .bokjakt-i-listan { margin-top: 10px; }
-  .bokjakt-i-listan p { margin: 4px 0 0; font-size: 14px; color: var(--text-mjuk); }
+  .grattis-kort button.huvudval { background: #efe2cf; border-color: var(--accent); }
 
   /* Mjuk övertoning när figuren byter våning. */
   #tona {
@@ -294,18 +166,16 @@
 
   /* --------------------------------------------------------- meddelanden */
   #meddelande {
-    position: fixed; top: 22px; left: calc(50% - 178px);
-    transform: translate(-50%, -140%);
-    display: flex; flex-direction: column; align-items: center;
-    padding: 12px 26px; border-radius: 999px;
+    position: fixed; top: 16px; left: 50%;
+    transform: translateX(-50%);
+    display: none; flex-direction: column; align-items: center;
+    padding: 8px 20px; border-radius: 14px;
     background: var(--papper); border: 2px solid var(--kant);
-    box-shadow: 0 5px 0 var(--kant), 0 12px 26px var(--skugga);
+    box-shadow: 0 3px 0 var(--kant);
     pointer-events: none; text-align: center;
-    visibility: hidden;
-    transition: transform 0.35s cubic-bezier(.3, 1.6, .5, 1), visibility 0s 0.35s;
   }
-  #meddelande.syns { transform: translate(-50%, 0); visibility: visible; transition-delay: 0s; }
-  #meddelande .huvud { font-size: 20px; font-weight: 800; }
+  #meddelande.syns { display: flex; }
+  #meddelande .huvud { font-size: 17px; font-weight: 800; }
   #meddelande .under { font-size: 14px; font-weight: 700; color: var(--text-mjuk); }
 </style>
 </head>
@@ -313,27 +183,19 @@
 <canvas id="spelduk" tabindex="-1" aria-label="3D-vy av biblioteket"></canvas>
 <div id="tona" aria-hidden="true"></div>
 
-<aside id="panel" aria-label="Platser i biblioteket"></aside>
-
 <div id="meddelande" role="status" aria-live="polite"></div>
 
 <section id="infokort" aria-live="polite" aria-label="Information"></section>
 
-<div id="forlopp" role="status" aria-live="polite" aria-label="Minispelet"></div>
+<div id="dialog" role="dialog" aria-labelledby="dialog-rubrik" aria-live="polite"></div>
 
-<div id="bokjakt"></div>
+<div id="forlopp" role="status" aria-live="polite" aria-label="Biblioteksorientering" hidden></div>
+
+<div id="bokjakt" aria-label="Bokjakten" hidden></div>
 
 <div id="grattis" role="dialog" aria-modal="true" aria-labelledby="grattis-rubrik"></div>
 
-<div id="hjalp">
-  <b>Gå runt i biblioteket</b>
-  <kbd>&uarr;</kbd> <kbd>&darr;</kbd> går framåt och bakåt.
-  <kbd>&larr;</kbd> <kbd>&rarr;</kbd> vrider figuren.
-  <kbd>Skift</kbd> springer. Gå upp på en gul
-  <span class="i-prick" aria-hidden="true">i</span>-platta för info,
-  eller på den gula plattan vid trappan för att byta våning.
-  <kbd>Esc</kbd> stänger.
-</div>
+<button id="hjalpknapp" type="button" aria-label="Visa instruktionerna" title="Visa instruktionerna (H)">?</button>
 
 <script type="importmap">
 { "imports": { "three": "./vendor/three.module.js" } }

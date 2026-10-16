@@ -1,4 +1,4 @@
-// Gula plattor framfor trappor och hiss, dar figuren byter vaning.
+// Bruna plattor framfor trappor och hiss, dar figuren byter vaning.
 //
 // Var plattorna ligger, och var man kommer ut pa den andra vaningen,
 // kommer ur "forbindelser" i src/data/layout.json och layout_plan1.json.
@@ -14,7 +14,7 @@ const LUFT = 0.12;              // sa langt utanfor kanten raknas som pa
 
 const ersatt = (mall, plan) => mall.replace("{plan}", plan);
 
-/** Plattans ovansida: senapsgul med vita pilar mot trappan. */
+/** Plattans ovansida: varmt brun med vita pilar mot trappan. */
 function plattDuk(f, mot, tema) {
   const duk = document.createElement("canvas");
   duk.width = Math.round(f.platta.bredd * PX);
@@ -120,7 +120,7 @@ export function byggPlattor(layout, tema) {
     const tex = plattDuk(f, mot, tema);
     const sida = new THREE.MeshStandardMaterial({ color: tema.senap, roughness: 0.55 });
     const topp = new THREE.MeshStandardMaterial({
-      map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.15, roughness: 0.55 });
+      map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.2, roughness: 0.55 });
     // En lada har sex sidor, och den tredje (index 2) ar ovansidan.
     const platta = new THREE.Mesh(new THREE.BoxGeometry(p.bredd, 0.04, p.djup),
                                   [sida, sida, topp, sida, sida, sida]);
@@ -132,17 +132,15 @@ export function byggPlattor(layout, tema) {
     const text = ersatt(upp ? SIDA.vaningUpp : SIDA.vaningNer, f.till);
     const skylt = skyltDuk(text, upp, tema);
     grupp.add(skylt);
-    plattor.push({ ...f, skylt, topp, fas: plattor.length * 1.1 });
+    plattor.push({ ...f, skylt, topp });
   }
 
-  function animera(tid) {
-    for (const p of plattor) {
-      const m = p.platta;
-      p.skylt.position.set(m.x + m.bredd / 2, 2.35 + Math.sin(tid * 2 + p.fas) * 0.08,
-                           m.z + m.djup / 2);
-      p.topp.emissiveIntensity = 0.15 + (Math.sin(tid * 3 + p.fas) * 0.5 + 0.5) * 0.2;
-    }
+  // Skylten star still over plattan.
+  for (const p of plattor) {
+    const m = p.platta;
+    p.skylt.position.set(m.x + m.bredd / 2, 2.35, m.z + m.djup / 2);
   }
+  function animera() {}
 
   /** Plattan figuren star pa, eller null. */
   function vid(x, z) {

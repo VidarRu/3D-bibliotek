@@ -1,8 +1,9 @@
-// Infopunkter: runda gula plattor pa golvet med en studsande "i"-bubbla.
+// Infopunkter: runda plattor pa golvet med en stillastaende "i"-bubbla.
 //
 // Var plattorna ligger kommer ur src/data/layout.json (infopunkter) och
 // vad som star pa korten ur src/config/content.js (INFOPUNKTER).
-// Plattorna ar inga hinder. Figuren gar upp pa dem for att lasa.
+// Plattorna ar inga hinder. Gar figuren upp pa en fragar spelet om man
+// vill lasa. Bubblan gar ocksa att klicka pa.
 
 import * as THREE from "three";
 import { TYPSNITT } from "./zoner.js";
@@ -72,24 +73,16 @@ export function byggInfopunkter(layout, info, tema) {
     bubbla.renderOrder = 9;
     grupp.add(bubbla);
 
-    punkter.push({ ...p, text, sida, topp, bubbla, fas: punkter.length * 1.7, hopp: -1, aktiv: false });
+    punkter.push({ ...p, text, sida, topp, bubbla, aktiv: false });
   }
 
-  function animera(tid) {
+  // Bubblorna star still. Bara plattan man star pa lyser, utan att blinka.
+  for (const p of punkter) p.bubbla.position.set(p.x, 2.1, p.z);
+
+  function animera() {
     for (const p of punkter) {
-      let y = 2.1 + Math.sin(tid * 2.2 + p.fas) * 0.1;
-      let s = 1;
-      if (p.hopp >= 0) {
-        const t = (tid - p.hopp) / 0.7;
-        if (t > 1) p.hopp = -1;
-        else { y += Math.sin(t * Math.PI) * 0.5; s = 1 + Math.sin(t * Math.PI * 2) * 0.15; }
-      }
-      p.bubbla.position.set(p.x, y, p.z);
-      p.bubbla.scale.set(0.62 * s, 0.62 * s, 1);
-      // Plattan lyser svagt nar figuren star pa den.
-      const glod = p.aktiv ? 0.35 + Math.sin(tid * 4) * 0.08 : 0;
-      p.sida.emissiveIntensity = glod;
-      p.topp.emissiveIntensity = glod * 0.6;
+      p.sida.emissiveIntensity = p.aktiv ? 0.35 : 0;
+      p.topp.emissiveIntensity = p.aktiv ? 0.2 : 0;
     }
   }
 
@@ -105,13 +98,15 @@ export function byggInfopunkter(layout, info, tema) {
     return null;
   }
 
-  function markera(id, tid) {
-    for (const p of punkter) {
-      const var_ = p.aktiv;
-      p.aktiv = p.id === id;
-      if (p.aktiv && !var_) p.hopp = tid;
-    }
+  function markera(id) {
+    for (const p of punkter) p.aktiv = p.id === id;
   }
 
-  return { grupp, punkter, animera, vid, markera };
+  /** Vilken bubbla traffar stralen, eller null. Bubblan kan klickas. */
+  function traffad(straleKastare) {
+    const traff = straleKastare.intersectObjects(punkter.map(p => p.bubbla), false)[0];
+    return traff ? punkter.find(p => p.bubbla === traff.object).id : null;
+  }
+
+  return { grupp, punkter, animera, vid, markera, traffad };
 }

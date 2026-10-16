@@ -12,36 +12,25 @@
 //     Platsen måste också finnas i den våningens kartfil.
 //   * Ordningen här är ordningen i listan på sidan.
 //   * farg är zonens färg på golvet och kanten på skylten, skriven som
-//     en färgkod. Sök på "color picker" på nätet för att hitta koder.
+//     en färgkod. Håll dig till lugna nyanser: beige, brunt och mörkrött.
+//     Starka färger gör kartan plottrig.
 //
 //  Spara filen och ladda om sidan för att se ändringen.
 // =====================================================================
 
 export const SIDA = {
-  titel: "Leksaksbiblioteket",
-  undertitel: "Plan {plan}",
-  listrubrik: "Hitta i biblioteket",
-  avdelningarRubrik: "Avdelningar",
-  ovrigtRubrik: "Övriga platser",
-  knappVisaVag: "Visa vägen",
-  knappSluta: "Sluta visa",
-  framme: "Du är framme vid {namn}!",
+  titel: "Västerviks stadsbibliotek",
+  framme: "Du är framme vid {namn}",
   visarVag: "Följ prickarna till {namn}",
   stangHjalp: "Tryck Esc för att sluta visa vägen",
-  fallIhop: "Dölj listan",
-  fallUt: "Visa listan",
-  oppetIdag: "Öppet idag {tid}",
-  stangtIdag: "Stängt idag",
-  braAttVeta: "Bra att veta",
   oppettiderRubrik: "Öppettider",
   kontaktRubrik: "Kontakt",
   infoNamn: "Info: {namn}",
   stangKort: "Stäng",
+  lasUpp: "Läs upp",
+  slutaLasa: "Sluta läsa",
 
   // Våningar
-  vaningRubrik: "Våning",
-  vaningKnapp: "Plan {plan}",
-  vaningGrupp: "Plan {plan}",
   nuPaPlan: "Du är på plan {plan}",
   vaningUpp: "Upp till plan {plan}",
   vaningNer: "Ner till plan {plan}",
@@ -56,42 +45,42 @@ export const PLATSER = [
     namn: "Receptionsdisken",
     beskrivning: "Här kan du fråga personalen om allt.",
     avdelning: true,
-    farg: "#f2a65a"
+    farg: "#a8845c"
   },
   {
     id: "lana_aterlamna",
     namn: "Låna och återlämna",
     beskrivning: "Automater där du lånar och lämnar tillbaka själv.",
     avdelning: true,
-    farg: "#7cc6a4"
+    farg: "#8c6b4f"
   },
   {
     id: "utstallningsyta",
     namn: "Utställningsytan",
     beskrivning: "Här visas utställningar som byts ut under året.",
     avdelning: true,
-    farg: "#e88aa6"
+    farg: "#9a5a4a"
   },
   {
     id: "ungdomshorna",
     namn: "Ungdomshörnan",
     beskrivning: "Soffor, böcker och spel för dig som är ung.",
     avdelning: true,
-    farg: "#9b8fe0"
+    farg: "#7a3b33"
   },
   {
     id: "labbet",
     namn: "Labbet",
     beskrivning: "Prova på teknik, skapa och bygg.",
     avdelning: true,
-    farg: "#5fb3e0"
+    farg: "#6b4a3a"
   },
   {
     id: "barnavdelning",
     namn: "Barnavdelningen",
     beskrivning: "Bilderböcker och barnböcker, och en egen lånedisk.",
     avdelning: true,
-    farg: "#f2cd4b"
+    farg: "#b8925f"
   },
 
   // ------------------------------------------------- övriga platser
@@ -100,35 +89,35 @@ export const PLATSER = [
     namn: "Entré",
     beskrivning: "Här kommer du in.",
     avdelning: false,
-    farg: "#c9b8a3"
+    farg: "#c8b496"
   },
   {
     id: "scen",
     namn: "Scenen",
     beskrivning: "Här hålls föreställningar och evenemang.",
     avdelning: false,
-    farg: "#d99a8b"
+    farg: "#a46a5a"
   },
   {
     id: "talbocker",
     namn: "Talböcker",
     beskrivning: "Böcker att lyssna på.",
     avdelning: false,
-    farg: "#a5c48a"
+    farg: "#b59a78"
   },
   {
     id: "storstil",
     namn: "Storstil",
     beskrivning: "Böcker med stor text och en lugn sitthörna.",
     avdelning: false,
-    farg: "#b7c9d6"
+    farg: "#c2ab8a"
   },
   {
     id: "trappa_hiss",
     namn: "Trappa och hiss",
     beskrivning: "Upp till plan 1.",
     avdelning: false,
-    farg: "#c4bdb3"
+    farg: "#bfb2a0"
   },
 
   // ------------------------------------------- plan 1, avdelningar
@@ -138,7 +127,7 @@ export const PLATSER = [
     namn: "Romaner",
     beskrivning: "Skönlitteratur för vuxna.",
     avdelning: true,
-    farg: "#e57f8f"
+    farg: "#7a3b33"
   },
   {
     id: "spanning",
@@ -146,7 +135,7 @@ export const PLATSER = [
     namn: "Spänning",
     beskrivning: "Deckare och thrillers.",
     avdelning: true,
-    farg: "#e0866a"
+    farg: "#8c4a3c"
   },
   {
     id: "klassiker",
@@ -154,7 +143,7 @@ export const PLATSER = [
     namn: "Klassiker",
     beskrivning: "Böcker som har hållit i många år.",
     avdelning: true,
-    farg: "#c9a26b"
+    farg: "#a8845c"
   },
   {
     id: "ljudbocker",
@@ -162,7 +151,7 @@ export const PLATSER = [
     namn: "Ljudböcker",
     beskrivning: "Böcker att lyssna på.",
     avdelning: true,
-    farg: "#a58fd8"
+    farg: "#6b4a3a"
   },
   {
     id: "serier",
@@ -170,7 +159,7 @@ export const PLATSER = [
     namn: "Serier",
     beskrivning: "Serieböcker och grafiska romaner.",
     avdelning: true,
-    farg: "#ef9fc9"
+    farg: "#9a5a4a"
   },
   {
     id: "tidningshorna",
@@ -178,7 +167,7 @@ export const PLATSER = [
     namn: "Tidningshörnan",
     beskrivning: "Dagstidningar och tidskrifter i sköna fåtöljer.",
     avdelning: true,
-    farg: "#6fbf9a"
+    farg: "#b8925f"
   },
   {
     id: "studieyta",
@@ -186,7 +175,7 @@ export const PLATSER = [
     namn: "Studieytan",
     beskrivning: "Långbord där du kan sitta och plugga.",
     avdelning: true,
-    farg: "#a5c48a"
+    farg: "#8c6b4f"
   },
   {
     id: "datorer",
@@ -194,7 +183,7 @@ export const PLATSER = [
     namn: "Publika datorer",
     beskrivning: "Datorer och skrivare som alla får använda.",
     avdelning: true,
-    farg: "#7a8fe0"
+    farg: "#5b4130"
   },
   {
     id: "slaktforskning",
@@ -202,7 +191,7 @@ export const PLATSER = [
     namn: "Släktforskning",
     beskrivning: "Tjustrummet, med material för den som släktforskar.",
     avdelning: true,
-    farg: "#5fb3e0"
+    farg: "#a46a5a"
   },
 
   // --------------------------------------- plan 1, övriga platser
@@ -212,7 +201,7 @@ export const PLATSER = [
     namn: "Information",
     beskrivning: "Disken där du kan fråga om hjälp på plan 1.",
     avdelning: false,
-    farg: "#f0b86e"
+    farg: "#a8845c"
   },
   {
     id: "facklitteratur",
@@ -220,7 +209,7 @@ export const PLATSER = [
     namn: "Facklitteratur",
     beskrivning: "Böcker om allt mellan himmel och jord.",
     avdelning: false,
-    farg: "#8fc3c3"
+    farg: "#b59a78"
   },
   {
     id: "trappa_hiss_plan1",
@@ -228,7 +217,7 @@ export const PLATSER = [
     namn: "Trappa och hiss",
     beskrivning: "Ner till plan 0.",
     avdelning: false,
-    farg: "#c4bdb3"
+    farg: "#bfb2a0"
   }
 ];
 
@@ -313,56 +302,87 @@ export const INFOPUNKTER = [
 ];
 
 // =====================================================================
-//  MINISPEL – "Hitta alla avdelningar"
+//  RUTOR – instruktionen och de små frågorna
+// =====================================================================
+//
+//  Alla rutor dyker upp på samma ställe, längst ner i mitten.
+//  Mellanslag betyder alltid Ja och Esc betyder alltid Nej eller Stäng.
+//  Varje rad i "rader" blir ett eget stycke i instruktionen.
+
+export const RUTOR = {
+  instruktionRubrik: "Så går du runt i biblioteket",
+  instruktionRader: [
+    "Pilarna ↑ och ↓ går framåt och bakåt. Pilarna ← och → vrider figuren.",
+    "Står du på en brun i-platta får du frågan om du vill veta vad platsen är. Du kan också klicka på i-bubblan.",
+    "Gå upp på plattan vid trappan för att byta våning.",
+    "I Labbet på plan 0 finns två små spel, om du vill prova.",
+    "Tryck på ? eller H för att se det här igen."
+  ],
+  forstar:      "Jag förstår",
+  visaHjalp:    "Visa instruktionerna",
+  ja:           "Ja",
+  nej:          "Nej",
+  infoFraga:    "Vill du veta vad det här är?",
+
+  // Labbet. spelPlats är id för platsen där spelen startar.
+  spelPlats:    "labbet",
+  labbFraga:    "Vill du utmana dig själv lite grann?",
+  labbUnder:    "Här i Labbet kan du prova ett litet spel.",
+  valjSpel:     "Vilket spel vill du prova?",
+  ingetSpel:    "Inget spel",
+  avsluta:      "Avsluta spelet",
+  spelSlut:     "Spelet är avslutat"
+};
+
+// =====================================================================
+//  MINISPEL – "Biblioteksorientering", startas i Labbet
 // =====================================================================
 //
 //  Alla platser med avdelning: true räknas. {namn}, {antal} och
 //  {totalt} byts mot rätt ord och siffror när texten visas.
 
 export const MINISPEL = {
-  rubrik:        "Hitta alla avdelningar",
+  namn:          "Biblioteksorientering",
+  forklaring:    "Gå till alla avdelningar på båda våningarna.",
+  rubrik:        "Biblioteksorientering",
   rakning:       "{antal} av {totalt}",
-  hittade:       "Du hittade {namn}!",
+  hittade:       "Du hittade {namn}",
   hittadeUnder:  "{antal} av {totalt} avdelningar",
   hittadMarke:   "Hittad!",
-  grattisRubrik: "Grattis!",
+  grattisRubrik: "Bra gjort!",
   grattisText:   "Du har hittat alla {totalt} avdelningar. Nu hittar du rätt när du kommer till biblioteket på riktigt!",
   spelaIgen:     "Spela igen",
-  fortsatt:      "Fortsätt utforska"
+  fortsatt:      "Avsluta spelet"
 };
 
 // =====================================================================
-//  BOKJAKT – samla böcker och undvik låntagare (kan stängas av)
+//  BOKJAKT – samla böcker och undvik låntagare, startas i Labbet
 // =====================================================================
-//
-//  paFranStart: false betyder att bokjakten är avstängd när sidan
-//  öppnas, och besökaren slår på den med knappen.
 
 export const BOKJAKT = {
-  paFranStart:    false,
   antalBocker:    20,
   poangPerBok:    10,
   tappVidKrock:   3,      // så många böcker tappar man vid krock
   antalLantagare: 4,      // högst så många som det finns banor i kartan
   lantagarFart:   1.4,    // meter per sekund (spelaren går 3,2)
 
-  knapp:          "Bokjakt",
-  pa:             "På",
-  av:             "Av",
+  namn:           "Bokjakten",
   rakning:        "{bocker} böcker · {poang} poäng",
   rakningEn:      "1 bok · {poang} poäng",
   allaSamlade:    "Alla böcker samlade!",
   allaUnder:      "Nya böcker dyker snart upp.",
-  krock:          "Oj! Du tappade {antal} böcker.",
-  krockUtan:      "Oj! Akta låntagarna.",
-  forklaring:     "Samla böcker och undvik låntagarna. Krockar du tappar du böcker."
+  krock:          "Du tappade {antal} böcker",
+  krockUtan:      "Akta låntagarna",
+  forklaring:     "Samla böcker och undvik låntagarna. Krockar du tappar du några böcker."
 };
 
 // =====================================================================
-//  TEMA – världens färger. Hämtade ur fotona i material/foton.
+//  TEMA – världens färger. Hämtade ur fotona i material/foton, och
+//  sedan dämpade till en lugn palett: beige, brunt och mörkrött.
 // =====================================================================
 //
 //  Färgkoder skrivs som "#rrggbb". Ändra, spara och ladda om sidan.
+//  Starka färger gör kartan plottrig för den som är känslig för intryck.
 
 export const TEMA = {
   // Himmel och mark runt huset
@@ -378,19 +398,20 @@ export const TEMA = {
   // Väggar
   vagg:          "#fbf6ee",   // varmvitt
   vaggKant:      "#efe5d6",   // överkanten
-  laxrosa:       "#f4c7b0",   // accentväggar och pelare
-  tegel:         "#d9a948",   // gula tegelväggen vid hissen
-  tegelFog:      "#b88a35",
+  laxrosa:       "#e6cdb8",   // accentväggar och pelare
+  tegel:         "#c9a46c",   // tegelväggen vid hissen
+  tegelFog:      "#a8865a",
   morkgra:       "#6d6a66",   // hissväggen
   glas:          "#a9dbe8",   // fönster och glasväggar, svagt blå
   karm:          "#f7f1e6",   // fönsterkarmar
 
   // Möbler
   hylla:         "#fdfbf7",   // vita hyllor
-  bjork:         "#e3b06a",   // björkskivor och räcken
+  bjork:         "#d6b48a",   // björkskivor och räcken
   automat:       "#2e2c2b",
-  skarm:         "#4fd6d0",   // turkos skärm
-  scenFond:      "#5466cc",
+  skarm:         "#9fb1ad",   // matt skärm
+  tv:            "#a7b2b4",
+  scenFond:      "#6b4540",   // dämpad mörkröd ridå
   lampa:         "#fff3dc",
   lampSken:      "#ffd89a",
 
@@ -398,19 +419,19 @@ export const TEMA = {
   lampor: ["receptionsdisk", "ungdomshorna", "storstil", "barnavdelning", "entre",
            "information", "tidningshorna", "studieyta", "slaktforskning"],
 
-  // Bibliotekets profilfärger, från fasaden
-  senap:         "#e7b53c",
-  mint:          "#8fd0b6",
-  rosa:          "#e7a6c6",
+  // Accentfärger. senap används till i-plattorna och trapplattorna,
+  // så den ska synas, men inte skrika.
+  senap:         "#b9874a",
+  mint:          "#b8ab8c",
+  rosa:          "#b07a6e",
 
   // Bokryggarna dras slumpvis ur den här listan
-  bocker: ["#e7b53c", "#8fd0b6", "#e7a6c6", "#d8574a", "#3d6fb6",
-           "#2f8a6b", "#f2ede3", "#2b2a33", "#c97b3a", "#8a5aa8",
-           "#e6d06a", "#5aa7c9"],
+  bocker: ["#7a3b33", "#8c5a3c", "#a8845c", "#5b4130", "#c8ad86",
+           "#e6dccb", "#6b4a3a", "#9a6b4f"],
 
-  // Figuren
-  figurTroja:    "#e7b53c",
-  figurByxor:    "#5fae93",
+  // Figuren: mörkröd tröja, så att den syns mot det ljusa golvet
+  figurTroja:    "#8a3a30",
+  figurByxor:    "#5b4130",
   figurHud:      "#f1d9c0",
   figurHar:      "#5a3d2b"
 };
