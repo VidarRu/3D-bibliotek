@@ -154,6 +154,14 @@ export const PLATSER = [
     farg: "#6b4a3a"
   },
   {
+    id: "biografier",
+    plan: 1,
+    namn: "Biografier",
+    beskrivning: "Berättelser om verkliga människors liv.",
+    avdelning: true,
+    farg: "#8c6b4f"
+  },
+  {
     id: "serier",
     plan: 1,
     namn: "Serier",
@@ -218,6 +226,14 @@ export const PLATSER = [
     beskrivning: "Ner till plan 0.",
     avdelning: false,
     farg: "#bfb2a0"
+  },
+  {
+    id: "toaletter_plan1",
+    plan: 1,
+    namn: "Toaletter",
+    beskrivning: "Två toaletter, mellan studieytan och tidningshörnan.",
+    avdelning: false,
+    farg: "#b8ab8c"
   }
 ];
 
@@ -294,7 +310,7 @@ export const INFOPUNKTER = [
     plan: 1,
     rubrik: "Välkommen till plan 1",
     rader: [
-      "Här finns romaner, spänning, facklitteratur, ljudböcker och serier.",
+      "Här finns romaner, spänning, facklitteratur, ljudböcker, biografier och serier.",
       "Vid informationsdisken kan du fråga om hjälp att hitta.",
       "Datorerna och släktforskningen finns i Tjustrummet längst in åt öster."
     ]
@@ -412,6 +428,7 @@ export const TEMA = {
   skarm:         "#9fb1ad",   // matt skärm
   tv:            "#a7b2b4",
   scenFond:      "#6b4540",   // dämpad mörkröd ridå
+  ljudvagg:      "#a59a86",   // ljuddämpande skärmar runt studiebåsen
   lampa:         "#fff3dc",
   lampSken:      "#ffd89a",
 

@@ -6,7 +6,7 @@
 // vill lasa. Bubblan gar ocksa att klicka pa.
 
 import * as THREE from "three";
-import { TYPSNITT } from "./zoner.js";
+import { TYPSNITT, fritFranVaggar } from "./zoner.js";
 
 export const RADIE = 0.55;          // plattans radie i meter
 const KLIV_PA = 0.62;               // sa nara mitten raknas som pa plattan
@@ -77,7 +77,11 @@ export function byggInfopunkter(layout, info, tema) {
   }
 
   // Bubblorna star still. Bara plattan man star pa lyser, utan att blinka.
-  for (const p of punkter) p.bubbla.position.set(p.x, 2.1, p.z);
+  // Bubblan flyttas ut fran en vagg den annars skulle sticka in i.
+  for (const p of punkter) {
+    const fri = fritFranVaggar(layout, p.x, p.z, p.bubbla.scale.x / 2);
+    p.bubbla.position.set(fri.x, 2.1, fri.z);
+  }
 
   function animera() {
     for (const p of punkter) {
