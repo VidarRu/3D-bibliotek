@@ -6,7 +6,7 @@
 // plattan "hissen" pa plan 0 kommer man ut vid "hissen" pa plan 1.
 
 import * as THREE from "three";
-import { TYPSNITT, rundRekt } from "./zoner.js";
+import { TYPSNITT, rundRekt, fritFranVaggar } from "./zoner.js";
 import { SIDA } from "./config/content.js";
 
 const PX = 128;                 // pixlar per meter pa plattans duk
@@ -135,10 +135,11 @@ export function byggPlattor(layout, tema) {
     plattor.push({ ...f, skylt, topp });
   }
 
-  // Skylten star still over plattan.
+  // Skylten star still over plattan, men inte inne i en vagg.
   for (const p of plattor) {
     const m = p.platta;
-    p.skylt.position.set(m.x + m.bredd / 2, 2.35, m.z + m.djup / 2);
+    const fri = fritFranVaggar(layout, m.x + m.bredd / 2, m.z + m.djup / 2, p.skylt.scale.x / 2);
+    p.skylt.position.set(fri.x, 2.35, fri.z);
   }
   function animera() {}
 

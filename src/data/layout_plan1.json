@@ -207,7 +207,7 @@
     { "id": "ljudbocker",      "namn": "Ljudböcker",
       "rutor": [ { "x":  3.60, "z": 20.40, "bredd":  4.50, "djup":  6.85 },
                  { "x":  8.10, "z": 20.40, "bredd":  1.66, "djup":  2.40 } ],
-      "skylt": { "x":  6.80, "z": 26.30 } },
+      "skylt": { "x":  6.80, "z": 24.10 } },
 
     { "id": "biografier",      "namn": "Biografier",
       "rutor": [ { "x":  3.60, "z": 27.25, "bredd":  4.50, "djup":  2.35 } ],

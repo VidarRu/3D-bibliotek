@@ -669,6 +669,19 @@ window.spel = {
   bytVaning: (plan, via) => { bytVaning(plan, via, true); rita(); },
   /** Byter vaning om figuren star pa en platta, direkt. */
   kollaVaning: () => kollaVaning(true),
+  /** Alla svavande skyltar pa bada vaningarna, for granskningen. */
+  get skyltar() {
+    return vaningar.flatMap(v => {
+      const ut = [];
+      v.grupp.updateMatrixWorld(true);
+      v.grupp.traverse(n => {
+        if (!n.isSprite || !n.visible) return;
+        const p = n.getWorldPosition(new THREE.Vector3());
+        ut.push({ plan: v.plan, namn: n.name, x: p.x, y: p.y, z: p.z, radie: n.scale.x / 2 });
+      });
+      return ut;
+    });
+  },
   get plattor() {
     return vaningar.map(v => ({ plan: v.plan, plattor: v.plattor.plattor.map(p => ({
       id: p.id, till: p.till, platta: p.platta, ankomst: p.ankomst })) }));

@@ -208,6 +208,44 @@ export function skyltPlats(layout, plats) {
 }
 
 /**
+ * Flyttar en skylt sa att den inte sticker in i en vagg eller ett slutet
+ * rum, hisschakt eller pelare. En skylt vander sig alltid mot kameran, sa sett fran sidan tar den
+ * upp en cirkel med halva skyltbredden som radie. Cirkeln skjuts ut fran
+ * allt den overlappar, nagra varv sa att horn ocksa klaras.
+ */
+export function fritFranVaggar(layout, x, z, radie) {
+  const LUFT = 0.05;
+  const r = radie + LUFT;
+  // Hisschakt och pelare nar upp i skylthojd, sa de raknas som vaggar.
+  const hinder = [...layout.walls, ...(layout.blocks || []).filter(b => !b.gangbar),
+                  ...(layout.fixtures || []).filter(f => f.typ === "hiss" || f.typ === "pelare")];
+  for (let varv = 0; varv < 8; varv++) {
+    let flyttad = false;
+    for (const o of hinder) {
+      const nx = Math.min(Math.max(x, o.x), o.x + o.bredd);
+      const nz = Math.min(Math.max(z, o.z), o.z + o.djup);
+      const dx = x - nx, dz = z - nz;
+      const d = Math.hypot(dx, dz);
+      if (d >= r) continue;
+      if (d > 1e-6) {
+        x = nx + dx / d * r;
+        z = nz + dz / d * r;
+      } else {
+        // Mitten ligger inne i hindret: ut genom narmaste sida.
+        const ut = [[o.x - r - x, 0], [o.x + o.bredd + r - x, 0],
+                    [0, o.z - r - z], [0, o.z + o.djup + r - z]];
+        const [ux, uz] = ut.reduce((a, b) =>
+          Math.abs(a[0] + a[1]) < Math.abs(b[0] + b[1]) ? a : b);
+        x += ux; z += uz;
+      }
+      flyttad = true;
+    }
+    if (!flyttad) break;
+  }
+  return { x, z };
+}
+
+/**
  * Bygger zoner och skyltar. Ger tillbaka gruppen. Skyltarna star still,
  * sa att det inte ror sig nagot i bilden som man inte sjalv satt igang.
  */
@@ -227,7 +265,8 @@ export async function byggZoner(layout, platser) {
   for (const p of platser) {
     const s = byggSkylt(p);
     const { x, y, z } = skyltPlats(layout, p);
-    s.position.set(x, y, z);
+    const fri = fritFranVaggar(layout, x, z, s.scale.x / 2);
+    s.position.set(fri.x, y, fri.z);
     s.name = "skylt_" + p.id;
     grupp.add(s);
   }
