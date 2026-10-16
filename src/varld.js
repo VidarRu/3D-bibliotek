@@ -16,9 +16,9 @@ const PX_PER_METER = 40;
 
 // Vilka vaggar som far annan yta an varmvitt. Namnen ar vaggarnas id.
 const LAXROSA_VAGGAR = ["yttre_norr", "labb_ostvagg", "karna_vast", "karna_norr"];
-const TEGEL_VAGGAR = ["karna_ost_syd", "karna_ost_mitt"];
+const TEGEL_VAGGAR = ["karna_ost_mitt"];
 // Zoner med beige stengolv i stallet for det grå golvet.
-const STENGOLV = ["entre", "trappa_hiss", "trappa_hiss_plan1"];
+const STENGOLV = ["entre", "trappa_hiss", "trappa_hiss_plan1", "torget"];
 
 /** Trappor som gar ner till vaningen under. Dar har golvet ett hal. */
 const halIGolvet = layout => layout.fixtures.filter(f => f.typ === "trappa" && f.ner);

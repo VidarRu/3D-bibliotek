@@ -207,6 +207,23 @@ function sittmobel(f, t, alla, index) {
   return g;
 }
 
+/** En stol med rygg pa den sida som "rygg" anger, sa att den vander sig mot bordet. */
+function stol(f, t) {
+  const g = new THREE.Group();
+  const sits = 0.45;
+  const farg = mat(SITTFARGER(t)[sittIndex++ % 3]);
+  const ben = mat(t.hylla);
+  for (const [dx, dz] of [[0.05, 0.05], [f.bredd - 0.05, 0.05], [0.05, f.djup - 0.05], [f.bredd - 0.05, f.djup - 0.05]]) {
+    g.add(cylinder(f.x + dx, f.z + dz, 0.02, sits - 0.04, 0, ben, 8));
+  }
+  g.add(rundLada(f.x, f.z, f.bredd, f.djup, 0.05, sits - 0.05, farg, 0.03));
+  const T = 0.05;
+  const r = { norr: [f.x, f.z, f.bredd, T], syd: [f.x, f.z + f.djup - T, f.bredd, T],
+              vast: [f.x, f.z, T, f.djup], ost: [f.x + f.bredd - T, f.z, T, f.djup] }[f.rygg || "syd"];
+  g.add(rundLada(r[0], r[1], r[2], r[3], f.hojd - sits, sits, farg, 0.02));
+  return g;
+}
+
 function bord(f, t) {
   const g = new THREE.Group();
   g.add(rundLada(f.x, f.z, f.bredd, f.djup, 0.06, f.hojd - 0.06, mat(t.bjork), 0.03));
@@ -788,6 +805,7 @@ export function byggMobel(f, t, alla) {
     case "soffa":
     case "fatolj": return sittmobel(f, t, alla, sittIndex++);
     case "bord": return bord(f, t);
+    case "stol": return stol(f, t);
     case "studiebas": return studiebas(f, t);
     case "scen": return scen(f, t);
     case "trappa": return trappa(f, t);

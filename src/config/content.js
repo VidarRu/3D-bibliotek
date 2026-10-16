@@ -183,6 +183,13 @@ export const PLATSER = [
     farg: "#c8b496"
   },
   {
+    id: "torget",
+    namn: "Torget",
+    beskrivning: "Utanför entrén. Här börjar du.",
+    avdelning: false,
+    farg: "#c8b496"
+  },
+  {
     id: "trappa_hiss",
     namn: "Trappa och hiss",
     beskrivning: "Upp till plan 1.",

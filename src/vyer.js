@@ -105,6 +105,26 @@ export const VYER = {
     position: [5.4, 7.5, 40.5],
     mot: [5.4, 0.0, 34.8]
   },
+  hyllrummet: {
+    beskrivning: "Det lilla rummet av bokhyllor mellan labbet och ungdomshornan",
+    position: [9.2, 4.2, 16.4],
+    mot: [8.8, 0.6, 11.0]
+  },
+  pentry: {
+    beskrivning: "Pentryt med hoga vaggar och ingang i sydvastra hornet",
+    position: [1.0, 2.4, 18.8],
+    mot: [4.2, 0.8, 13.6]
+  },
+  barnentre: {
+    beskrivning: "Dorroppningen fran entren in till barnavdelningen, och automaten framfor forradet",
+    position: [17.2, 2.4, 23.4],
+    mot: [14.0, 0.8, 30.0]
+  },
+  torget: {
+    beskrivning: "Startplatsen pa torget, figuren blickar mot entren",
+    position: [23.2, 3.0, 28.6],
+    mot: [18.6, 1.0, 24.6]
+  },
   barnhyllor: {
     beskrivning: "Bilderbokstragen vaster om barnavdelningens lanedisk",
     position: [8.6, 3.6, 33.0],
