@@ -283,22 +283,54 @@ function byggVaggar(layout, tema) {
   }
 
   // Slutna rum, som toaletterna, blir rundade block med en farglad dorr.
-  const dorrar = { toalett: { sida: "syd", farg: tema.mint, antal: 2 },
+  // Ett block kan ange var dorrarna sitter ("dorrar" med sida och x),
+  // annars fordelas de jamnt over sidan.
+  const dorrar = { toalett: { sida: "syd", farg: tema.mint, antal: 2, wc: true },
                    barnvagn: { sida: "norr", farg: tema.rosa, antal: 1 } };
   for (const b of layout.blocks) {
     if (b.gangbar) continue;
     grupp.add(rundLada(b.x, b.z, b.bredd, b.djup, VAGGHOJD, 0, mat(tema.vagg), 0.12));
     const d = dorrar[b.id];
     if (!d) continue;
-    const z = d.sida === "syd" ? b.z + b.djup + 0.01 : b.z - 0.01;
-    for (let i = 0; i < d.antal; i++) {
-      const x = b.x + b.bredd * (i + 1) / (d.antal + 1);
+    const sida = b.dorrar?.sida || d.sida;
+    const syd = sida === "syd";
+    const z = syd ? b.z + b.djup + 0.01 : b.z - 0.01;
+    const lagen = b.dorrar?.x ||
+      Array.from({ length: d.antal }, (_, i) => b.x + b.bredd * (i + 1) / (d.antal + 1));
+    for (const x of lagen) {
       grupp.add(rundLadaMitt(x, z, 0.9, 0.05, 2.05, 0, mat(d.farg), 0.03));
-      grupp.add(rundLadaMitt(x + 0.3, z + (d.sida === "syd" ? 0.03 : -0.03),
+      grupp.add(rundLadaMitt(x + 0.3, z + (syd ? 0.03 : -0.03),
                              0.08, 0.03, 0.08, 1.0, mat(tema.automat), 0.01));
+      if (d.wc) grupp.add(wcSkylt(x, z + (syd ? 0.035 : -0.035), syd));
     }
   }
   return grupp;
+}
+
+let wcMaterial = null;
+/** En liten WC-skylt i ogonhojd pa en toalettdorr. */
+function wcSkylt(x, z, syd) {
+  if (!wcMaterial) {
+    const duk = document.createElement("canvas");
+    duk.width = duk.height = 128;
+    const c = duk.getContext("2d");
+    c.fillStyle = "#f7f1e6";
+    c.beginPath();
+    c.roundRect(4, 4, 120, 120, 18);
+    c.fill();
+    c.fillStyle = "#3b2f27";
+    c.font = "800 58px Nunito, 'Segoe UI', system-ui, sans-serif";
+    c.textAlign = "center";
+    c.textBaseline = "middle";
+    c.fillText("WC", 64, 68);
+    const tex = new THREE.CanvasTexture(duk);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    wcMaterial = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.6 });
+  }
+  const skylt = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.22), wcMaterial);
+  skylt.position.set(x, 1.55, z);
+  if (!syd) skylt.rotation.y = Math.PI;
+  return skylt;
 }
 
 // --------------------------------------------------------------- lampor
@@ -347,7 +379,7 @@ export function byggVarld(layout, tema) {
   const mobler = new THREE.Group();
   mobler.name = "mobler";
   for (const f of layout.fixtures) {
-    const m = f.ner ? { ...f, nerMot: nerRiktning(layout, f) } : f;
+    const m = f.ner ? { ...f, nerMot: f.nerMot || nerRiktning(layout, f) } : f;
     mobler.add(byggMobel(m, tema, layout.fixtures));
   }
   varld.add(mobler);

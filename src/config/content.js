@@ -218,6 +218,14 @@ export const PLATSER = [
     beskrivning: "Ner till plan 0.",
     avdelning: false,
     farg: "#bfb2a0"
+  },
+  {
+    id: "toaletter_plan1",
+    plan: 1,
+    namn: "Toaletter",
+    beskrivning: "Två toaletter, vid tidningshörnan.",
+    avdelning: false,
+    farg: "#b8ab8c"
   }
 ];
 
@@ -412,6 +420,7 @@ export const TEMA = {
   skarm:         "#9fb1ad",   // matt skärm
   tv:            "#a7b2b4",
   scenFond:      "#6b4540",   // dämpad mörkröd ridå
+  ljudvagg:      "#a59a86",   // ljuddämpande skärmar runt studiebåsen
   lampa:         "#fff3dc",
   lampSken:      "#ffd89a",
 

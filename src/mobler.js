@@ -217,6 +217,70 @@ function bord(f, t) {
   return g;
 }
 
+/**
+ * Studiebas: skrivplatser med ljuddampande skarmvaggar runt sig.
+ * "antal" bas i rad langs den langa sidan och "rader" (1 eller 2) bredvid
+ * varandra. Tva rader vander sig mot varandra over en skarm i mitten.
+ * "bord" ar bordets djup tvars over; ar rektangeln bredare ryms stolarna
+ * innanfor, och gavelskarmarna gar da ut over dem, som i ett gruppbas.
+ */
+function studiebas(f, t) {
+  const g = new THREE.Group();
+  const langsZ = f.djup >= f.bredd;
+  const L = langsZ ? f.djup : f.bredd;
+  const K = langsZ ? f.bredd : f.djup;
+  // s gar langs den langa sidan, k tvars over.
+  const lada = (s, k, ls, lk, h, y0, m, r) => langsZ
+    ? rundLada(f.x + k, f.z + s, lk, ls, h, y0, m, r)
+    : rundLada(f.x + s, f.z + k, ls, lk, h, y0, m, r);
+  const ben = (s, k, h, m) => langsZ
+    ? cylinder(f.x + k, f.z + s, 0.03, h, 0, m, 8)
+    : cylinder(f.x + s, f.z + k, 0.03, h, 0, m, 8);
+
+  const rader = f.rader || 1, antal = f.antal || 1;
+  const bord = f.bord || K;
+  const k0 = (K - bord) / 2;
+  const BORDHOJD = 0.74, T = 0.05;
+  const skiva = mat(t.bjork), vit = mat(t.hylla), filt = mat(t.ljudvagg);
+  const plats = L / antal;
+  const radDjup = bord / rader;
+
+  // En skiva per plats, med ben vid den oppna kanten.
+  for (let r = 0; r < rader; r++) {
+    for (let i = 0; i < antal; i++) {
+      const s = i * plats + T, ls = plats - 2 * T;
+      const k = k0 + r * radDjup + (r === 1 ? T / 2 : 0.01);
+      const lk = radDjup - T / 2 - 0.01;
+      g.add(lada(s, k, ls, lk, 0.05, BORDHOJD - 0.05, skiva, 0.02));
+      const ytter = r === 0 && rader === 2 ? k + 0.06 : k + lk - 0.06;
+      if (rader === 2) {
+        g.add(ben(s + 0.08, ytter, BORDHOJD - 0.05, vit));
+        g.add(ben(s + ls - 0.08, ytter, BORDHOJD - 0.05, vit));
+      } else {
+        for (const kk of [k + 0.06, k + lk - 0.06]) {
+          g.add(ben(s + 0.08, kk, BORDHOJD - 0.05, vit));
+          g.add(ben(s + ls - 0.08, kk, BORDHOJD - 0.05, vit));
+        }
+      }
+    }
+  }
+
+  // Skarmvaggar av filt med en tunn bjorklist overst. Gavlarna och
+  // mellanvaggarna gar tvars over, mittskarmen langs mitten.
+  const skarm = (s, k, ls, lk) => {
+    g.add(lada(s, k, ls, lk, f.hojd - 0.03, 0, filt, 0.02));
+    g.add(lada(s, k, ls, lk, 0.03, f.hojd - 0.03, skiva, 0.012));
+  };
+  for (let i = 0; i <= antal; i++) {
+    const s = Math.min(Math.max(i * plats - T / 2, 0), L - T);
+    // Mellan basen racker skarmen over bordet, gavlarna gar hela vagen.
+    const yttre = i === 0 || i === antal;
+    skarm(s, yttre ? 0 : k0, T, yttre ? K : bord);
+  }
+  if (rader === 2) skarm(T, K / 2 - T / 2, L - 2 * T, T);
+  return g;
+}
+
 // ------------------------------------------------------------ scenen
 
 function scen(f, t) {
@@ -308,58 +372,96 @@ function trappa(f, t) {
  * En trappa som gar ner genom ett hal i golvet. Hålet tas upp av golvet
  * sjalvt (se varld.js). Har byggs stegen, schaktets vaggar och racken
  * med glas langs kanterna. f.nerMot sager at vilket hall trappan sjunker.
+ *
+ * Ett trapplopp kan borja under golvet och sluta i ett vilplan, sa att
+ * tva lopp tillsammans blir en trappa som svanger:
+ *   fran      hur langt under golvet loppet borjar (0 = vid golvet)
+ *   fall      hur mycket loppet sjunker
+ *   vilplan   langd pa det plana partiet i den nedre anden
+ *   racke     sidor med racke bara en bit, { syd: [fran, till] } i meter
+ *             fran det nordvastra hornet, eller false for inget racke
  */
 export const SCHAKTDJUP = 2.9;
 
 function trappaNer(f, t) {
   const g = new THREE.Group();
-  const antal = 14;
   const mot = f.nerMot || "norr";
   const langsZ = mot === "norr" || mot === "syd";
   const langd = langsZ ? f.djup : f.bredd;
-  const steglangd = langd / antal;
-  const steg = mat("#8f8b86");
-  const djup = SCHAKTDJUP - 0.1;
+  const fran = f.fran ?? 0;
+  const fall = f.fall ?? SCHAKTDJUP - 0.1 - fran;
+  const vilplan = f.vilplan ?? 0;
+  const antal = Math.max(3, Math.round(fall / 0.2));
+  const steglangd = (langd - vilplan) / antal;
+  // Bjorksteg, sa att trappan syns mot det grå golvet nar man tittar ner.
+  const steg = mat(t.bjork);
+  const kant = mat("#5b4130");
 
-  // Steg i fran ovansidan och nedat. "fram" ar avstandet fran den kant
-  // dar man kliver ner.
+  // Rektangel "fram" meter fran den kant dar man kliver ner, "l" lang.
+  const bit = (fram, l) =>
+    mot === "vast" ? [f.x + f.bredd - fram - l, f.z, l, f.djup] :
+    mot === "ost"  ? [f.x + fram, f.z, l, f.djup] :
+    mot === "norr" ? [f.x, f.z + f.djup - fram - l, f.bredd, l] :
+                     [f.x, f.z + fram, f.bredd, l];
+
+  // Steg i fran ovansidan och nedat, och vilplanet sist.
   for (let i = 0; i < antal; i++) {
-    const topp = -(djup * (i + 1)) / antal;
-    const fram = i * steglangd;
-    const h = topp + SCHAKTDJUP;
-    const [x, z, b, d] =
-      mot === "vast" ? [f.x + f.bredd - fram - steglangd, f.z, steglangd, f.djup] :
-      mot === "ost"  ? [f.x + fram, f.z, steglangd, f.djup] :
-      mot === "norr" ? [f.x, f.z + f.djup - fram - steglangd, f.bredd, steglangd] :
-                       [f.x, f.z + fram, f.bredd, steglangd];
-    g.add(rundLada(x, z, b, d, h, -SCHAKTDJUP, steg, 0.02));
+    const [x, z, b, d] = bit(i * steglangd, steglangd);
+    const topp = -(fran + (fall * (i + 1)) / antal);
+    g.add(rundLada(x, z, b, d, topp + SCHAKTDJUP, -SCHAKTDJUP, steg, 0.02));
+    // Mork framkant pa varje steg, sa att stegen gar att skilja at.
+    const [nx, nz, nb, nd] = bit(i * steglangd, 0.06);
+    g.add(rundLada(nx, nz, nb, nd, 0.012, topp, kant, 0.004));
+  }
+  if (vilplan > 0) {
+    const [x, z, b, d] = bit(langd - vilplan, vilplan);
+    g.add(rundLada(x, z, b, d, SCHAKTDJUP - fran - fall, -SCHAKTDJUP, steg, 0.02));
   }
 
-  // Schaktets vaggar och botten, sa att man inte ser ut under huset.
-  const vagg = mat(t.vaggKant);
-  const T = 0.04;
-  g.add(rundLada(f.x, f.z, f.bredd, T, SCHAKTDJUP, -SCHAKTDJUP, vagg, 0.01));
-  g.add(rundLada(f.x, f.z + f.djup - T, f.bredd, T, SCHAKTDJUP, -SCHAKTDJUP, vagg, 0.01));
-  g.add(rundLada(f.x, f.z, T, f.djup, SCHAKTDJUP, -SCHAKTDJUP, vagg, 0.01));
-  g.add(rundLada(f.x + f.bredd - T, f.z, T, f.djup, SCHAKTDJUP, -SCHAKTDJUP, vagg, 0.01));
-  g.add(rundLada(f.x, f.z, f.bredd, f.djup, 0.05, -SCHAKTDJUP - 0.05, mat("#6d6a66"), 0.01));
+  // Gul-svart rand pa forsta steget, sa att kanten syns.
+  if (fran === 0) {
+    const tex = randTextur(t);
+    const tvars = langsZ ? f.bredd : f.djup;
+    tex.repeat.set(tvars / 0.5, 1);
+    const rand = new THREE.Mesh(new THREE.PlaneGeometry(tvars - 0.04, 0.1),
+      new THREE.MeshStandardMaterial({ map: tex, roughness: 0.6 }));
+    rand.rotation.x = -Math.PI / 2;
+    if (!langsZ) rand.rotation.z = Math.PI / 2;
+    const [x, z, b, d] = bit(0, 0.12);
+    rand.position.set(x + b / 2, -fall / antal + 0.002, z + d / 2);
+    g.add(rand);
+  }
 
-  // Glasrack langs kanterna, utom dar man kliver ner.
+  // Kanterna: vaggar ner i schaktet och glasracke ovanfor golvet. Ingen
+  // av delarna hamnar dar man kliver ner, och en kant kan vara kortad
+  // dar trappan fortsatter i ett annat lopp.
+  const T = 0.06;
+  const motsatt = { norr: "syd", syd: "norr", ost: "vast", vast: "ost" };
+  const kanter = [];
+  for (const sida of ["norr", "syd", "vast", "ost"]) {
+    if (sida === motsatt[mot]) continue;
+    const del = f.racke?.[sida];
+    if (del === false) continue;
+    const langsSida = sida === "norr" || sida === "syd" ? f.bredd : f.djup;
+    const [a, b] = del || [0, langsSida];
+    kanter.push(
+      sida === "norr" ? [f.x + a, f.z, b - a, T] :
+      sida === "syd"  ? [f.x + a, f.z + f.djup - T, b - a, T] :
+      sida === "vast" ? [f.x, f.z + a, T, b - a] :
+                        [f.x + f.bredd - T, f.z + a, T, b - a]);
+  }
+  const vagg = mat(t.vaggKant);
   const glas = new THREE.MeshStandardMaterial({
     color: t.glas, transparent: true, opacity: 0.35, roughness: 0.1, depthWrite: false });
   const bjork = mat(t.bjork);
-  const kanter = {
-    norr: [f.x, f.z, f.bredd, 0.06], syd: [f.x, f.z + f.djup - 0.06, f.bredd, 0.06],
-    vast: [f.x, f.z, 0.06, f.djup], ost: [f.x + f.bredd - 0.06, f.z, 0.06, f.djup]
-  };
-  const motsatt = { norr: "syd", syd: "norr", ost: "vast", vast: "ost" };
-  for (const [sida, [x, z, b, d]] of Object.entries(kanter)) {
-    if (sida === motsatt[mot]) continue;
+  for (const [x, z, b, d] of kanter) {
+    g.add(rundLada(x, z, b, d, SCHAKTDJUP, -SCHAKTDJUP, vagg, 0.01));
     const ruta = new THREE.Mesh(new THREE.BoxGeometry(b, 0.85, d), glas);
     ruta.position.set(x + b / 2, 0.45, z + d / 2);
     g.add(ruta);
     g.add(rundLada(x - 0.01, z - 0.01, b + 0.02, d + 0.02, 0.07, 0.9, bjork, 0.03));
   }
+  g.add(rundLada(f.x, f.z, f.bredd, f.djup, 0.05, -SCHAKTDJUP - 0.05, mat("#6d6a66"), 0.01));
   return g;
 }
 
@@ -488,6 +590,7 @@ export function byggMobel(f, t, alla) {
     case "soffa":
     case "fatolj": return sittmobel(f, t, alla, sittIndex++);
     case "bord": return bord(f, t);
+    case "studiebas": return studiebas(f, t);
     case "scen": return scen(f, t);
     case "trappa": return trappa(f, t);
     case "hiss": return hiss(f, t);

@@ -194,9 +194,11 @@ function byggSkylt(plats) {
 /**
  * Var skylten ska sta: ovanpa den hylla i zonen som ligger narmast
  * skyltpunkten i kartan. Har platsen ingen hylla star skylten pa
- * skyltpunkten, i ogonhojd.
+ * skyltpunkten, i ogonhojd. Har skyltpunkten en egen hojd (y) svavar
+ * skylten fritt dar, till exempel over datorerna eller fatoljerna.
  */
 export function skyltPlats(layout, plats) {
+  if (plats.skylt.y !== undefined) return { x: plats.skylt.x, y: plats.skylt.y, z: plats.skylt.z };
   const hyllor = (layout.shelves || []).filter(h => h.zon === plats.id);
   if (!hyllor.length) return { x: plats.skylt.x, y: UTAN_HYLLA, z: plats.skylt.z };
   const mitt = h => ({ x: h.x + h.bredd / 2, z: h.z + h.djup / 2 });
