@@ -131,7 +131,46 @@ export const VYER = {
     mot: [7.2, 0.4, 26.0]
   },
 
+  ungdomshorna: {
+    beskrivning: "Ungdomshornan med en soffa langs varje vagg och L-hyllan mot toaletterna",
+    position: [13.4, 4.4, 13.6],
+    mot: [8.4, 0.6, 18.2]
+  },
+  nodvast: {
+    beskrivning: "Nodutgangen i vastra vaggen vid kopiatorn, och hyllorna soder om den",
+    position: [8.4, 4.6, 9.2],
+    mot: [5.4, 1.0, 9.7]
+  },
+  storstilskylt: {
+    beskrivning: "Storstils skylt ovanpa hyllan vid godisautomaten",
+    position: [17.2, 3.0, 11.2],
+    mot: [22.0, 1.4, 15.0]
+  },
+  skjutdorrar: {
+    beskrivning: "Entrens skjutdorrar sedda fran torget",
+    position: [22.6, 2.4, 25.5],
+    mot: [18.2, 1.2, 25.5]
+  },
+
   // ------------------------------------------------------------- plan 1
+  nodtjust1: {
+    plan: 1,
+    beskrivning: "Plan 1: nodutgangen langst in i slaktforskningen",
+    position: [21.0, 3.2, 8.4],
+    mot: [19.9, 1.0, 0.4]
+  },
+  utsikt1: {
+    plan: 1,
+    beskrivning: "Plan 1: genom datorernas sodra fonster, ner mot torget",
+    position: [20.4, 3.0, 15.6],
+    mot: [21.4, -3.5, 25.0]
+  },
+  studievagg1: {
+    plan: 1,
+    beskrivning: "Plan 1: sodra vaggen bakom studieytans hyllor",
+    position: [9.8, 2.4, 31.2],
+    mot: [7.0, 1.0, 37.6]
+  },
   oversikt1: {
     plan: 1,
     beskrivning: "Plan 1: hela vaningen snett uppifran",

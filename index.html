@@ -89,6 +89,51 @@
   .oppettider tr.idag { background: #efe2cf; }
   .oppettider tr.idag th, .oppettider tr.idag td { font-weight: 800; }
 
+  /* ---------------------------------------- behovshjulet vid entrén */
+  #behov {
+    position: fixed; left: 50%; bottom: 24px;
+    width: min(620px, calc(100vw - 32px)); box-sizing: border-box;
+    padding: 16px 16px 16px; text-align: center;
+    background: var(--papper); border: 2px solid var(--kant); border-radius: 18px;
+    box-shadow: 0 4px 0 var(--kant), 0 10px 26px var(--skugga);
+    transform: translateX(-50%);
+    display: none;
+  }
+  #behov.syns { display: block; }
+  #behov h2 { margin: 0 0 4px; font-size: 19px; font-weight: 800; }
+  #behov p.under { margin: 0 0 6px; color: var(--text-mjuk); }
+  #behov .knappar { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 6px; }
+  .behov-hjul { display: flex; align-items: center; gap: 6px; }
+  .behov-bana {
+    position: relative; flex: 1; height: 104px; overflow: hidden;
+    perspective: 700px;
+    /* Korten tonar bort mot kanterna, som pa ett hjul som vander sig. */
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+  }
+  .behov-kort {
+    position: absolute; left: 50%; top: 12px;
+    width: 140px; height: 80px; margin-left: -70px; box-sizing: border-box;
+    display: grid; place-items: center; padding: 6px 10px;
+    background: #fff; border: 2px solid var(--kant); border-radius: 14px;
+    font-weight: 800; font-size: 15px; line-height: 1.2;
+    transition: transform 0.28s ease, opacity 0.28s ease;
+  }
+  .behov-kort.vald {
+    background: #fbf1d6; border-color: #e3b230; box-shadow: 0 3px 0 #e3b230;
+  }
+  .behov-pil {
+    flex: none; width: 40px; height: 40px; border-radius: 50%;
+    background: #fff; border: 2px solid var(--kant);
+    font-size: 26px; font-weight: 800; line-height: 1; padding: 0 0 3px;
+  }
+  .behov-status {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);
+  }
+  @media (max-width: 420px) {
+    .behov-kort { width: 120px; margin-left: -60px; font-size: 14px; }
+  }
+
   /* ------------------------------------------------------------ infokort */
   #infokort {
     /* Samma plats som dialogrutan: allt man läser hamnar på ett ställe. */
@@ -188,6 +233,8 @@
 <section id="infokort" aria-live="polite" aria-label="Information"></section>
 
 <div id="dialog" role="dialog" aria-labelledby="dialog-rubrik" aria-live="polite"></div>
+
+<div id="behov" role="dialog" aria-labelledby="behov-rubrik"></div>
 
 <div id="forlopp" role="status" aria-live="polite" aria-label="Biblioteksorientering" hidden></div>
 

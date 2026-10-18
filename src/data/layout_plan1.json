@@ -22,6 +22,11 @@
       "Toaletterna är ett slutet block med två dörrar jämnt fördelade på södra väggen.",
       "Hyllrader är förenklade till raka lådor. Små möbler, växter och bokvagnar är utelämnade."
     ],
+    "andringar_efter_granskning": [
+      "Rättelser 2026-10-18: nödutgång längst in i släktforskningen, i norra väggen bort från torget, med grön skylt.",
+      "Rättelser 2026-10-18: södra väggen bakom studieytans bokhyllor är en vanlig vägg utan fönster.",
+      "Rättelser 2026-10-18: genom fönstren ser man ner på torget och taket på plan 0. Marken ligger en våning längre ner än på plan 0."
+    ],
     "kartnoter": [
       "Rutnätet är en meter.",
       "Plan 1 ligger rakt ovanpå plan 0.",
@@ -49,9 +54,10 @@
   ],
 
   "walls": [
-    { "id": "yttre_norr",       "x":  3.35, "z":  0.00, "bredd": 20.35, "djup":  0.25 },
+    { "id": "yttre_norr",       "x":  3.35, "z":  0.00, "bredd": 16.05, "djup":  0.25 },
+    { "id": "yttre_norr_tjust", "x": 20.40, "z":  0.00, "bredd":  3.30, "djup":  0.25 },
     { "id": "yttre_vast",       "x":  3.35, "z":  0.25, "bredd":  0.25, "djup": 37.40, "fonster": true },
-    { "id": "yttre_syd",        "x":  3.35, "z": 37.65, "bredd":  8.85, "djup":  0.25, "fonster": true },
+    { "id": "yttre_syd",        "x":  3.35, "z": 37.65, "bredd":  8.85, "djup":  0.25 },
     { "id": "yttre_syd_tidn",   "x": 12.20, "z": 37.65, "bredd":  6.05, "djup":  0.25 },
     { "id": "yttre_ost_ovan",   "x": 23.45, "z":  0.25, "bredd":  0.25, "djup": 19.90 },
     { "id": "tjust_syd",        "x": 18.25, "z": 19.90, "bredd":  5.45, "djup":  0.25, "fonster": true },
@@ -69,7 +75,8 @@
   "doors": [
     { "id": "tjust_dorr",        "typ": "inre", "x": 18.00, "z": 16.70, "bredd": 0.25, "djup": 1.30, "riktning": "ost" },
     { "id": "trapphall_dorr_n",  "typ": "inre", "x": 16.70, "z": 21.60, "bredd": 1.30, "djup": 0.20, "riktning": "syd" },
-    { "id": "trapphall_dorr_s",  "typ": "inre", "x": 15.60, "z": 28.85, "bredd": 1.10, "djup": 0.20, "riktning": "syd" }
+    { "id": "trapphall_dorr_s",  "typ": "inre", "x": 15.60, "z": 28.85, "bredd": 1.10, "djup": 0.20, "riktning": "syd" },
+    { "id": "nod_tjust",         "typ": "nod",  "x": 19.40, "z":  0.00, "bredd": 1.00, "djup": 0.25, "riktning": "norr" }
   ],
 
   "shelves": [
@@ -172,7 +179,8 @@
     { "id": "p1f40", "typ": "pall",      "namn": "Stol",                    "x": 22.05, "z":  3.60, "bredd": 0.45, "djup": 0.45, "hojd": 0.45 },
     { "id": "p1f41", "typ": "datorbord", "namn": "Datorer",                 "x": 20.40, "z": 11.50, "bredd": 2.40, "djup": 1.40, "hojd": 0.75 },
     { "id": "p1f42", "typ": "datorbord", "namn": "Datorer",                 "x": 20.40, "z": 14.70, "bredd": 2.40, "djup": 1.40, "hojd": 0.75 },
-    { "id": "p1f43", "typ": "bord",      "namn": "Bänk med skrivare",       "x": 18.80, "z": 19.30, "bredd": 4.50, "djup": 0.60, "hojd": 0.90 }
+    { "id": "p1f43", "typ": "bord",      "namn": "Bänk med skrivare",       "x": 18.80, "z": 19.30, "bredd": 4.50, "djup": 0.60, "hojd": 0.90 },
+    { "id": "p1f51", "typ": "nodutgang", "namn": "Nödutgång",               "x": 19.40, "z":  0.00, "bredd": 1.00, "djup": 0.25, "hojd": 2.20, "riktning": "syd" }
   ],
 
   "zones": [
@@ -235,6 +243,14 @@
       "rutor": [ { "x": 18.25, "z": 10.40, "bredd":  5.20, "djup":  9.50 } ],
       "skylt": { "x": 21.60, "z": 13.80, "y": 1.85 } }
   ],
+
+  "utsikt": {
+    "beskrivning": "Det man ser genom fönstren: marken en våning ner, taket på plan 0 och torget framför entrén.",
+    "djup": 3.50,
+    "tak": [ { "x":  0.00, "z":  0.00, "bredd": 23.70, "djup": 19.90 },
+             { "x":  3.35, "z": 19.90, "bredd": 14.90, "djup": 18.00 } ],
+    "stengolv": [ { "x": 18.25, "z": 19.90, "bredd":  5.45, "djup":  9.10 } ]
+  },
 
   "infopunkter": [
     { "id": "info_plan1", "x": 12.60, "z": 4.40 }
