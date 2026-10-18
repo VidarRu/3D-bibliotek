@@ -407,6 +407,7 @@ export const RUTOR = {
   instruktionRader: [
     "Pilarna ↑ och ↓ går framåt och bakåt. Pilarna ← och → vrider figuren.",
     "Står du på en brun i-platta får du frågan om du vill veta vad platsen är. Du kan också klicka på i-bubblan.",
+    "Vid entrédörrarna får du välja vad du vill göra. Gula prickar visar sedan vägen. Gå ut till dörrarna igen för att välja något annat.",
     "Gå upp på plattan vid trappan för att byta våning.",
     "I Labbet på plan 0 finns två små spel, om du vill prova.",
     "Tryck på ? eller H för att se det här igen."
@@ -425,6 +426,60 @@ export const RUTOR = {
   ingetSpel:    "Inget spel",
   avsluta:      "Avsluta spelet",
   spelSlut:     "Spelet är avslutat"
+};
+
+// =====================================================================
+//  BEHOV – hjulet vid entrédörrarna
+// =====================================================================
+//
+//  När figuren kommer fram till skjutdörrarna från torget dyker ett
+//  hjul upp. Pilarna ← och → vrider hjulet och Enter väljer. Sedan
+//  leder gula prickar till platsen.
+//
+//   * text   = det som står i hjulet
+//   * mal    = id för platsen prickarna leder till (se PLATSER ovan)
+//   * framme = det som står när man har kommit fram
+//   * Ett val utan mal stänger bara hjulet.
+//   * Ordningen här är ordningen i hjulet. Det första valet står i mitten
+//     när hjulet öppnas.
+
+export const BEHOV = {
+  rubrik:    "Vad vill du göra i dag?",
+  under:     "Välj med ← och →. Tryck Enter för att få vägen visad.",
+  stang:     "Stäng",
+  valj:      "Visa vägen",
+  prickfarg: "#e3b230",       // de gula prickarna
+  visarVag:  "Följ de gula prickarna",
+  visarVagUnder: "Till {namn}. Tryck Esc för att sluta visa vägen.",
+  visarVagAnnanVaning: "{namn} finns på plan {plan}. Följ prickarna till trappan.",
+
+  val: [
+    { text: "Hitta en bok",            mal: "information",
+      framme: "Vid informationsdisken hjälper personalen dig att hitta rätt bok." },
+    { text: "Hämta reserverad bok",    mal: "reservationer",
+      framme: "Här i hyllan hämtar du det du har reserverat." },
+    { text: "Gå på toaletten",         mal: "toaletter",
+      framme: "Här är toaletterna." },
+    { text: "Sitta och plugga",        mal: "studieyta",
+      framme: "Här på studieytan kan du sitta i lugn och ro och plugga." },
+    { text: "Äta medhavd mat",         mal: "pentry",
+      framme: "I pentryt kan du äta din medhavda mat." },
+    { text: "Köpa fika",               mal: "kaffe",
+      framme: "Här finns kaffe och vatten. Godisautomaten står vid soffgruppen." },
+    { text: "Hitta en plats att amma", mal: "hoglasningsrum",
+      framme: "I högläsningsrummet kan du stänga dörren och amma i lugn och ro." },
+    { text: "Göra en utskrift",        mal: "kopiator",
+      framme: "Här skriver du ut och kopierar." },
+    { text: "Låna en dator",           mal: "datorer",
+      framme: "Här finns datorer som alla får använda." },
+    { text: "Sitta och hänga",         mal: "ungdomshorna",
+      framme: "Ungdomshörnan är till för dig som är ung. Slå dig ner i en soffa!" },
+    { text: "Sitta ner en stund",      mal: "soffgrupp",
+      framme: "Här i soffgruppen kan du sitta ner en stund." },
+    { text: "Läsa en tidning",         mal: "tidningshorna",
+      framme: "Här finns dagstidningar och tidskrifter." },
+    { text: "Bara titta runt",         mal: null }
+  ]
 };
 
 // =====================================================================
@@ -496,6 +551,7 @@ export const TEMA = {
   tegelFog:      "#a8865a",
   morkgra:       "#6d6a66",   // hissväggen
   glas:          "#a9dbe8",   // fönster och glasväggar, svagt blå
+  tak:           "#b9b2a8",   // taket på plan 0, sett från fönstren på plan 1
   karm:          "#f7f1e6",   // fönsterkarmar
 
   // Möbler

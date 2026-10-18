@@ -13,7 +13,7 @@ import { byggVarld, byggLjus, VAGGHOJD } from "./varld.js";
 import { byggFigur, stegaFigur, animeraFigur, FIGUR_HOJD } from "./figur.js";
 import { skapaHinder, arFri, flytta, FIGUR_RADIE } from "./kollision.js";
 import { VYER } from "./vyer.js";
-import { PLATSER, SIDA, TEMA, INFOPUNKTER, MINISPEL, BOKJAKT, RUTOR } from "./config/content.js";
+import { PLATSER, SIDA, TEMA, INFOPUNKTER, MINISPEL, BOKJAKT, RUTOR, BEHOV } from "./config/content.js";
 import { sammanfogaPlatser, byggZoner, iZon } from "./zoner.js";
 import { byggRutnat, hittaVag, byggPrickar, vaglangd } from "./vagvisning.js";
 import { meddela, doljMeddelande, fyllI, visaInfokort,
@@ -24,6 +24,8 @@ import { byggBokjakt } from "./bokjakt.js";
 import { skapaDialog } from "./dialog.js";
 import { byggLantagare } from "./lantagare.js";
 import { byggPlattor } from "./vaningsbyte.js";
+import { byggSkjutdorrar } from "./skjutdorrar.js";
+import { skapaBehovshjul } from "./behovshjul.js";
 
 // Kartorna lases vid start i stallet for att bakas in. Da racker det att
 // spara om en kartfil och ladda om sidan for att se andringen.
@@ -32,6 +34,7 @@ const layouter = await Promise.all(KARTFILER.map(fil =>
   fetch(new URL(fil, import.meta.url)).then(svar => svar.json())));
 
 const duk = document.getElementById("spelduk");
+const lugnt = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const renderare = new THREE.WebGLRenderer({ canvas: duk, antialias: true });
 renderare.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -85,9 +88,12 @@ async function byggVaning(layout) {
   const plattor = byggPlattor(layout, TEMA);
   grupp.add(plattor.grupp);
 
+  const skjutdorrar = byggSkjutdorrar(layout, TEMA, lugnt);
+  grupp.add(skjutdorrar.grupp);
+
   return {
     plan, layout, grupp, varld, hinder, platser, zoner, info, infopunkter,
-    infoPlatser, plattor,
+    infoPlatser, plattor, skjutdorrar,
     rutnat: byggRutnat(layout, hinder),
     bokjakt: byggBokjakt(layout, hinder, TEMA, BOKJAKT, delad),
     lantagare: byggLantagare(layout, TEMA, BOKJAKT.antalLantagare, BOKJAKT.lantagarFart)
@@ -104,6 +110,8 @@ const fastVy = valdVy && VYER[valdVy] ? VYER[valdVy] : null;
 
 let V = vaningFor(fastVy?.plan ?? 0);    // vaningen figuren ar pa
 scen.add(V.grupp);
+// Figuren star pa torget pa plan 0 och hor inte hemma i en fast vy av plan 1.
+if (fastVy?.plan) figur.visible = false;
 
 const platser = vaningar.flatMap(v => v.platser);
 const info = vaningar.flatMap(v => v.info);
@@ -133,6 +141,7 @@ const KARTA = {
 };
 
 const dialog = skapaDialog();
+const hjul = skapaBehovshjul(BEHOV);
 const tillbakaTillSpelet = () => duk.focus({ preventScroll: true });
 
 // Nar fokus ligger i grattisrutan ska piltangenterna inte styra figuren.
@@ -177,7 +186,8 @@ document.getElementById("hjalpknapp").addEventListener("click", visaInstruktion)
 // eller hiss) som ger kortast vag sammanlagt, och vidare fran dar man
 // kommer ut pa den andra vaningen.
 
-const vagvisning = { mal: null, vag: null, senast: 0, andraLangd: null };
+// behov ar valet ur hjulet vid entren, om vagen visas for det.
+const vagvisning = { mal: null, vag: null, senast: 0, andraLangd: null, behov: null };
 let framme = null;
 
 /** En platta som plats, sa att vagvisningen kan leda dit. */
@@ -214,7 +224,8 @@ function ritaVag() {
     }
     vagvisning.vag = bast;
   }
-  if (vagvisning.vag) prickar.visa(vagvisning.vag, plats.farg);
+  const farg = vagvisning.behov ? BEHOV.prickfarg : plats.farg;
+  if (vagvisning.vag) prickar.visa(vagvisning.vag, farg);
   else prickar.dolj();
   return vagvisning.vag;
 }
@@ -228,31 +239,44 @@ function arFramme(id) {
 
 /** Talar om vart prickarna leder, med vaningen om den ar en annan. */
 function meddelaVag(plats) {
+  if (vagvisning.behov) {
+    if (plats.plan === V.plan) meddela(BEHOV.visarVag, 0, fyllI(BEHOV.visarVagUnder, plats.namn));
+    else meddela(BEHOV.visarVag, 0, ersatt(BEHOV.visarVagAnnanVaning, { namn: plats.namn, plan: plats.plan }));
+    return;
+  }
   if (plats.plan === V.plan) meddela(fyllI(SIDA.visarVag, plats.namn), 0, SIDA.stangHjalp);
   else meddela(ersatt(SIDA.visarVagAnnanVaning, { namn: plats.namn, plan: plats.plan }), 0,
                SIDA.visarVagAnnanUnder);
 }
 
-function visaVag(id) {
+/** Visar vagen till platsen. behov ar valet ur hjulet, om det kom darifran. */
+function visaVag(id, behov = null) {
   const plats = platsMed(id);
   if (!plats) return null;
   framme = null;
   if (arFramme(id)) {
     slutaVisa();
-    meddela(fyllI(SIDA.framme, plats.namn));
+    meddelaFramme(plats, behov);
     framme = id;
     return [];
   }
   vagvisning.mal = id;
+  vagvisning.behov = behov;
   vagvisning.andraLangd = null;
   ritaVag();
   meddelaVag(plats);
   return vagvisning.vag;
 }
 
+function meddelaFramme(plats, behov) {
+  if (behov?.framme) meddela(fyllI(SIDA.framme, plats.namn), 7, behov.framme);
+  else meddela(fyllI(SIDA.framme, plats.namn));
+}
+
 function slutaVisa() {
   if (!vagvisning.mal) return;
   vagvisning.mal = null;
+  vagvisning.behov = null;
   vagvisning.vag = null;
   vagvisning.andraLangd = null;
   prickar.dolj();
@@ -263,10 +287,11 @@ function folj(tid) {
   if (!vagvisning.mal) return;
   if (arFramme(vagvisning.mal)) {
     const plats = platsMed(vagvisning.mal);
+    const behov = vagvisning.behov;
     framme = plats.id;
     slutaVisa();
     // Har figuren just hittat avdelningen sager minispelet det i stallet.
-    if (nyssHittad !== plats.id) meddela(fyllI(SIDA.framme, plats.namn));
+    if (nyssHittad !== plats.id) meddelaFramme(plats, behov);
     return;
   }
   // Raknas om nagra ganger i sekunden medan figuren ror sig.
@@ -440,6 +465,33 @@ function kollaSpelPlatsen() {
   iSpelPlatsen = inne;
 }
 
+// ------------------------------------------------------- hjulet vid entren
+//
+// Nar figuren kommer fram till skjutdorrarna fran torget fragar hjulet
+// vad man vill gora, och gula prickar visar vagen dit. Hjulet kommer inte
+// igen forran figuren har gatt ifran dorrarna. Under ett spel fragas
+// ingenting.
+
+let vidDorrarna = false;
+
+async function fragaOmBehov() {
+  stangInfo();
+  infoFraga?.stang();
+  const val = await hjul.visa();
+  tillbakaTillSpelet();
+  if (!val) return;
+  if (val.mal) visaVag(val.mal, val);
+  else slutaVisa();
+}
+
+function kollaValplats() {
+  const r = V.layout.valplats;
+  const inne = !!r && tillstand.x >= r.x && tillstand.x <= r.x + r.bredd &&
+    tillstand.z >= r.z && tillstand.z <= r.z + r.djup;
+  if (inne && !vidDorrarna && !aktivtSpel && !dialog.stoppar && !hjul.oppet) fragaOmBehov();
+  vidDorrarna = inne;
+}
+
 // ---------------------------------------------------------------- bokjakt
 //
 // Ett eget lager ovanpa resten: bocker att samla och lantagare att
@@ -505,7 +557,6 @@ function stegaBokjakt(dt, tid) {
 // Gar figuren upp pa en gul platta tonar bilden ut, figuren flyttas till
 // samma trappa eller hiss pa den andra vaningen och bilden tonar in igen.
 
-const lugnt = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const tona = document.getElementById("tona");
 let byter = false;
 
@@ -613,12 +664,14 @@ function slinga(nu) {
   forra = nu;
   if (!fastVy && !byter) {
     // Medan en storre ruta ar oppen star figuren still.
-    const knappar = dialog.stoppar || stangGrattis ? STILLA : tangenter;
+    const knappar = dialog.stoppar || stangGrattis || hjul.oppet ? STILLA : tangenter;
     stegaFigur(tillstand, knappar, dt, V.layout, V.hinder);
     animeraFigur(figur, tillstand, dt, knappar.spring);
     kollaZoner();
     kollaInfo();
     kollaSpelPlatsen();
+    kollaValplats();
+    V.skjutdorrar.stega(tillstand.x, tillstand.z, dt);
     folj(tid);
     stegaBokjakt(dt, tid);
     kollaVaning();
@@ -702,6 +755,10 @@ window.spel = {
   startaSpel,
   avslutaSpel,
   kollaSpelPlatsen,
+  kollaValplats,
+  hjul,
+  get behov() { return vagvisning.behov; },
+  get skjutdorrar() { return V.skjutdorrar.oppna; },
   visaInstruktion,
   /** Som ett klick pa i-bubblan. */
   klickaInfo: id => { infoFraga?.stang(); oppnaInfo(id); },

@@ -58,7 +58,11 @@
       "Rättelser 2026-10-16: från entrén går man in till barnavdelningen genom en dörröppning i en vägg söder om entrén. Barnvagnsparkeringen ligger innanför den väggen.",
       "Rättelser 2026-10-16: barnavdelningens självlåneautomat står mitt framför förråd 60. Tegelväggen vid entrén är borta, och förrådet och utrymmet bakom hissen är ett sammanhängande slutet block.",
       "Rättelser 2026-10-16: högläsningsrummets södra vägg är en vanlig vägg utan fönster.",
-      "Rättelser 2026-10-16: torget utanför entrén finns med som en stenlagd yta, och figuren börjar där."
+      "Rättelser 2026-10-16: torget utanför entrén finns med som en stenlagd yta, och figuren börjar där.",
+      "Rättelser 2026-10-18: ungdomshörnan har två soffor, en längs västra väggen och en längs södra. Mellan ungdomshörnan och toaletterna står två bokhyllor som ett L: en nord–syd och en som går österut mot pelaren, men inte hela vägen.",
+      "Rättelser 2026-10-18: storstils skylt står ovanpå hyllan närmast godisautomaten.",
+      "Rättelser 2026-10-18: bokhyllorna längs västra väggen söder om kopiatorn står lite närmare ungdomshörnan. Där de stod finns en nödutgång med grön skylt.",
+      "Rättelser 2026-10-18: entrén har två skjutdörrar som glider isär när man kommer nära."
     ]
   },
 
@@ -98,7 +102,8 @@
     { "id": "hogl_syd",          "x":  3.35, "z": 37.65, "bredd":  3.95, "djup":  0.25 },
     { "id": "yttre_syd",         "x":  7.30, "z": 37.65, "bredd": 10.95, "djup":  0.25, "fonster": true },
 
-    { "id": "forrad_ostvagg",    "x":  5.30, "z":  0.25, "bredd":  0.30, "djup": 19.40 },
+    { "id": "forrad_ostvagg",    "x":  5.30, "z":  0.25, "bredd":  0.30, "djup":  8.95 },
+    { "id": "forrad_ostvagg_s",  "x":  5.30, "z": 10.20, "bredd":  0.30, "djup":  9.45 },
     { "id": "pentry_vast",       "x":  2.25, "z": 12.80, "bredd":  0.20, "djup":  1.50 },
     { "id": "pentry_syd",        "x":  3.45, "z": 15.60, "bredd":  1.85, "djup":  0.20 },
 
@@ -119,7 +124,7 @@
   ],
 
   "doors": [
-    { "id": "huvudentre",      "typ": "entre", "x": 18.00, "z": 24.30, "bredd": 0.25, "djup": 2.40, "riktning": "ost" },
+    { "id": "huvudentre",      "typ": "entre", "x": 18.00, "z": 24.30, "bredd": 0.25, "djup": 2.40, "riktning": "ost", "skjutdorrar": true },
     { "id": "hall_till_entre", "typ": "inre",  "x": 15.70, "z": 19.65, "bredd": 1.80, "djup": 0.25, "riktning": "syd" },
     { "id": "karna_oppning",   "typ": "inre",  "x": 14.00, "z": 22.00, "bredd": 0.20, "djup": 1.80, "riktning": "ost" },
     { "id": "labb_dorr",       "typ": "inre",  "x":  8.00, "z":  8.00, "bredd": 1.20, "djup": 0.20, "riktning": "syd" },
@@ -128,7 +133,8 @@
     { "id": "pentry_oppning",  "typ": "inre",  "x":  2.25, "z": 14.30, "bredd": 0.20, "djup": 1.30, "riktning": "ost" },
     { "id": "hogl_dorr",       "typ": "inre",  "x":  4.30, "z": 32.40, "bredd": 0.90, "djup": 0.20, "riktning": "syd" },
     { "id": "nod_storstil",    "typ": "nod",   "x": 22.25, "z": 19.65, "bredd": 1.00, "djup": 0.25, "riktning": "syd" },
-    { "id": "nod_barn",        "typ": "nod",   "x": 18.00, "z": 34.60, "bredd": 0.25, "djup": 1.00, "riktning": "ost" }
+    { "id": "nod_barn",        "typ": "nod",   "x": 18.00, "z": 34.60, "bredd": 0.25, "djup": 1.00, "riktning": "ost" },
+    { "id": "nod_vast",        "typ": "nod",   "x":  5.30, "z":  9.20, "bredd": 0.30, "djup": 1.00, "riktning": "vast" }
   ],
 
   "shelves": [
@@ -139,11 +145,14 @@
     { "id": "h02", "zon": "storstil",        "x": 17.60, "z": 11.80, "bredd": 0.50, "djup": 2.30, "hojd": 1.80 },
     { "id": "h11", "zon": "storstil",        "x": 20.80, "z": 14.40, "bredd": 2.60, "djup": 0.60, "hojd": 1.50 },
 
-    { "id": "h05", "zon": null,              "x":  5.60, "z":  9.45, "bredd": 0.40, "djup": 2.80, "hojd": 1.80 },
-    { "id": "h06", "zon": null,              "x":  5.60, "z": 12.30, "bredd": 0.40, "djup": 2.80, "hojd": 1.80 },
+    { "id": "h05", "zon": null,              "x":  5.60, "z": 10.40, "bredd": 0.40, "djup": 2.80, "hojd": 1.80 },
+    { "id": "h06", "zon": null,              "x":  5.60, "z": 13.25, "bredd": 0.40, "djup": 2.80, "hojd": 1.80 },
     { "id": "h24", "zon": null,              "x":  7.10, "z":  9.95, "bredd": 3.30, "djup": 0.55, "hojd": 1.80 },
     { "id": "h25", "zon": null,              "x":  7.10, "z": 10.50, "bredd": 0.60, "djup": 2.90, "hojd": 1.80 },
     { "id": "h26", "zon": "reservationer",   "x": 10.55, "z":  9.95, "bredd": 0.60, "djup": 3.45, "hojd": 1.50 },
+
+    { "id": "h27", "zon": null,              "x":  9.95, "z": 17.20, "bredd": 0.50, "djup": 2.45, "hojd": 1.50 },
+    { "id": "h28", "zon": null,              "x":  9.95, "z": 16.70, "bredd": 2.35, "djup": 0.50, "hojd": 1.50 },
 
     { "id": "h12", "zon": "smabarn",       "typ": "trag", "x":  0.30, "z": 16.40, "bredd": 0.70, "djup": 2.20, "hojd": 0.55 },
 
@@ -174,9 +183,8 @@
     { "id": "f07", "typ": "trappa",  "namn": "Huvudtrappa",               "x": 10.00, "z": 22.00, "bredd": 4.00, "djup": 1.80, "hojd": 2.80 },
     { "id": "f08", "typ": "hiss",    "namn": "Hiss",                      "x": 10.00, "z": 23.80, "bredd": 4.00, "djup": 2.10, "hojd": 2.80, "riktning": "ost" },
 
-    { "id": "f09", "typ": "soffa",   "namn": "Soffa",                     "x":  6.20, "z": 16.20, "bredd": 2.40, "djup": 0.80, "hojd": 0.80 },
-    { "id": "f10", "typ": "soffa",   "namn": "Soffa",                     "x":  6.20, "z": 18.20, "bredd": 2.40, "djup": 0.80, "hojd": 0.80 },
-    { "id": "f11", "typ": "soffa",   "namn": "Soffa",                     "x":  9.60, "z": 16.80, "bredd": 0.80, "djup": 2.00, "hojd": 0.80 },
+    { "id": "f09", "typ": "soffa",   "namn": "Soffa",                     "x":  5.60, "z": 16.35, "bredd": 0.80, "djup": 2.40, "hojd": 0.80, "rygg": "vast" },
+    { "id": "f10", "typ": "soffa",   "namn": "Soffa",                     "x":  6.70, "z": 18.85, "bredd": 2.40, "djup": 0.80, "hojd": 0.80, "rygg": "syd" },
 
     { "id": "f12", "typ": "bord",    "namn": "Soffbord",                  "x": 20.00, "z": 17.70, "bredd": 1.40, "djup": 0.80, "hojd": 0.45 },
     { "id": "f13", "typ": "fatolj",  "namn": "Fåtölj",                    "x": 19.10, "z": 17.75, "bredd": 0.70, "djup": 0.70, "hojd": 0.80, "rygg": "vast" },
@@ -187,6 +195,7 @@
     { "id": "f19", "typ": "kopiator", "namn": "Kopiator",                 "x":  5.90, "z":  8.35, "bredd": 1.40, "djup": 0.65, "hojd": 1.15, "riktning": "syd" },
     { "id": "f20", "typ": "nodutgang", "namn": "Nödutgång",               "x": 22.25, "z": 19.65, "bredd": 1.00, "djup": 0.25, "hojd": 2.20, "riktning": "norr" },
     { "id": "f21", "typ": "nodutgang", "namn": "Nödutgång",               "x": 18.00, "z": 34.60, "bredd": 0.25, "djup": 1.00, "hojd": 2.20, "riktning": "vast" },
+    { "id": "f22", "typ": "nodutgang", "namn": "Nödutgång",               "x":  5.30, "z":  9.20, "bredd": 0.30, "djup": 1.00, "hojd": 2.20, "riktning": "ost" },
 
     { "id": "b01", "typ": "pentry",  "namn": "Pentrybänk",                "x":  3.45, "z": 15.00, "bredd": 1.85, "djup": 0.60, "hojd": 0.92, "riktning": "norr" },
     { "id": "b02", "typ": "bord",    "namn": "Pentrybord",                "x":  3.50, "z": 13.30, "bredd": 0.80, "djup": 0.80, "hojd": 0.72 },
@@ -259,8 +268,8 @@
       "skylt": { "x": 14.95, "z": 28.00, "y": 2.30 } },
 
     { "id": "ungdomshorna",    "namn": "Ungdomshörnan",
-      "rutor": [ { "x":  5.60, "z": 15.20, "bredd":  4.85, "djup":  4.45 } ],
-      "skylt": { "x":  8.10, "z": 17.50, "y": 2.20 } },
+      "rutor": [ { "x":  5.60, "z": 16.10, "bredd":  4.35, "djup":  3.55 } ],
+      "skylt": { "x":  7.90, "z": 17.80, "y": 2.20 } },
 
     { "id": "toaletter",       "namn": "Toaletter",
       "rutor": [ { "x": 10.45, "z": 19.00, "bredd":  2.10, "djup":  0.90 } ],
@@ -301,7 +310,7 @@
     { "id": "storstil",        "namn": "Storstil",
       "rutor": [ { "x": 16.80, "z": 10.70, "bredd":  1.60, "djup":  4.90 },
                  { "x": 18.40, "z": 14.00, "bredd":  5.05, "djup":  1.60 } ],
-      "skylt": { "x": 19.00, "z": 13.50, "y": 2.20 } },
+      "skylt": { "x": 22.10, "z": 14.70 } },
 
     { "id": "soffgrupp",       "namn": "Soffgruppen",
       "rutor": [ { "x": 18.30, "z": 16.20, "bredd":  4.30, "djup":  3.45 } ],
@@ -349,6 +358,9 @@
       "platta":  { "x": 16.50, "z":  4.30, "bredd": 1.20, "djup": 0.60 },
       "ankomst": { "x": 17.10, "z":  5.60, "riktning": 180 } }
   ],
+
+  "valplats": { "beskrivning": "Framför entrédörrarna på torget. Här kommer hjulet med frågan vad man vill göra.",
+                "x": 18.25, "z": 23.70, "bredd": 1.90, "djup": 3.60 },
 
   "start": { "x": 21.40, "z": 25.50, "riktning": 270 }
 }

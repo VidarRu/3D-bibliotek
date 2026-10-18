@@ -15,7 +15,7 @@ const GOLVTJOCKLEK = 0.30;
 const PX_PER_METER = 40;
 
 // Vilka vaggar som far annan yta an varmvitt. Namnen ar vaggarnas id.
-const LAXROSA_VAGGAR = ["yttre_norr", "labb_ostvagg", "karna_vast", "karna_norr"];
+const LAXROSA_VAGGAR = ["yttre_norr", "yttre_norr_tjust", "labb_ostvagg", "karna_vast", "karna_norr"];
 const TEGEL_VAGGAR = ["karna_ost_mitt"];
 // Zoner med beige stengolv i stallet for det grå golvet.
 const STENGOLV = ["entre", "trappa_hiss", "trappa_hiss_plan1", "torget"];
@@ -195,9 +195,69 @@ function byggGolv(layout, tema) {
   }
   const mark = new THREE.Mesh(new THREE.ShapeGeometry(form, 48), mat(tema.mark, { roughness: 1 }));
   mark.rotation.x = -Math.PI / 2;
-  mark.position.set(bredd / 2, -GOLVTJOCKLEK - 0.01, djup / 2);
+  // Pa en ovre vaning ligger marken en vaning ner, se byggUtsikt.
+  const markDjup = layout.utsikt?.djup ?? GOLVTJOCKLEK;
+  mark.position.set(bredd / 2, -markDjup - 0.01, djup / 2);
   mark.receiveShadow = true;
   grupp.add(mark);
+  if (layout.utsikt) grupp.add(byggUtsikt(layout, tema, hal));
+  return grupp;
+}
+
+/** Stenplattor i forskjutna rader, som pa torget, for en rektangel. */
+function stenDuk(r, tema) {
+  const P = PX_PER_METER;
+  const duk = document.createElement("canvas");
+  duk.width = Math.ceil(r.bredd * P);
+  duk.height = Math.ceil(r.djup * P);
+  const c = duk.getContext("2d");
+  const slp = slumpare(1312);
+  const PL = 0.6 * P, PH = 0.4 * P;
+  c.fillStyle = tema.stengolvFog;
+  c.fillRect(0, 0, duk.width, duk.height);
+  for (let rad = 0, y = 0; y < duk.height; rad++, y += PH) {
+    for (let x = -(rad % 2) * PL / 2; x < duk.width; x += PL) {
+      const bas = new THREE.Color(tema.stengolv).multiplyScalar(0.94 + slp() * 0.1);
+      c.fillStyle = "#" + bas.getHexString();
+      c.beginPath();
+      c.roundRect(x + 1.5, y + 1.5, PL - 3, PH - 3, 4);
+      c.fill();
+    }
+  }
+  return duk;
+}
+
+/**
+ * Det man ser genom fonstren pa en ovre vaning: vaningen under som
+ * slutna block med tak, och stenlagda ytor som torget, allt en vaning
+ * ner. Blocken har hal dar trapporna gar ner, sa att schaktet syns.
+ */
+function byggUtsikt(layout, tema, hal) {
+  const grupp = new THREE.Group();
+  grupp.name = "utsikt";
+  const { djup, tak = [], stengolv = [] } = layout.utsikt;
+  const topp = -GOLVTJOCKLEK - 0.01;
+  let bitar = tak;
+  for (const h of hal) bitar = bitar.flatMap(r => utanHal(r, h));
+  for (const b of bitar) {
+    const block = new THREE.Mesh(new THREE.BoxGeometry(b.bredd, djup + topp - 0.02, b.djup), mat(tema.vagg));
+    block.position.set(b.x + b.bredd / 2, (topp - 0.02 - djup) / 2, b.z + b.djup / 2);
+    const takyta = new THREE.Mesh(new THREE.PlaneGeometry(b.bredd, b.djup), mat(tema.tak));
+    takyta.rotation.x = -Math.PI / 2;
+    takyta.position.set(b.x + b.bredd / 2, topp - 0.01, b.z + b.djup / 2);
+    block.receiveShadow = takyta.receiveShadow = true;
+    grupp.add(block, takyta);
+  }
+  for (const r of stengolv) {
+    const tex = new THREE.CanvasTexture(stenDuk(r, tema));
+    tex.colorSpace = THREE.SRGBColorSpace;
+    const yta = new THREE.Mesh(new THREE.PlaneGeometry(r.bredd, r.djup),
+      new THREE.MeshStandardMaterial({ map: tex, roughness: 0.9 }));
+    yta.rotation.x = -Math.PI / 2;
+    yta.position.set(r.x + r.bredd / 2, -djup + 0.005, r.z + r.djup / 2);
+    yta.receiveShadow = true;
+    grupp.add(yta);
+  }
   return grupp;
 }
 
