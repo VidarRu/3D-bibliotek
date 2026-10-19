@@ -10,10 +10,10 @@
 
 import * as THREE from "three";
 import { byggVarld, byggLjus, VAGGHOJD } from "./varld.js";
-import { byggFigur, stegaFigur, animeraFigur, FIGUR_HOJD } from "./figur.js";
+import { byggFigur, stegaFigur, animeraFigur, animeraFirande, FIGUR_HOJD } from "./figur.js";
 import { skapaHinder, arFri, flytta, FIGUR_RADIE } from "./kollision.js";
 import { VYER } from "./vyer.js";
-import { PLATSER, SIDA, TEMA, INFOPUNKTER, MINISPEL, BOKJAKT, RUTOR, BEHOV } from "./config/content.js";
+import { PLATSER, SIDA, TEMA, INFOPUNKTER, MINISPEL, BOKJAKT, RUTOR, BEHOV, MOBIL } from "./config/content.js";
 import { sammanfogaPlatser, byggZoner, iZon } from "./zoner.js";
 import { byggRutnat, hittaVag, byggPrickar, vaglangd } from "./vagvisning.js";
 import { meddela, doljMeddelande, fyllI, visaInfokort,
@@ -26,6 +26,8 @@ import { byggLantagare } from "./lantagare.js";
 import { byggPlattor } from "./vaningsbyte.js";
 import { byggSkjutdorrar } from "./skjutdorrar.js";
 import { skapaBehovshjul } from "./behovshjul.js";
+import { skapaMobilmeny } from "./mobilmeny.js";
+import { byggFirande } from "./firande.js";
 
 // Kartorna lases vid start i stallet for att bakas in. Da racker det att
 // spara om en kartfil och ladda om sidan for att se andringen.
@@ -112,6 +114,14 @@ let V = vaningFor(fastVy?.plan ?? 0);    // vaningen figuren ar pa
 scen.add(V.grupp);
 // Figuren star pa torget pa plan 0 och hor inte hemma i en fast vy av plan 1.
 if (fastVy?.plan) figur.visible = false;
+
+// Pa en pekskarm utan mus kommer en meny i stallet for styrningen, se
+// avsnittet om mobilen langre ner. ?lage=mobil eller ?lage=dator i
+// adressen valjer sjalv.
+const lageIAdressen = new URLSearchParams(location.search).get("lage");
+const mobilLage = !fastVy && (lageIAdressen ? lageIAdressen === "mobil"
+  : window.matchMedia("(hover: none) and (pointer: coarse)").matches);
+if (mobilLage) document.body.classList.add("mobil");
 
 const platser = vaningar.flatMap(v => v.platser);
 const info = vaningar.flatMap(v => v.info);
@@ -239,6 +249,8 @@ function arFramme(id) {
 
 /** Talar om vart prickarna leder, med vaningen om den ar en annan. */
 function meddelaVag(plats) {
+  // Pa mobilen star det i rutan nedtill i stallet.
+  if (mobilLage) return;
   if (vagvisning.behov) {
     if (plats.plan === V.plan) meddela(BEHOV.visarVag, 0, fyllI(BEHOV.visarVagUnder, plats.namn));
     else meddela(BEHOV.visarVag, 0, ersatt(BEHOV.visarVagAnnanVaning, { namn: plats.namn, plan: plats.plan }));
@@ -269,6 +281,7 @@ function visaVag(id, behov = null) {
 }
 
 function meddelaFramme(plats, behov) {
+  if (mobilLage) return;
   if (behov?.framme) meddela(fyllI(SIDA.framme, plats.namn), 7, behov.framme);
   else meddela(fyllI(SIDA.framme, plats.namn));
 }
@@ -357,6 +370,8 @@ function bubblaUnder(e) {
   return V.infopunkter.traffad(straleKastare);
 }
 duk.addEventListener("click", e => {
+  // Pa mobilen ligger menyn dar infokortet skulle ha hamnat.
+  if (mobilLage) return;
   const id = bubblaUnder(e);
   if (!id || dialog.stoppar) return;
   infoFraga?.stang();
@@ -613,9 +628,167 @@ function kollaVaning(direkt = false) {
   if (f) bytVaning(f.till, f.id, direkt);
 }
 
+// ---------------------------------------------------------------- mobilen
+//
+// Pa en pekskarm gar det inte att styra figuren. Dar kommer i stallet en
+// meny med valen fran hjulet vid entren. Figuren gar dit av sig sjalv
+// langs de gula prickarna, och tar trappan eller hissen om platsen ligger
+// pa den andra vaningen. Framme firar den en liten stund, och sedan star
+// den pa torget igen och man kan valja nytt.
+
+const mobilmeny = skapaMobilmeny(MOBIL, BEHOV.val.filter(v => v.mal && platsMed(v.mal)));
+const firande = byggFirande([BEHOV.prickfarg, TEMA.senap, TEMA.rosa, TEMA.figurTroja,
+                             TEMA.mint, TEMA.bjork, "#fffaf2"]);
+scen.add(firande.grupp);
+
+// lage ar null, "meny", "gar", "firar" eller "tillbaka".
+const mobil = { lage: null, val: null, plats: null, vag: null, steg: 1, plan: 0,
+                firat: 0, kameraRiktning: 0, timer: null };
+const VRIDFART_SJALV = 7;               // radianer i sekunden
+
+async function mobilMeny() {
+  mobil.lage = "meny";
+  const val = await mobilmeny.meny();
+  if (mobil.lage === "meny") mobilGa(val);
+}
+
+function visaPaVag() {
+  const { plats } = mobil;
+  mobilmeny.paVag(fyllI(MOBIL.paVag, plats.namn),
+    plats.plan === V.plan ? MOBIL.paVagUnder
+      : ersatt(MOBIL.paVagAnnanVaning, { namn: plats.namn, plan: plats.plan }),
+    () => mobilTillbaka());
+}
+
+function mobilGa(val) {
+  mobil.val = val;
+  mobil.plats = platsMed(val.mal);
+  const vag = visaVag(val.mal, val);
+  if (!vag) { slutaVisa(); mobilMeny(); return; }      // ingen vag dit
+  if (!vag.length) { mobilFira(); return; }            // redan framme
+  mobil.lage = "gar";
+  mobil.vag = null;
+  visaPaVag();
+}
+
+/** Vrider figuren mjukt mot riktningen mal. */
+function vridMot(mal, dt) {
+  let d = (mal - tillstand.riktning) % (Math.PI * 2);
+  if (d > Math.PI) d -= Math.PI * 2;
+  if (d < -Math.PI) d += Math.PI * 2;
+  const max = VRIDFART_SJALV * dt;
+  tillstand.riktning += Math.max(-max, Math.min(max, d));
+}
+
+/** Figuren gar langs vagen av sig sjalv. */
+function gaSjalv(dt) {
+  const vag = vagvisning.vag;
+  // Ny vag efter ett vaningsbyte: borja om fran dess forsta punkt.
+  if (vag !== mobil.vag) {
+    mobil.vag = vag;
+    mobil.steg = 1;
+    if (mobil.plan !== V.plan) { mobil.plan = V.plan; visaPaVag(); }
+  }
+  if (!vag) return;
+  let kvar = MOBIL.fart * dt;
+  while (kvar > 0 && mobil.steg < vag.length) {
+    const m = vag[mobil.steg];
+    const dx = m.x - tillstand.x, dz = m.z - tillstand.z;
+    const l = Math.hypot(dx, dz);
+    if (l <= kvar) {
+      tillstand.x = m.x; tillstand.z = m.z;
+      kvar -= l;
+      mobil.steg++;
+    } else {
+      tillstand.x += (dx / l) * kvar;
+      tillstand.z += (dz / l) * kvar;
+      kvar = 0;
+    }
+  }
+  const m = vag[Math.min(mobil.steg, vag.length - 1)];
+  const dx = m.x - tillstand.x, dz = m.z - tillstand.z;
+  if (Math.hypot(dx, dz) > 0.05) vridMot(Math.atan2(dx, -dz), dt);
+  tillstand.gar = mobil.steg < vag.length;
+
+  if (tillstand.gar) return;
+  if (mobil.plats.plan === V.plan) mobilFira();
+  // Vagen till en annan vaning slutar pa plattan vid trappan eller hissen.
+  else bytVaning(mobil.plats.plan, V.plattor.vid(tillstand.x, tillstand.z)?.id);
+}
+
+function mobilFira() {
+  const { plats, val } = mobil;
+  mobil.lage = "firar";
+  mobil.firat = 0;
+  // Kameran stannar dar den ar medan figuren vander sig om mot den.
+  mobil.kameraRiktning = tillstand.riktning;
+  tillstand.gar = false;
+  slutaVisa();
+  framme = plats.id;
+  if (!lugnt) firande.starta(tillstand.x, tillstand.z);
+  mobilmeny.framme(fyllI(MOBIL.framme, plats.namn), val.framme || "", MOBIL.vantetid,
+                   () => mobilTillbaka());
+  clearTimeout(mobil.timer);
+  mobil.timer = setTimeout(() => mobilTillbaka(), MOBIL.vantetid * 1000);
+}
+
+/** Tillbaka till torget pa plan 0, och menyn igen. */
+function mobilTillbaka(direkt = false) {
+  if (mobil.lage === "tillbaka" || mobil.lage === "meny") return;
+  // Mitt i ett vaningsbyte: vanta tills det ar klart.
+  if (byter) { setTimeout(() => mobilTillbaka(direkt), 120); return; }
+  clearTimeout(mobil.timer);
+  mobil.lage = "tillbaka";
+  mobilmeny.dolj();
+  const klart = () => {
+    slutaVisa();
+    framme = null;
+    firande.stoppa();
+    animeraFirande(figur, -1);
+    const hem = vaningFor(0);
+    if (V !== hem) {
+      scen.remove(V.grupp);
+      V = hem;
+      scen.add(V.grupp);
+    }
+    tillstand.x = start.x;
+    tillstand.z = start.z;
+    tillstand.riktning = (start.riktning * Math.PI) / 180;
+    tillstand.gar = false;
+    mobil.plan = V.plan;
+    placeraKamera(true);
+    mobilMeny();
+  };
+  if (direkt || lugnt) { klart(); return; }
+  byter = true;
+  tona.classList.add("syns");
+  setTimeout(() => {
+    klart();
+    tona.classList.remove("syns");
+    setTimeout(() => { byter = false; }, 250);
+  }, 260);
+}
+
+function stegaMobil(dt) {
+  if (mobil.lage === "gar") {
+    gaSjalv(dt);
+    animeraFigur(figur, tillstand, dt, true);
+  } else if (mobil.lage === "firar") {
+    mobil.firat += dt;
+    firande.stega(dt);
+    if (lugnt) return;
+    // Vander sig mot kameran, hoppar och vinkar.
+    vridMot(mobil.kameraRiktning + Math.PI, dt);
+    animeraFirande(figur, mobil.firat);
+  } else {
+    animeraFigur(figur, tillstand, dt, false);
+  }
+}
+
 // ------------------------------------------------------------ fast kamera
 
 let friVy = null;           // valfri kamera, bara for granskningen
+let nedtill = 0;            // pixlar som rutan nedtill tacker, utjamnat
 
 function placeraKamera(forsta) {
   const vy = friVy || fastVy;
@@ -625,24 +798,49 @@ function placeraKamera(forsta) {
     return;
   }
   // Foljer snett bakifran. Kameran maste ligga hogre an vagghojden,
-  // annars skar narmaste vagg rakt genom bilden.
-  const bakat = new THREE.Vector3(
-    -Math.sin(tillstand.riktning), 0, Math.cos(tillstand.riktning));
+  // annars skar narmaste vagg rakt genom bilden. Pa mobilen ligger den
+  // hogre och brantare, sa att man ser mer av golvet pa den smala
+  // skarmen. Nar figuren firar kommer kameran lite narmare.
+  const firar = mobilLage && mobil.lage === "firar";
+  const riktning = firar ? mobil.kameraRiktning : tillstand.riktning;
+  const [bak, upp] = !mobilLage ? [8.0, 5.8] : firar ? [5.6, 4.2] : [7.2, 7.4];
+  const bakat = new THREE.Vector3(-Math.sin(riktning), 0, Math.cos(riktning));
   const mal = new THREE.Vector3(tillstand.x, 0, tillstand.z)
-    .addScaledVector(bakat, 8.0)
-    .add(new THREE.Vector3(0, VAGGHOJD + 5.8, 0));
+    .addScaledVector(bakat, bak)
+    .add(new THREE.Vector3(0, VAGGHOJD + upp, 0));
   if (forsta) kamera.position.copy(mal);
-  else kamera.position.lerp(mal, 0.12);
+  else kamera.position.lerp(mal, firar ? 0.05 : 0.12);
   kamera.lookAt(tillstand.x, 0.9, tillstand.z);
+
+  // Tacker en ruta nedre delen av skarmen tittar kameran lite brantare
+  // ner, sa att figuren hamnar mitt i den del av bilden som syns.
+  if (!mobilLage) return;
+  const h = duk.clientHeight || 1;
+  const tackt = Math.min(mobilmeny.hojd, h * 0.7);
+  nedtill = forsta ? tackt : nedtill + (tackt - nedtill) * 0.15;
+  const halva = Math.tan(THREE.MathUtils.degToRad(kamera.fov / 2));
+  kamera.rotateX(-Math.atan((nedtill / h) * halva));
 }
 
 // ------------------------------------------------------------------ slinga
 
+// Duken ar storre an sin plats pa skarmar med hog upplosning, darfor
+// jamfors med den senaste storleken och inte med dukens egen.
+let storlek = "";
 function passaStorlek() {
   const b = duk.clientWidth, h = duk.clientHeight;
-  if (duk.width !== b || duk.height !== h) {
+  if (storlek !== `${b}x${h}`) {
+    storlek = `${b}x${h}`;
     renderare.setSize(b, h, false);
     kamera.aspect = b / h;
+    // En staende mobilskarm ar smal. Kameran far da en storre synvinkel
+    // pa hojden, sa att det inte blir som att titta genom ett titthal.
+    if (mobilLage && kamera.aspect < 1) {
+      const vinkel = 2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(27)) / kamera.aspect);
+      kamera.fov = Math.min(72, THREE.MathUtils.radToDeg(vinkel));
+    } else {
+      kamera.fov = 52;
+    }
     kamera.updateProjectionMatrix();
   }
 }
@@ -662,7 +860,10 @@ function slinga(nu) {
   const dt = Math.min((nu - forra) / 1000, 0.05);
   const tid = nu / 1000;
   forra = nu;
-  if (!fastVy && !byter) {
+  if (mobilLage && !byter) {
+    stegaMobil(dt);
+    V.skjutdorrar.stega(tillstand.x, tillstand.z, dt);
+  } else if (!fastVy && !byter) {
     // Medan en storre ruta ar oppen star figuren still.
     const knappar = dialog.stoppar || stangGrattis || hjul.oppet ? STILLA : tangenter;
     stegaFigur(tillstand, knappar, dt, V.layout, V.hinder);
@@ -688,7 +889,8 @@ requestAnimationFrame(slinga);
 // Instruktionen forsta gangen. Inte i granskningens fasta vyer.
 let sedd = false;
 try { sedd = localStorage.getItem(SEDD) === "1"; } catch { /* visas varje gang */ }
-if (!sedd && !fastVy) visaInstruktion();
+if (mobilLage) mobilMeny();
+else if (!sedd && !fastVy) visaInstruktion();
 
 // --------------------------------------------------------- krok for tester
 // Verifieringen behover kunna styra figuren utan tangentbord och lasa av
@@ -759,6 +961,21 @@ window.spel = {
   hjul,
   get behov() { return vagvisning.behov; },
   get skjutdorrar() { return V.skjutdorrar.oppna; },
+  mobil: {
+    get pa() { return mobilLage; },
+    get lage() { return mobil.lage; },
+    get menylage() { return mobilmeny.lage; },
+    /** Som att trycka pa ett val i menyn. */
+    valj: mal => mobilmeny.valj(mal),
+    /** Stegar figuren i sekunder utan att rita, for proven. */
+    stega(sekunder, dt = 1 / 60) {
+      for (let t = 0; t < sekunder && !byter; t += dt) stegaMobil(dt);
+      placeraKamera(true);
+      rita();
+      return { x: tillstand.x, z: tillstand.z, plan: V.plan, lage: mobil.lage };
+    },
+    tillbaka: () => mobilTillbaka(true)
+  },
   visaInstruktion,
   /** Som ett klick pa i-bubblan. */
   klickaInfo: id => { infoFraga?.stang(); oppnaInfo(id); },

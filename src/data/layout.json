@@ -62,7 +62,8 @@
       "Rättelser 2026-10-18: ungdomshörnan har två soffor, en längs västra väggen och en längs södra. Mellan ungdomshörnan och toaletterna står två bokhyllor som ett L: en nord–syd och en som går österut mot pelaren, men inte hela vägen.",
       "Rättelser 2026-10-18: storstils skylt står ovanpå hyllan närmast godisautomaten.",
       "Rättelser 2026-10-18: bokhyllorna längs västra väggen söder om kopiatorn står lite närmare ungdomshörnan. Där de stod finns en nödutgång med grön skylt.",
-      "Rättelser 2026-10-18: entrén har två skjutdörrar som glider isär när man kommer nära."
+      "Rättelser 2026-10-18: entrén har två skjutdörrar som glider isär när man kommer nära.",
+      "Rättelser 2026-10-19: reservationshyllan, låna- och återlämningsautomaterna och infopunkten vid dem står 1,30 m längre österut, mot utställningsytan och storstil. Mellan hyllrummet med bordet och reservationshyllan går nu en gång från receptionen söderut."
     ]
   },
 
@@ -149,7 +150,7 @@
     { "id": "h06", "zon": null,              "x":  5.60, "z": 13.25, "bredd": 0.40, "djup": 2.80, "hojd": 1.80 },
     { "id": "h24", "zon": null,              "x":  7.10, "z":  9.95, "bredd": 3.30, "djup": 0.55, "hojd": 1.80 },
     { "id": "h25", "zon": null,              "x":  7.10, "z": 10.50, "bredd": 0.60, "djup": 2.90, "hojd": 1.80 },
-    { "id": "h26", "zon": "reservationer",   "x": 10.55, "z":  9.95, "bredd": 0.60, "djup": 3.45, "hojd": 1.50 },
+    { "id": "h26", "zon": "reservationer",   "x": 11.85, "z":  9.95, "bredd": 0.60, "djup": 3.45, "hojd": 1.50 },
 
     { "id": "h27", "zon": null,              "x":  9.95, "z": 17.20, "bredd": 0.50, "djup": 2.45, "hojd": 1.50 },
     { "id": "h28", "zon": null,              "x":  9.95, "z": 16.70, "bredd": 2.35, "djup": 0.50, "hojd": 1.50 },
@@ -174,8 +175,8 @@
 
   "fixtures": [
     { "id": "f01", "typ": "disk",    "namn": "Receptionsdisk",            "x": 12.90, "z":  3.70, "bredd": 2.60, "djup": 0.70, "hojd": 1.10 },
-    { "id": "f02", "typ": "automat", "namn": "Låna och återlämna",        "x": 12.10, "z": 13.80, "bredd": 1.00, "djup": 0.60, "hojd": 1.20, "riktning": "norr" },
-    { "id": "f03", "typ": "automat", "namn": "Låna och återlämna",        "x": 12.10, "z": 14.40, "bredd": 1.00, "djup": 0.60, "hojd": 1.20, "riktning": "syd" },
+    { "id": "f02", "typ": "automat", "namn": "Låna och återlämna",        "x": 13.40, "z": 13.80, "bredd": 1.00, "djup": 0.60, "hojd": 1.20, "riktning": "norr" },
+    { "id": "f03", "typ": "automat", "namn": "Låna och återlämna",        "x": 13.40, "z": 14.40, "bredd": 1.00, "djup": 0.60, "hojd": 1.20, "riktning": "syd" },
     { "id": "f04", "typ": "automat", "namn": "Låna och återlämna, barn",  "x": 12.80, "z": 28.80, "bredd": 1.00, "djup": 0.60, "hojd": 1.20, "riktning": "syd" },
     { "id": "f16", "typ": "disk",    "namn": "Lånedisk, barn",            "x":  9.90, "z": 29.20, "bredd": 2.00, "djup": 0.70, "hojd": 1.00 },
     { "id": "f05", "typ": "scen",    "namn": "Scen",                      "x": 18.20, "z":  0.60, "bredd": 5.00, "djup": 2.20, "hojd": 0.40 },
@@ -284,8 +285,8 @@
       "skylt": { "x":  6.60, "z":  8.80, "y": 2.35 } },
 
     { "id": "reservationer",   "namn": "Reservationer",
-      "rutor": [ { "x": 10.40, "z":  9.80, "bredd":  1.20, "djup":  3.75 } ],
-      "skylt": { "x": 10.85, "z": 11.60, "y": 2.15 } },
+      "rutor": [ { "x": 11.70, "z":  9.80, "bredd":  1.20, "djup":  3.75 } ],
+      "skylt": { "x": 12.15, "z": 11.60, "y": 2.15 } },
 
     { "id": "labbet",          "namn": "Labbet",
       "rutor": [ { "x":  5.60, "z":  0.25, "bredd":  5.40, "djup":  7.75 } ],
@@ -321,8 +322,8 @@
       "skylt": { "x": 23.00, "z": 16.40, "y": 2.35 } },
 
     { "id": "lana_aterlamna",  "namn": "Låna och återlämna",
-      "rutor": [ { "x": 11.80, "z": 12.70, "bredd":  3.40, "djup":  3.15 } ],
-      "skylt": { "x": 13.60, "z": 14.25 } },
+      "rutor": [ { "x": 13.10, "z": 12.70, "bredd":  3.40, "djup":  3.15 } ],
+      "skylt": { "x": 14.90, "z": 14.25 } },
 
     { "id": "torget",          "namn": "Torget",
       "rutor": [ { "x": 18.25, "z": 19.90, "bredd":  5.45, "djup":  9.10 } ],
@@ -336,12 +337,12 @@
   "infopunkter": [
     { "id": "info_entre",     "x": 16.40, "z": 22.60 },
     { "id": "info_reception", "x": 14.20, "z":  5.70 },
-    { "id": "info_automater", "x": 14.30, "z": 14.40 },
+    { "id": "info_automater", "x": 15.60, "z": 14.40 },
     { "id": "info_barn",      "x": 11.60, "z": 31.20 }
   ],
 
   "lantagare": [
-    { "id": "l1", "slinga": true,  "bana": [[12.00,  7.60], [12.00, 12.40], [16.20, 12.40], [16.20, 7.60]] },
+    { "id": "l1", "slinga": true,  "bana": [[13.10,  7.60], [13.10, 12.40], [16.20, 12.40], [16.20, 7.60]] },
     { "id": "l2", "slinga": false, "bana": [[ 6.55,  9.60], [ 6.55, 14.80]] },
     { "id": "l3", "slinga": false, "bana": [[ 8.00, 36.90], [17.40, 36.90]] },
     { "id": "l4", "slinga": false, "bana": [[11.40, 18.40], [16.60, 18.40]] }

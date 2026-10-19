@@ -37,8 +37,8 @@ export const VYER = {
   },
   info: {
     beskrivning: "Infopunkten vid automaterna pa nara hall",
-    position: [16.6, 3.4, 17.6],
-    mot: [14.3, 0.8, 14.4]
+    position: [17.9, 3.4, 17.6],
+    mot: [15.6, 0.8, 14.4]
   },
   labbet: {
     beskrivning: "Labbet genom glasvaggen, med bord, skap och tv",
@@ -47,8 +47,8 @@ export const VYER = {
   },
   automater: {
     beskrivning: "Aterlamningsautomaterna rygg mot rygg, fran oster",
-    position: [15.6, 1.9, 14.7],
-    mot: [12.6, 0.9, 14.4]
+    position: [16.9, 1.9, 14.7],
+    mot: [13.9, 0.9, 14.4]
   },
   trapphall: {
     beskrivning: "Trappan och hissen sedda fran entredorren",

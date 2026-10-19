@@ -109,6 +109,35 @@ export function animeraFigur(figur, tillstand, dt, springer) {
 }
 
 /**
+ * Figuren firar att den ar framme: tva glada hopp med armarna i luften,
+ * och sedan vinkar den med hogerarmen. t ar sekunder sedan firandet
+ * borjade. Med t < 0 star figuren som vanligt igen.
+ */
+export function animeraFirande(figur, t) {
+  const d = figur.userData;
+  if (t < 0) {
+    d.leder.vansterArm.rotation.z = -0.12;
+    d.leder.hogerArm.rotation.z = 0.12;
+    d.kropp.position.y = 0;
+    d.kropp.rotation.z = 0;
+    return;
+  }
+  // Armarna lyfts mjukt under den forsta kvarts sekunden.
+  const upp = Math.min(1, t / 0.25);
+  const hopp = t < 1.3 ? Math.max(0, Math.sin(t * Math.PI / 0.65)) : 0;
+  d.kropp.position.y = hopp * 0.32;
+  d.kropp.rotation.z = 0;
+  for (const namn of ["vansterBen", "hogerBen"]) d.leder[namn].rotation.x = -hopp * 0.35;
+  d.leder.vansterArm.rotation.x = 0;
+  d.leder.hogerArm.rotation.x = 0;
+  // Efter hoppen vinkar hogerarmen, och vansterarmen sjunker ner.
+  const vinka = t > 1.3 ? Math.sin((t - 1.3) * 9) * 0.35 : 0;
+  const ner = t > 1.3 ? Math.min(1, (t - 1.3) / 0.4) : 0;
+  d.leder.hogerArm.rotation.z = 0.12 + upp * 2.5 + vinka;
+  d.leder.vansterArm.rotation.z = -0.12 - upp * 2.5 * (1 - ner);
+}
+
+/**
  * Flyttar figuren ett tidssteg.
  * riktning ar radianer medurs fran norr, samma som i datafilen.
  */
