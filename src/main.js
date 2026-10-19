@@ -11,7 +11,7 @@
 import * as THREE from "three";
 import { byggVarld, byggLjus, VAGGHOJD } from "./varld.js";
 import { byggFigur, stegaFigur, animeraFigur, animeraFirande, FIGUR_HOJD } from "./figur.js";
-import { skapaHinder, arFri, flytta, FIGUR_RADIE } from "./kollision.js";
+import { skapaHinder, arFri, flytta, paGolv, FIGUR_RADIE } from "./kollision.js";
 import { VYER } from "./vyer.js";
 import { PLATSER, SIDA, TEMA, INFOPUNKTER, MINISPEL, BOKJAKT, RUTOR, BEHOV, MOBIL } from "./config/content.js";
 import { sammanfogaPlatser, byggZoner, iZon } from "./zoner.js";
@@ -362,11 +362,14 @@ function kollaInfo() {
 
 // Klick pa en i-bubbla oppnar kortet direkt.
 const straleKastare = new THREE.Raycaster();
-function bubblaUnder(e) {
+function sikta(e) {
   const r = duk.getBoundingClientRect();
   const ndc = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1,
                                 -((e.clientY - r.top) / r.height) * 2 + 1);
   straleKastare.setFromCamera(ndc, kamera);
+}
+function bubblaUnder(e) {
+  sikta(e);
   return V.infopunkter.traffad(straleKastare);
 }
 duk.addEventListener("click", e => {
@@ -597,6 +600,8 @@ function flyttaTillVaning(plan, viaId) {
   // En lantagare som star vid trappan ska inte krocka med en gang.
   bokLager.lugnTill = performance.now() / 1000 + 1.0;
   bokLager.allaVar = V.bokjakt.allaPlockade();
+  // Den som utforskar sjalv borjar om pa den nya vaningen.
+  if (mobil.lage === "utforskar") stannaUtforska();
 
   if (vagvisning.mal) {
     ritaVag();
@@ -635,21 +640,30 @@ function kollaVaning(direkt = false) {
 // langs de gula prickarna, och tar trappan eller hissen om platsen ligger
 // pa den andra vaningen. Framme firar den en liten stund, och sedan star
 // den pa torget igen och man kan valja nytt.
+//
+// Overst i menyn kan man i stallet valja att utforska sjalv. Da falls
+// menyn ner till en smal list och figuren gar dit man trycker pa golvet.
+// Infopunkterna och trappornas plattor fungerar som med tangenterna.
 
 const mobilmeny = skapaMobilmeny(MOBIL, BEHOV.val.filter(v => v.mal && platsMed(v.mal)));
 const firande = byggFirande([BEHOV.prickfarg, TEMA.senap, TEMA.rosa, TEMA.figurTroja,
                              TEMA.mint, TEMA.bjork, "#fffaf2"]);
 scen.add(firande.grupp);
 
-// lage ar null, "meny", "gar", "firar" eller "tillbaka".
+// lage ar null, "meny", "gar", "firar", "tillbaka" eller "utforskar".
+// fran ar "utforskar" om menyn oppnades medan man utforskade sjalv, och
+// tryck ar vagen till dit man senast tryckte.
 const mobil = { lage: null, val: null, plats: null, vag: null, steg: 1, plan: 0,
-                firat: 0, kameraRiktning: 0, timer: null };
+                firat: 0, kameraRiktning: 0, timer: null, fran: null, tryck: null };
 const VRIDFART_SJALV = 7;               // radianer i sekunden
+const TRYCK_NARA = 1.5;                 // meter mellan trycket och narmaste fria plats
 
 async function mobilMeny() {
   mobil.lage = "meny";
   const val = await mobilmeny.meny();
-  if (mobil.lage === "meny") mobilGa(val);
+  if (mobil.lage !== "meny") return;
+  if (val.utforska) mobilUtforska();
+  else mobilGa(val);
 }
 
 function visaPaVag() {
@@ -657,12 +671,21 @@ function visaPaVag() {
   mobilmeny.paVag(fyllI(MOBIL.paVag, plats.namn),
     plats.plan === V.plan ? MOBIL.paVagUnder
       : ersatt(MOBIL.paVagAnnanVaning, { namn: plats.namn, plan: plats.plan }),
-    () => mobilTillbaka());
+    () => mobilAvbryt());
+}
+
+/** Avbryt pa vagen: tillbaka till torget, eller fortsatt utforska dar man ar. */
+function mobilAvbryt() {
+  if (mobil.fran !== "utforskar") { mobilTillbaka(); return; }
+  if (byter) { setTimeout(mobilAvbryt, 120); return; }
+  slutaVisa();
+  mobilUtforska();
 }
 
 function mobilGa(val) {
   mobil.val = val;
   mobil.plats = platsMed(val.mal);
+  mobil.plan = V.plan;
   const vag = visaVag(val.mal, val);
   if (!vag) { slutaVisa(); mobilMeny(); return; }      // ingen vag dit
   if (!vag.length) { mobilFira(); return; }            // redan framme
@@ -680,16 +703,8 @@ function vridMot(mal, dt) {
   tillstand.riktning += Math.max(-max, Math.min(max, d));
 }
 
-/** Figuren gar langs vagen av sig sjalv. */
-function gaSjalv(dt) {
-  const vag = vagvisning.vag;
-  // Ny vag efter ett vaningsbyte: borja om fran dess forsta punkt.
-  if (vag !== mobil.vag) {
-    mobil.vag = vag;
-    mobil.steg = 1;
-    if (mobil.plan !== V.plan) { mobil.plan = V.plan; visaPaVag(); }
-  }
-  if (!vag) return;
+/** Flyttar figuren en bit langs vagen. Ger true medan den fortfarande gar. */
+function stegaLangs(vag, dt) {
   let kvar = MOBIL.fart * dt;
   while (kvar > 0 && mobil.steg < vag.length) {
     const m = vag[mobil.steg];
@@ -709,8 +724,19 @@ function gaSjalv(dt) {
   const dx = m.x - tillstand.x, dz = m.z - tillstand.z;
   if (Math.hypot(dx, dz) > 0.05) vridMot(Math.atan2(dx, -dz), dt);
   tillstand.gar = mobil.steg < vag.length;
+  return tillstand.gar;
+}
 
-  if (tillstand.gar) return;
+/** Figuren gar langs vagen av sig sjalv. */
+function gaSjalv(dt) {
+  const vag = vagvisning.vag;
+  // Ny vag efter ett vaningsbyte: borja om fran dess forsta punkt.
+  if (vag !== mobil.vag) {
+    mobil.vag = vag;
+    mobil.steg = 1;
+    if (mobil.plan !== V.plan) { mobil.plan = V.plan; visaPaVag(); }
+  }
+  if (!vag || stegaLangs(vag, dt)) return;
   if (mobil.plats.plan === V.plan) mobilFira();
   // Vagen till en annan vaning slutar pa plattan vid trappan eller hissen.
   else bytVaning(mobil.plats.plan, V.plattor.vid(tillstand.x, tillstand.z)?.id);
@@ -743,6 +769,10 @@ function mobilTillbaka(direkt = false) {
   const klart = () => {
     slutaVisa();
     framme = null;
+    mobil.fran = null;
+    platta = null;
+    infoFraga?.stang();
+    stangInfo();
     firande.stoppa();
     animeraFirande(figur, -1);
     const hem = vaningFor(0);
@@ -769,8 +799,98 @@ function mobilTillbaka(direkt = false) {
   }, 260);
 }
 
+// ------------------------------------------------- mobilen: utforska sjalv
+
+const dialogRuta = document.getElementById("dialog");
+
+function mobilUtforska() {
+  mobil.lage = "utforskar";
+  mobil.fran = "utforskar";
+  stannaUtforska();
+  mobilmeny.utforska(MOBIL.utforskaRubrik, MOBIL.utforskaRad, () => mobilVisaMeny());
+}
+
+/** Figuren stannar dar den ar och prickarna forsvinner. */
+function stannaUtforska() {
+  mobil.tryck = null;
+  tillstand.gar = false;
+  if (!vagvisning.mal) prickar.dolj();
+}
+
+/** "Meny" i listen: menyn falls upp igen, och figuren star kvar. */
+function mobilVisaMeny() {
+  stannaUtforska();
+  infoFraga?.stang();
+  stangInfo();
+  mobilMeny();
+}
+
+/** Gar dit man tryckte, eller till narmaste fria plats intill. */
+function utforskaTill(x, z) {
+  if (mobil.lage !== "utforskar" || byter || !paGolv(V.layout, x, z)) return false;
+  const plats = { id: "tryck", plan: V.plan, skylt: { x, z },
+                  rutor: [{ x: x - 0.25, z: z - 0.25, bredd: 0.5, djup: 0.5 }] };
+  const vag = hittaVag(V.rutnat, tillstand.x, tillstand.z, plats);
+  if (!vag || vag.length < 2) return false;
+  // Ett tryck mitt pa en stor disk eller bakom en vagg ger ingen vag dit.
+  const slut = vag[vag.length - 1];
+  if (Math.hypot(slut.x - x, slut.z - z) > TRYCK_NARA) return false;
+  if (infoOppen && !infoFranPlatta) stangInfo();
+  mobil.tryck = vag;
+  mobil.steg = 1;
+  prickar.visa(vag, BEHOV.prickfarg);
+  return true;
+}
+
+/** Var pa golvet trycket hamnade. En hylla eller ett bord raknas dar det star. */
+const golvplan = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+function golvpunkt(e) {
+  sikta(e);
+  const traff = straleKastare.intersectObject(V.varld, true)[0];
+  if (traff) return { x: traff.point.x, z: traff.point.z };
+  const p = straleKastare.ray.intersectPlane(golvplan, new THREE.Vector3());
+  return p ? { x: p.x, z: p.z } : null;
+}
+
+function tryckPaDuken(e) {
+  if (mobil.lage !== "utforskar" || byter || dialog.stoppar) return;
+  const id = bubblaUnder(e);
+  if (id) { infoFraga?.stang(); oppnaInfo(id); return; }
+  const p = golvpunkt(e);
+  if (p) utforskaTill(p.x, p.z);
+}
+
+// Bara ett kort tryck med ett finger raknas. Ett drag eller tva fingrar
+// gor ingenting, sa att figuren inte gar ivag av misstag.
+const pekare = new Map();               // pekare som ar nere: { x, y, tid, flera }
+duk.addEventListener("pointerdown", e => {
+  if (!mobilLage) return;
+  for (const p of pekare.values()) p.flera = true;
+  pekare.set(e.pointerId, { x: e.clientX, y: e.clientY, tid: performance.now(),
+                            flera: pekare.size > 0 });
+});
+duk.addEventListener("pointerup", e => {
+  const p = pekare.get(e.pointerId);
+  pekare.delete(e.pointerId);
+  if (!p || p.flera) return;
+  if (Math.hypot(e.clientX - p.x, e.clientY - p.y) > 12 || performance.now() - p.tid > 600) return;
+  tryckPaDuken(e);
+});
+duk.addEventListener("pointercancel", e => pekare.delete(e.pointerId));
+
+function stegaUtforska(dt) {
+  if (mobil.tryck && !stegaLangs(mobil.tryck, dt)) stannaUtforska();
+  animeraFigur(figur, tillstand, dt, tillstand.gar);
+  kollaInfo();
+  kollaVaning();
+  // Fragan och infokortet ligger dar listen ar.
+  mobilmeny.gom(dialogRuta.classList.contains("syns") || !!infoOppen);
+}
+
 function stegaMobil(dt) {
-  if (mobil.lage === "gar") {
+  if (mobil.lage === "utforskar") {
+    stegaUtforska(dt);
+  } else if (mobil.lage === "gar") {
     gaSjalv(dt);
     animeraFigur(figur, tillstand, dt, true);
   } else if (mobil.lage === "firar") {
@@ -965,8 +1085,12 @@ window.spel = {
     get pa() { return mobilLage; },
     get lage() { return mobil.lage; },
     get menylage() { return mobilmeny.lage; },
-    /** Som att trycka pa ett val i menyn. */
+    /** Som att trycka pa ett val i menyn. "utforska" ar knappen overst. */
     valj: mal => mobilmeny.valj(mal),
+    /** Som ett tryck pa golvet i (x, z) nar man utforskar sjalv. */
+    tryck: (x, z) => utforskaTill(x, z),
+    /** Som "Meny" i listen. */
+    visaMeny: () => mobilVisaMeny(),
     /** Stegar figuren i sekunder utan att rita, for proven. */
     stega(sekunder, dt = 1 / 60) {
       for (let t = 0; t < sekunder && !byter; t += dt) stegaMobil(dt);
