@@ -483,6 +483,32 @@ export const BEHOV = {
 };
 
 // =====================================================================
+//  MOBIL – menyn i stället för styrning, på mobil och surfplatta
+// =====================================================================
+//
+//  På en pekskärm går det inte att styra figuren med pilar. Där kommer
+//  i stället en meny med samma val som hjulet vid entrén (BEHOV.val
+//  ovan, utom valen utan mal). Trycker man på ett val går figuren dit
+//  av sig själv, firar när den är framme och går sedan tillbaka till
+//  start, så att man kan välja något nytt.
+//
+//  Vill man prova menyn på en dator: lägg till ?lage=mobil i adressen.
+//  ?lage=dator ger styrningen med pilar även på en pekskärm.
+
+export const MOBIL = {
+  rubrik:      "Vad vill du göra i dag?",
+  under:       "Tryck på ett val, så går figuren dit och visar vägen.",
+  paVag:       "På väg till {namn}",
+  paVagUnder:  "Följ figuren och de gula prickarna.",
+  paVagAnnanVaning: "{namn} finns på plan {plan}. Figuren tar sig upp dit.",
+  avbryt:      "Avbryt",
+  framme:      "Du är framme vid {namn}!",
+  igen:        "Välj något nytt",
+  vantetid:    8,          // sekunder innan figuren går tillbaka till start
+  fart:        4.2         // meter i sekunden när figuren går själv
+};
+
+// =====================================================================
 //  MINISPEL – "Biblioteksorientering", startas i Labbet
 // =====================================================================
 //

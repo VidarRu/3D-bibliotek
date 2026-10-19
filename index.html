@@ -134,6 +134,58 @@
     .behov-kort { width: 120px; margin-left: -60px; font-size: 14px; }
   }
 
+  /* ------------------------------------- mobilen: menyn i stället för pilar */
+  #mobil {
+    position: fixed; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    width: min(560px, calc(100vw - 24px)); box-sizing: border-box;
+    max-height: 60vh; max-height: 60dvh; overflow-y: auto; overscroll-behavior: contain;
+    padding: 14px; text-align: center;
+    background: var(--papper); border: 2px solid var(--kant); border-radius: 18px;
+    box-shadow: 0 4px 0 var(--kant), 0 10px 26px var(--skugga);
+    transform: translateX(-50%);
+    display: none;
+  }
+  #mobil.syns { display: block; animation: mobil-in 0.28s ease-out; }
+  @keyframes mobil-in { from { opacity: 0; transform: translate(-50%, 18px); } }
+  #mobil h2 { margin: 0 0 2px; font-size: 19px; font-weight: 800; line-height: 1.25; }
+  #mobil p { margin: 4px 0 0; }
+  #mobil p.under { margin: 0 0 10px; color: var(--text-mjuk); font-size: 15px; }
+  .mobil-rutnat { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  @media (min-width: 520px) { .mobil-rutnat { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  /* Liggande mobil: lägre skärm, så fyra val i bredd och lite lägre knappar. */
+  @media (min-width: 700px) and (max-height: 500px) {
+    #mobil { width: min(760px, calc(100vw - 24px)); }
+    .mobil-rutnat { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .mobil-val { min-height: 46px; }
+  }
+  .mobil-val {
+    min-height: 56px; padding: 8px 10px; box-sizing: border-box;
+    background: #fff; border: 2px solid var(--kant); border-radius: 14px;
+    box-shadow: 0 3px 0 var(--kant);
+    font-weight: 800; font-size: 15px; line-height: 1.2;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  }
+  .mobil-val:active {
+    transform: translateY(2px); box-shadow: 0 1px 0 #e3b230;
+    background: #fbf1d6; border-color: #e3b230;
+  }
+  #mobil.pavag { text-align: left; padding: 12px 14px; }
+  #mobil.pavag h2 { font-size: 17px; }
+  #mobil.pavag p.under { margin: 0; font-size: 14px; }
+  .mobil-rad { display: flex; align-items: center; gap: 12px; }
+  .mobil-text { flex: 1; min-width: 0; }
+  #mobil .knappar { display: flex; justify-content: center; margin-top: 12px; }
+  .mobil-igen { position: relative; overflow: hidden; }
+  .mobil-igen > span:last-child { position: relative; }
+  /* Fylls medan tiden går, tills figuren går tillbaka av sig själv. */
+  .mobil-tid {
+    position: absolute; inset: 0; background: rgba(227, 178, 48, 0.32);
+    transform-origin: left; animation: mobil-tid linear forwards;
+  }
+  @keyframes mobil-tid { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  body.mobil #hjalpknapp { display: none; }
+  body.mobil #spelduk { touch-action: none; }
+
   /* ------------------------------------------------------------ infokort */
   #infokort {
     /* Samma plats som dialogrutan: allt man läser hamnar på ett ställe. */
@@ -235,6 +287,8 @@
 <div id="dialog" role="dialog" aria-labelledby="dialog-rubrik" aria-live="polite"></div>
 
 <div id="behov" role="dialog" aria-labelledby="behov-rubrik"></div>
+
+<div id="mobil" aria-labelledby="mobil-rubrik" aria-live="polite"></div>
 
 <div id="forlopp" role="status" aria-live="polite" aria-label="Biblioteksorientering" hidden></div>
 
