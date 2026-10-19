@@ -146,6 +146,8 @@
     display: none;
   }
   #mobil.syns { display: block; animation: mobil-in 0.28s ease-out; }
+  /* Medan en fråga eller ett infokort ligger på samma ställe. */
+  #mobil.syns.gomd { display: none; }
   @keyframes mobil-in { from { opacity: 0; transform: translate(-50%, 18px); } }
   #mobil h2 { margin: 0 0 2px; font-size: 19px; font-weight: 800; line-height: 1.25; }
   #mobil p { margin: 4px 0 0; }
@@ -157,6 +159,21 @@
     #mobil { width: min(760px, calc(100vw - 24px)); }
     .mobil-rutnat { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .mobil-val { min-height: 46px; }
+    .mobil-utforska { min-height: 52px; margin: 6px 0 8px; }
+  }
+  /* "Jag vill utforska själv": bredast och störst, överst i menyn. */
+  .mobil-utforska {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 100%; min-height: 68px; margin: 8px 0 12px; padding: 10px 14px; box-sizing: border-box;
+    background: #efe2cf; border: 2px solid var(--accent); border-radius: 14px;
+    box-shadow: 0 3px 0 var(--accent);
+    font-weight: 800; font-size: 18px; line-height: 1.2;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  }
+  .mobil-utforska .liten { margin-top: 3px; font-size: 14px; font-weight: 700; color: var(--text-mjuk); }
+  .mobil-utforska:active {
+    transform: translateY(2px); box-shadow: 0 1px 0 var(--accent-mork);
+    background: #fbf1d6;
   }
   .mobil-val {
     min-height: 56px; padding: 8px 10px; box-sizing: border-box;
@@ -169,9 +186,9 @@
     transform: translateY(2px); box-shadow: 0 1px 0 #e3b230;
     background: #fbf1d6; border-color: #e3b230;
   }
-  #mobil.pavag { text-align: left; padding: 12px 14px; }
-  #mobil.pavag h2 { font-size: 17px; }
-  #mobil.pavag p.under { margin: 0; font-size: 14px; }
+  #mobil.pavag, #mobil.utforska { text-align: left; padding: 12px 14px; }
+  #mobil.pavag h2, #mobil.utforska h2 { font-size: 17px; }
+  #mobil.pavag p.under, #mobil.utforska p.under { margin: 0; font-size: 14px; }
   .mobil-rad { display: flex; align-items: center; gap: 12px; }
   .mobil-text { flex: 1; min-width: 0; }
   #mobil .knappar { display: flex; justify-content: center; margin-top: 12px; }
@@ -184,6 +201,8 @@
   }
   @keyframes mobil-tid { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   body.mobil #hjalpknapp { display: none; }
+  /* Tangenterna i frågorna och infokortet betyder inget på en pekskärm. */
+  body.mobil kbd { display: none; }
   body.mobil #spelduk { touch-action: none; }
 
   /* ------------------------------------------------------------ infokort */

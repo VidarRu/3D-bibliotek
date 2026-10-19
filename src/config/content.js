@@ -492,12 +492,21 @@ export const BEHOV = {
 //  av sig själv, firar när den är framme och går sedan tillbaka till
 //  start, så att man kan välja något nytt.
 //
+//  Överst i menyn finns en bred knapp, "Jag vill utforska själv". Då
+//  fälls menyn ner till en smal list, och figuren går dit man trycker
+//  på golvet. "Meny" i listen fäller upp menyn igen.
+//
 //  Vill man prova menyn på en dator: lägg till ?lage=mobil i adressen.
 //  ?lage=dator ger styrningen med pilar även på en pekskärm.
 
 export const MOBIL = {
   rubrik:      "Vad vill du göra i dag?",
-  under:       "Tryck på ett val, så går figuren dit och visar vägen.",
+  utforska:    "Jag vill utforska själv",
+  utforskaUnder: "Tryck på golvet dit du vill gå",
+  under:       "Eller välj en plats, så går figuren dit och visar vägen.",
+  utforskaRubrik: "Tryck på golvet dit du vill gå",
+  utforskaRad: "En gul platta vid trappan eller hissen tar dig till den andra våningen.",
+  visaMeny:    "Meny",
   paVag:       "På väg till {namn}",
   paVagUnder:  "Följ figuren och de gula prickarna.",
   paVagAnnanVaning: "{namn} finns på plan {plan}. Figuren tar sig upp dit.",
