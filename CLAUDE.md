@@ -104,7 +104,11 @@ på plan 1.
 - Enhet meter. x växer österut, z söderut, origo i byggnadens nordvästra
   ytterhörn. Håll `meta` i kartfilen (noter om rummen) uppdaterad när
   något ändras.
-- Väggar med `"fonster": true` blir fönsterväggar.
+- Väggar med `"fonster": true` blir fönsterväggar. `"yta": "laxrosa"` ger
+  en accentvägg och `"yta": "tegel"` en tegelvägg. Utan yta blir väggen
+  varmvit.
+- Zoner med `"stengolv": true` får stenplattor i stället för vanligt golv,
+  till exempel entré, torg och trapphall.
 - Hyllor med `"typ": "trag"` blir låga boktråg.
 - En zonskylt med `"y"` svävar fritt på den höjden. Utan `"y"` står den på
   den hylla i zonen som ligger närmast skyltpunkten.
@@ -166,7 +170,8 @@ Fråga mig om det här innan du börjar bygga:
 3. **Underlaget.** Planskiss för varje våning, och ritning och foton om de
    finns. Hur många våningar, och var trappor och hiss finns.
 4. **Spelen.** Ska Biblioteksorientering och Bokjakten finnas med? I så
-   fall, på vilken plats ska de startas (`RUTOR.spelPlats`)?
+   fall, på vilken plats ska de startas (`RUTOR.spelPlats`)? Utan spel:
+   `spelPlats: null`, och stryk raden om spelen i `RUTOR.instruktionRader`.
 5. **Behovshjulet.** Gå igenom valen i `BEHOV` tillsammans med mig. Utgå
    från Västerviks val och stryk, byt eller lägg till efter vad det här
    biblioteket har.
@@ -180,12 +185,19 @@ står i nästa avsnitt.
 
 Det här är det som byts ut när motorn används för ett annat bibliotek:
 
-- `src/data/layout.json` (plan 0) och `layout_plan1.json` (plan 1), plus
-  listan `KARTFILER` i `src/main.js`.
+- Kartfilerna i `src/data`, en per våning: `layout.json` (plan 0) och
+  `layout_plan1.json` (plan 1). Vilka filer som läses står i `KARTOR` i
+  `content.js`, med entréplanet först.
 - Allt innehåll i `src/config/content.js`: namn, adress, öppettider,
-  platser, valen i `BEHOV`, var spelen startar (`RUTOR.spelPlats`).
+  platser, färger (`TEMA`), valen i `BEHOV`, var spelen startar
+  (`RUTOR.spelPlats`, eller `null` för inga spel).
 - Vyerna i `src/vyer.js`, som har Västerviks koordinater.
-- Titeln i `index.html` och första raden i `src/main.js`.
+- Titeln i `index.html`. Sidan byter själv till `SIDA.titel` när den
+  laddas, men titeln i filen syns innan dess.
+
+Motorn i `src/*.js` ska inte innehålla något om ett visst bibliotek: inga
+id:n för väggar, zoner eller platser och inga koordinater. Behövs något
+sådant, lägg det i kartfilen eller i `content.js` i stället.
 
 Plan 0 är entréplanet med torget, receptionen, barnavdelningen, Labbet och
 ungdomshörnan. Plan 1 har studieytan, tidningshörnan, släktforskningen och

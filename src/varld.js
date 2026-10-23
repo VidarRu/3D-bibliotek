@@ -14,11 +14,6 @@ export const VAGGHOJD = 3.20;
 const GOLVTJOCKLEK = 0.30;
 const PX_PER_METER = 40;
 
-// Vilka vaggar som far annan yta an varmvitt. Namnen ar vaggarnas id.
-const LAXROSA_VAGGAR = ["yttre_norr", "yttre_norr_tjust", "labb_ostvagg", "karna_vast", "karna_norr"];
-const TEGEL_VAGGAR = ["karna_ost_mitt"];
-// Zoner med beige stengolv i stallet for det grå golvet.
-const STENGOLV = ["entre", "trappa_hiss", "trappa_hiss_plan1", "torget"];
 
 /** Trappor som gar ner till vaningen under. Dar har golvet ett hal. */
 const halIGolvet = layout => layout.fixtures.filter(f => f.typ === "trappa" && f.ner);
@@ -107,7 +102,7 @@ function golvDuk(layout, tema) {
 
   // Stenplattor i entren och trapphallen, i forskjutna rader.
   const PL = 0.6 * P, PH = 0.4 * P;
-  for (const zon of layout.zones.filter(z => STENGOLV.includes(z.id))) {
+  for (const zon of layout.zones.filter(z => z.stengolv)) {
     for (const r of zon.rutor) {
       c.save();
       c.beginPath();
@@ -333,9 +328,11 @@ function byggVaggar(layout, tema) {
       grupp.add(fonstervagg(v, tema));
       continue;
     }
+    // "yta" i kartfilen: "laxrosa" for accentvaggar, "tegel" for tegel.
+    // Utan yta blir vaggen varmvit.
     let material = mat(tema.vagg);
-    if (LAXROSA_VAGGAR.includes(v.id)) material = mat(tema.laxrosa);
-    if (TEGEL_VAGGAR.includes(v.id)) {
+    if (v.yta === "laxrosa") material = mat(tema.laxrosa);
+    if (v.yta === "tegel") {
       material = new THREE.MeshStandardMaterial({
         map: tegelTextur(tema, Math.max(v.bredd, v.djup)), roughness: 0.9 });
     }

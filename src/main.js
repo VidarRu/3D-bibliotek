@@ -1,4 +1,5 @@
-// Vasterviks stadsbibliotek i 3D.
+// Ett folkbibliotek i 3D. Vilket bibliotek det ar star i src/config/content.js
+// och i kartfilerna i src/data.
 //
 // Kartan ar till for att kunna planera sitt besok i lugn och ro. Darfor
 // ar skarmen sa tom som mojligt: inget dyker upp utan att man fragas
@@ -13,7 +14,7 @@ import { byggVarld, byggLjus, VAGGHOJD } from "./varld.js";
 import { byggFigur, stegaFigur, animeraFigur, animeraFirande, FIGUR_HOJD } from "./figur.js";
 import { skapaHinder, arFri, flytta, paGolv, FIGUR_RADIE } from "./kollision.js";
 import { VYER } from "./vyer.js";
-import { PLATSER, SIDA, TEMA, INFOPUNKTER, MINISPEL, BOKJAKT, RUTOR, BEHOV, MOBIL } from "./config/content.js";
+import { PLATSER, SIDA, TEMA, INFOPUNKTER, MINISPEL, BOKJAKT, RUTOR, BEHOV, MOBIL, KARTOR } from "./config/content.js";
 import { sammanfogaPlatser, byggZoner, iZon } from "./zoner.js";
 import { byggRutnat, hittaVag, byggPrickar, vaglangd } from "./vagvisning.js";
 import { meddela, doljMeddelande, fyllI, visaInfokort,
@@ -31,10 +32,12 @@ import { byggFirande } from "./firande.js";
 
 // Kartorna lases vid start i stallet for att bakas in. Da racker det att
 // spara om en kartfil och ladda om sidan for att se andringen.
-const KARTFILER = ["./data/layout.json", "./data/layout_plan1.json"];
+// En kartfil per vaning, i ordning fran entreplanet och uppat.
+const KARTFILER = KARTOR.map(fil => `./data/${fil}`);
 const layouter = await Promise.all(KARTFILER.map(fil =>
   fetch(new URL(fil, import.meta.url)).then(svar => svar.json())));
 
+document.title = SIDA.titel;
 const duk = document.getElementById("spelduk");
 const lugnt = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -586,7 +589,8 @@ function flyttaTillVaning(plan, viaId) {
   scen.add(V.grupp);
 
   const fb = (V.layout.forbindelser || []);
-  const f = fb.find(o => o.id === viaId) || fb.find(o => o.id === "huvudtrappan") || fb[0];
+  // Utan via kommer man ut vid den forsta forbindelsen i kartfilen.
+  const f = fb.find(o => o.id === viaId) || fb[0];
   const a = f ? f.ankomst : V.layout.start;
   tillstand.x = a.x;
   tillstand.z = a.z;
