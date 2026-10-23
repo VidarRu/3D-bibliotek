@@ -86,7 +86,7 @@
   ],
 
   "walls": [
-    { "id": "yttre_norr",        "x":  0.00, "z":  0.00, "bredd": 23.70, "djup":  0.25 },
+    { "id": "yttre_norr",        "x":  0.00, "z":  0.00, "bredd": 23.70, "djup":  0.25, "yta": "laxrosa" },
     { "id": "yttre_vast_ovan",   "x":  0.00, "z":  0.00, "bredd":  0.25, "djup": 19.90 },
     { "id": "yttre_ost_ovan",    "x": 23.45, "z":  0.00, "bredd":  0.25, "djup": 19.90 },
     { "id": "mitt_syd_vast",     "x":  0.00, "z": 19.65, "bredd":  3.60, "djup":  0.25 },
@@ -116,9 +116,9 @@
     { "id": "labb_syd_vast",     "x":  5.60, "z":  8.00, "bredd":  2.40, "djup":  0.20, "fonster": true },
     { "id": "labb_syd_ost",      "x":  9.20, "z":  8.00, "bredd":  2.00, "djup":  0.20, "fonster": true },
 
-    { "id": "karna_vast",        "x":  9.80, "z": 21.80, "bredd":  0.20, "djup":  4.30 },
-    { "id": "karna_norr",        "x":  9.80, "z": 21.80, "bredd":  4.40, "djup":  0.20 },
-    { "id": "karna_ost_mitt",    "x": 14.00, "z": 23.80, "bredd":  0.20, "djup":  0.20 },
+    { "id": "karna_vast",        "x":  9.80, "z": 21.80, "bredd":  0.20, "djup":  4.30, "yta": "laxrosa" },
+    { "id": "karna_norr",        "x":  9.80, "z": 21.80, "bredd":  4.40, "djup":  0.20, "yta": "laxrosa" },
+    { "id": "karna_ost_mitt",    "x": 14.00, "z": 23.80, "bredd":  0.20, "djup":  0.20, "yta": "tegel" },
     { "id": "barn_entre_vast",   "x": 14.20, "z": 26.90, "bredd":  2.10, "djup":  0.20 },
     { "id": "barn_entre_ost",    "x": 17.30, "z": 26.90, "bredd":  0.70, "djup":  0.20 },
     { "id": "karna_syd",         "x":  9.80, "z": 25.90, "bredd":  4.40, "djup":  0.20 }
@@ -236,7 +236,7 @@
   ],
 
   "zones": [
-    { "id": "entre",           "namn": "Entré",
+    { "id": "entre",           "namn": "Entré", "stengolv": true,
       "rutor": [ { "x": 14.00, "z": 19.90, "bredd":  4.00, "djup":  1.90 },
                  { "x": 15.00, "z": 21.80, "bredd":  3.00, "djup":  4.30 },
                  { "x": 14.20, "z": 26.10, "bredd":  3.80, "djup":  0.80 } ],
@@ -325,11 +325,11 @@
       "rutor": [ { "x": 13.10, "z": 12.70, "bredd":  3.40, "djup":  3.15 } ],
       "skylt": { "x": 14.90, "z": 14.25 } },
 
-    { "id": "torget",          "namn": "Torget",
+    { "id": "torget",          "namn": "Torget", "stengolv": true,
       "rutor": [ { "x": 18.25, "z": 19.90, "bredd":  5.45, "djup":  9.10 } ],
       "skylt": { "x": 21.60, "z": 21.40, "y": 2.40 } },
 
-    { "id": "trappa_hiss",     "namn": "Trappa och hiss",
+    { "id": "trappa_hiss",     "namn": "Trappa och hiss", "stengolv": true,
       "rutor": [ { "x":  9.80, "z": 21.80, "bredd":  5.20, "djup":  4.30 } ],
       "skylt": { "x": 14.60, "z": 23.00 } }
   ],

@@ -54,8 +54,8 @@
   ],
 
   "walls": [
-    { "id": "yttre_norr",       "x":  3.35, "z":  0.00, "bredd": 16.05, "djup":  0.25 },
-    { "id": "yttre_norr_tjust", "x": 20.40, "z":  0.00, "bredd":  3.30, "djup":  0.25 },
+    { "id": "yttre_norr",       "x":  3.35, "z":  0.00, "bredd": 16.05, "djup":  0.25, "yta": "laxrosa" },
+    { "id": "yttre_norr_tjust", "x": 20.40, "z":  0.00, "bredd":  3.30, "djup":  0.25, "yta": "laxrosa" },
     { "id": "yttre_vast",       "x":  3.35, "z":  0.25, "bredd":  0.25, "djup": 37.40, "fonster": true },
     { "id": "yttre_syd",        "x":  3.35, "z": 37.65, "bredd":  8.85, "djup":  0.25 },
     { "id": "yttre_syd_tidn",   "x": 12.20, "z": 37.65, "bredd":  6.05, "djup":  0.25 },
@@ -204,7 +204,7 @@
       "rutor": [ { "x": 11.20, "z": 18.40, "bredd":  6.25, "djup":  3.20 } ],
       "skylt": { "x": 14.30, "z": 21.20, "y": 1.30 } },
 
-    { "id": "trappa_hiss_plan1",     "namn": "Trappa och hiss",
+    { "id": "trappa_hiss_plan1",     "namn": "Trappa och hiss", "stengolv": true,
       "rutor": [ { "x": 14.06, "z": 21.80, "bredd":  3.94, "djup":  7.05 } ],
       "skylt": { "x": 16.40, "z": 25.80 } },
 

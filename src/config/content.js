@@ -38,6 +38,10 @@ export const SIDA = {
   visarVagAnnanUnder: "Följ prickarna till trappan."
 };
 
+// Kartfilerna i src/data, en per våning. Den första är entréplanet, där
+// figuren börjar. Varje kartfil har sitt våningsnummer i "meta": { "plan": … }.
+export const KARTOR = ["layout.json", "layout_plan1.json"];
+
 export const PLATSER = [
   // ---------------------------------------------------- avdelningar
   {
@@ -418,7 +422,9 @@ export const RUTOR = {
   nej:          "Nej",
   infoFraga:    "Vill du veta vad det här är?",
 
-  // Labbet. spelPlats är id för platsen där spelen startar.
+  // Labbet. spelPlats är id för platsen där spelen startar. Skriv null
+  // om biblioteket inte ska ha spelen, och ta då bort raden om spelen i
+  // instruktionRader ovan.
   spelPlats:    "labbet",
   labbFraga:    "Vill du utmana dig själv lite grann?",
   labbUnder:    "Här i Labbet kan du prova ett litet spel.",
